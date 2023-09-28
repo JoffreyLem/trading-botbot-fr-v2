@@ -1,0 +1,21 @@
+{
+  "status": true,
+  "returnData": {
+    "quotations": [
+      {
+        "symbol": "test",
+        "ask": 100,
+        "bid": 101,
+        "high": 100,
+        "low": 100,
+        "askVolume": 400000,
+        "bidVolume": 298000,
+        "timestamp": 1669409999590,
+        "level": 0,
+        "exemode": 1,
+        "spreadRaw": 100,
+        "spreadTable": 100
+      }
+    ]
+  }
+}

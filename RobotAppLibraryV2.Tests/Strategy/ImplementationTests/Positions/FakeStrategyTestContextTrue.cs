@@ -1,0 +1,33 @@
+using RobotAppLibraryV2.Attributes;
+using RobotAppLibraryV2.Indicators.Attributes;
+using RobotAppLibraryV2.Indicators.Indicator;
+using RobotAppLibraryV2.Modeles;
+using RobotAppLibraryV2.Strategy;
+
+namespace RobotAppLibraryV2.Tests.Strategy.ImplementationTests.Positions;
+
+[VersionStrategy("1")]
+public class FakeStrategyTestContextTrue : StrategyImplementationBase
+{
+    public SarIndicator SarIndicator { get; set; } = new();
+
+    [IndicatorLongerTerm] public SarIndicator SarIndicator2 { get; set; } = new();
+
+    protected override void Run()
+    {
+        OpenPosition(TypePosition.Buy, 1, 1, 0, 0.11);
+    }
+
+
+    protected override bool ShouldClosePosition(Position position)
+    {
+        return true;
+    }
+
+    protected override bool ShouldUpdatePosition(Position position)
+    {
+        position.StopLoss = 2;
+        position.TakeProfit = 2;
+        return true;
+    }
+}

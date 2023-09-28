@@ -1,0 +1,71 @@
+﻿@inherits LayoutComponentBase
+@inject IJSRuntime JsRuntime
+
+<PageTitle>Robot</PageTitle>
+<head>
+    <link href="css/mainLayout.css" rel="stylesheet" />
+</head>
+<div class="page">
+    <div class="sidebar">
+        <NavMenu/>
+    </div>
+    <main>
+        <div class="@GetContainerClass()">
+            <SfAppBar ColorMode="AppBarColor.Dark">
+                <SfButton Type="button" CssClass="e-inherit" IconCss="e-icons e-menu" @onclick="HandleSideBard"></SfButton>
+                <span class="regular">Bot bot</span>
+                <AppBarSpacer/>
+                <LoginDisplay/>
+            </SfAppBar>
+    
+            <SfSidebar Width="200px" @bind-IsOpen="SidebarToggle">
+                <ChildContent>
+                    <nav id="sidebarMenu" class="sidebar">
+                        <div class="nav-item px-3 border-bottom mb-3 py-3 thick-border">
+                            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                                <i data-feather="home" class="icon-spacing"></i>Home
+                            </NavLink>
+                        </div>
+                    </nav>
+                </ChildContent>
+            </SfSidebar>
+
+        </div>
+        
+        <article class="@GetContainerClass() content px-4">
+            @Body
+        </article>
+    </main>
+
+</div>
+
+@code
+{
+
+    public bool SidebarToggle;
+   
+
+    protected override Task OnInitializedAsync()
+    {
+        SidebarToggle = false;
+        return Task.CompletedTask;
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) 
+        {
+            await JsRuntime.InvokeVoidAsync("feather.replace");
+        }
+    }
+
+    private void HandleSideBard()
+    {
+        SidebarToggle = !SidebarToggle;
+    }
+    
+    private string GetContainerClass()
+    {
+        return SidebarToggle ? "sidebar-opened" : "";
+    }
+}

@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="12.0.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="Destructurama.Attributed" Version="3.1.0" />
+        <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Serilog" Version="3.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\RobotAppLibraryV2\RobotAppLibraryV2.csproj" />
+        <ProjectReference Include="..\StrategyApi.Dto\StrategyApi.Dto.csproj" />
+        <ProjectReference Include="..\StrategyApi.Mail\StrategyApi.Mail.csproj" />
+        <ProjectReference Include="..\Strategy\StrategyApi.Strategy.Main\StrategyApi.Strategy.Main.csproj" />
+        <ProjectReference Include="..\Strategy\StrategyApi.Strategy.StrategySar\StrategyApi.Strategy.StrategySar.csproj" />
+        <ProjectReference Include="..\Strategy\StrategyApi.Strategy.Test\StrategyApi.Strategy.Test.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="AutoMapper">
+            <HintPath>..\..\..\.nuget\packages\automapper\12.0.0\lib\netstandard2.1\AutoMapper.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Dto\Command\" />
+    </ItemGroup>
+
+</Project>

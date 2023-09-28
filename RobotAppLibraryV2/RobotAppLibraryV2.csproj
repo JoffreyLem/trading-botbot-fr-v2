@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TargetFramework>net7.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Serilog" Version="3.0.1"/>
+        <PackageReference Include="Skender.Stock.Indicators" Version="2.4.10"/>
+    </ItemGroup>
+
+    <ItemGroup>
+
+        <ProjectReference Include="..\RobotAppLibraryV2.ApiHandler.Xtb\RobotAppLibraryV2.ApiHandler.Xtb.csproj"/>
+
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Skender.Stock.Indicators">
+            <HintPath>..\..\..\.nuget\packages\skender.stock.indicators\2.4.10\lib\net7.0\Skender.Stock.Indicators.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+</Project>

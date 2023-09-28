@@ -1,0 +1,15 @@
+{
+  "status": true,
+  "returnData": [
+    {
+      "time": 1691084421510,
+      "country": "CZ",
+      "title": "CNB Rate Decision",
+      "current": "",
+      "previous": "7.00",
+      "forecast": "",
+      "impact": "3",
+      "period": "August"
+    }
+  ]
+}

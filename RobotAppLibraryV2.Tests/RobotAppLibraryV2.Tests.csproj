@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <TargetFramework>net7.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions" Version="6.11.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0"/>
+        <PackageReference Include="Moq" Version="4.18.4"/>
+        <PackageReference Include="xunit" Version="2.4.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector" Version="3.2.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\RobotAppLibraryV2\RobotAppLibraryV2.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="ApiHandler\Ressources\Xtb\allsymbolrsp.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\allsymbolrsp.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\chart.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\chart.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\currentTrade.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\currentTrade.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\marginLevelResponse.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\marginLevelResponse.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\streamingTradeRecord.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\streamingTradeRecord.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\symbolInfo.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\symbolInfo.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\tickPrice.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\tickPrice.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\tradeHistoryResponse.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\tradeHistoryResponse.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\transactionResponse.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\transactionResponse.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\marginlevel.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\marginlevel.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\getTradesHistory.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\getTradesHistory.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\getCalendar.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\getCalendar.json"/>
+        <None Remove="ApiHandler\Ressources\Xtb\tradingHours.json"/>
+        <EmbeddedResource Include="ApiHandler\Ressources\Xtb\tradingHours.json"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Skender.Stock.Indicators">
+            <HintPath>..\..\..\.nuget\packages\skender.stock.indicators\2.4.10\lib\net7.0\Skender.Stock.Indicators.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+
+</Project>

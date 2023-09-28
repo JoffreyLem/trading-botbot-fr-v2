@@ -1,0 +1,12 @@
+{
+  "status": true,
+  "returnData": {
+    "balance": 10000,
+    "credit": 10000,
+    "currency": "EUR",
+    "equity": 10000,
+    "margin": 10000,
+    "margin_free": 10000,
+    "margin_level": 10000
+  }
+}

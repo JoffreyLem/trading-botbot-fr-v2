@@ -1,0 +1,12 @@
+{
+  "status": true,
+  "returnData": {
+    "balance": 1,
+    "credit": 1,
+    "currency": "test",
+    "equity": 1,
+    "margin": 1,
+    "margin_free": 1,
+    "margin_level": 1
+  }
+}
