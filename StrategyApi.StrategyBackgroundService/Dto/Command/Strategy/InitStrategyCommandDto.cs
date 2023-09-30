@@ -1,5 +1,5 @@
 using RobotAppLibraryV2.Modeles;
-using StrategyApi.Dto.Enum;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
 

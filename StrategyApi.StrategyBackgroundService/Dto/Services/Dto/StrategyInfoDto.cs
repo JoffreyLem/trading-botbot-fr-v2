@@ -1,6 +1,4 @@
-using StrategyApi.Dto.Enum;
-
-namespace StrategyApi.Dto.Dto;
+namespace StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
 
 public class StrategyInfoDto
 {

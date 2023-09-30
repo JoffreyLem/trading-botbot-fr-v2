@@ -1,6 +1,6 @@
 using RobotAppLibraryV2.Modeles;
-using StrategyApi.Dto.Dto;
-using StrategyApi.Dto.Enum;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Hubs;
 

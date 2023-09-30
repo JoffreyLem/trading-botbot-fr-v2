@@ -21,7 +21,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\RobotAppLibraryV2\RobotAppLibraryV2.csproj" />
-        <ProjectReference Include="..\StrategyApi.Dto\StrategyApi.Dto.csproj" />
         <ProjectReference Include="..\StrategyApi.Mail\StrategyApi.Mail.csproj" />
         <ProjectReference Include="..\Strategy\StrategyApi.Strategy.Main\StrategyApi.Strategy.Main.csproj" />
         <ProjectReference Include="..\Strategy\StrategyApi.Strategy.StrategySar\StrategyApi.Strategy.StrategySar.csproj" />
@@ -36,6 +35,7 @@
 
     <ItemGroup>
         <Folder Include="Dto\Command\" />
+        <Folder Include="Dto\Services\" />
     </ItemGroup>
 
 </Project>

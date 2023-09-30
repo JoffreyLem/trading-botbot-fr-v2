@@ -1,8 +1,8 @@
 ﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using StrategyApi.Dto.Dto;
-using StrategyApi.Dto.Enum;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.DropDowns;
 
@@ -22,11 +22,11 @@ public class ApiComponentBase : ComponentBase
     protected string? ApiSelected { get; set; } = "";
     
     [Parameter]
-    public EventCallback OnChildUpdateRequested { get; set; }
+    public EventCallback ApiComponentUpdateRequested { get; set; }
     
     private async Task NotifyParentToUpdate()
     {
-        await OnChildUpdateRequested.InvokeAsync();
+        await ApiComponentUpdateRequested.InvokeAsync();
     }
     
     protected override async Task OnInitializedAsync()

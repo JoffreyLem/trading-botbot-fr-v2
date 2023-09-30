@@ -1,4 +1,4 @@
-using StrategyApi.Dto.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
 
 namespace StrategyApi.StrategyBackgroundService.Hubs;
 

@@ -1,4 +1,4 @@
-namespace StrategyApi.Dto.Enum;
+namespace StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
 public enum EventType
 {

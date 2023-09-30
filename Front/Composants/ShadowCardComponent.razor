@@ -1,0 +1,31 @@
+﻿<div class="card shadow p-3 position-relative m-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3>@Title</h3>
+            <button class="btn btn-link" style="z-index: 1;" type="button" data-bs-toggle="collapse" data-bs-target="#@uniqueId" aria-expanded="true">
+                <i data-feather="chevron-down"></i>
+            </button>
+        </div>
+
+        <div id="@uniqueId" class="collapse show">
+            @Body
+            <div id="container">
+                <SfSpinner @bind-Visible="@OnLoading"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private string uniqueId = $"retractableContent-{Guid.NewGuid()}";
+    
+    [Parameter]
+    public bool OnLoading { get; set; }
+    
+    [Parameter]
+    public string Title { get; set; }
+    
+    [Parameter] public RenderFragment Body { get; set; }
+    
+}

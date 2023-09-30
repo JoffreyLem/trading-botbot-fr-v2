@@ -1,9 +1,9 @@
 using System.Threading.Channels;
 using RobotAppLibraryV2.Modeles;
-using StrategyApi.Dto.Dto;
-using StrategyApi.Dto.Enum;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using ILogger = Serilog.ILogger;
 
 namespace StrategyApi.StrategyBackgroundService.Services;

@@ -1,59 +1,44 @@
 ﻿@inherits ApiComponentBase;
 
-<head>
-    <link href="css/apiComponent.css" rel="stylesheet"/>
-</head>
-
-<div class="card shadow p-3 position-relative m-3">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-            <h3>Gestion API</h3>
-            <button class="btn btn-link" style="z-index: 1;" type="button" data-bs-toggle="collapse" data-bs-target="#retractableContentApiGestion" aria-expanded="true">
-                <i data-feather="chevron-down"></i>
-            </button>
+<ShadowCardComponent OnLoading="OnLoading" Title="Gestion API">
+    <Body>
+    <SfDropDownList Enabled="ApiHandlerListEnabled" @ref="_dropDownList" @bind-Value="@ApiSelected" Placeholder="Choisir une api" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@ApiProviders" TValue="string" TItem="string">
+        <DropDownListEvents TValue="string" TItem="string" ValueChange="OnApiProviderValueChange"></DropDownListEvents>
+    </SfDropDownList>
+    @if (IsConnected)
+    {
+        <div class="mt-3">
+            <SfButton @onclick="Disconnect">Disconnect</SfButton>
         </div>
-
-        <div id="retractableContentApiGestion" class="collapse show">
-            <SfDropDownList Enabled="ApiHandlerListEnabled" @ref="_dropDownList" @bind-Value="@ApiSelected" Placeholder="Choisir une api" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@ApiProviders" TValue="string" TItem="string">
-                <DropDownListEvents TValue="string" TItem="string" ValueChange="OnApiProviderValueChange"></DropDownListEvents>
-            </SfDropDownList>
-            @if (IsConnected)
-            {
-                <div class="mt-3">
-                    <SfButton @onclick="Disconnect">Disconnect</SfButton>
-                </div>
-            }
+    }
+                
         
-
-            @if (!string.IsNullOrEmpty(ApiSelected) && !IsConnected)
-            {
-                <div class="row">
-                    <div class="col-md-4">
-                        <EditForm Model="@ConnectDto" OnValidSubmit="Connect" class="mt-3">
-                            <DataAnnotationsValidator/>
-                            <ValidationSummary/>
-                            <div class="form-group">
-                                <label for="first-name">User</label>
-                                <SfTextBox Type="InputType.Text" ID="first-name" @bind-value="ConnectDto.User"></SfTextBox>
-                            </div>
-                            <div class="form-group">
-                                <label for="last-name">Password</label>
-                                <SfTextBox Type="InputType.Password" ID="last-name" @bind-value="ConnectDto.Pwd"></SfTextBox>
-                            </div>
-                            <div class="mt-3">
-                                <SfButton>Submit</SfButton>
-                            </div>
-                        </EditForm>
+    @if (!string.IsNullOrEmpty(ApiSelected) && !IsConnected)
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <EditForm Model="@ConnectDto" OnValidSubmit="Connect" class="mt-3">
+                    <DataAnnotationsValidator/>
+                    <ValidationSummary/>
+                    <div class="form-group">
+                        <label for="first-name">User</label>
+                        <SfTextBox Type="InputType.Text" ID="first-name" @bind-value="ConnectDto.User"></SfTextBox>
                     </div>
-                </div>
-          
-            }
-            <div id="container">
-                <SfSpinner @bind-Visible="@OnLoading"/>
+                    <div class="form-group">
+                        <label for="last-name">Password</label>
+                        <SfTextBox Type="InputType.Password" ID="last-name" @bind-value="ConnectDto.Pwd"></SfTextBox>
+                    </div>
+                    <div class="mt-3">
+                        <SfButton>Submit</SfButton>
+                    </div>
+                </EditForm>
             </div>
         </div>
-    </div>
-</div>
+                  
+    }
+    </Body>
+</ShadowCardComponent>
+
 
 @code {
     

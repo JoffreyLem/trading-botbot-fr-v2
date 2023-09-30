@@ -1,16 +1,18 @@
-﻿<div class="card shadow p-3 position-relative m-3">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-            <h3>Strategy</h3>
-            <button class="btn btn-link" style="z-index: 1;" type="button" data-bs-toggle="collapse" data-bs-target="#retractableContentStrategy" aria-expanded="true">
-                <i data-feather="chevron-down"></i>
-            </button>
-        </div>
-        <div id="retractableContentStrategy" class="collapse show">
-            
-        </div>
-    </div>
-</div>
+﻿@inherits StrategyComponentBase
+
+<ShadowCardComponent Title="Strategy">
+    <Body>
+    @if (IsInitialized)
+    {
+        <StrategyDataComponent/>
+    }
+    else
+    {
+        <StrategyInitFormComponent StrategyFormUpdateRequested="@HandleStrategyForm"/>
+    }
+    </Body>
+
+</ShadowCardComponent>
 
 @code {
     

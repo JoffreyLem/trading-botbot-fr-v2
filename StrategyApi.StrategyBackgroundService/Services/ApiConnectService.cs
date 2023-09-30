@@ -1,7 +1,7 @@
 using System.Threading.Channels;
-using StrategyApi.Dto.Enum;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using ILogger = Serilog.ILogger;
 
 namespace StrategyApi.StrategyBackgroundService.Services;

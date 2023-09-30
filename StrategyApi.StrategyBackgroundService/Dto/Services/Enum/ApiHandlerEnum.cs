@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace StrategyApi.Dto.Enum;
+namespace StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ApiHandlerEnum

@@ -1,0 +1,37 @@
+﻿@using RobotAppLibraryV2.Modeles
+@using StrategyApi.StrategyBackgroundService.Dto.Services.Enum
+@inherits StrategiInitFormBase
+
+<div class="row">
+    <div class="col-md-4" >
+        <EditForm Model="@_strategyInitDto" OnValidSubmit="InitStrategy" class="mt-3">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            <div class="form-group">
+                <SfDropDownList ID="strategyType" @bind-Value="@_strategyInitDto.StrategyType" Placeholder="Strategy" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@StrategyTypes" TValue="StrategyTypeEnum" TItem="string"/>
+            </div>
+            <div class="form-group">
+                <SfAutoComplete ID="symbolType" @bind-Value="@_strategyInitDto.Symbol" Placeholder="Symbol" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@Symbols" TValue="string" TItem="string"/>
+            </div>
+            <div class="form-group">
+                <SfDropDownList ID="timeFrameList" @bind-Value="@_strategyInitDto.Timeframe" Placeholder="Timeframe" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@TimeFrames" TValue="Timeframe" TItem="string"/>
+            </div>
+            <div class="form-group">
+                <SfDropDownList ID="timeFrameList2" @bind-Value="@_strategyInitDto.Timeframe2" Placeholder="Timeframe" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@TimeFrames" TValue="Timeframe" TItem="string"/>
+            </div>
+            <div class="mt-3">
+                <SfButton>Submit</SfButton>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+
+<div id="container">
+    <SfSpinner @bind-Visible="@OnLoading"/>
+</div>
+
+@code {
+    
+}

@@ -1,7 +1,7 @@
 ﻿@page "/Accueil"
 @inherits IndexBase
 
-<ApiComponent OnChildUpdateRequested="@HandleApiUpdate"/>
+<ApiComponent ApiComponentUpdateRequested="@HandleApiUpdate"/>
 @if (IsConnected)
 {
     <StrategyComponent/>
