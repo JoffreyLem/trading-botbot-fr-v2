@@ -3,38 +3,44 @@
 
 <PageTitle>Robot</PageTitle>
 <head>
-    <link href="css/mainLayout.css" rel="stylesheet" />
+    <title></title>
+    <link href="css/mainLayout.css" rel="stylesheet"/>
 </head>
 <div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
     <main>
-        <div class="@GetContainerClass()">
+     
+        
             <SfAppBar ColorMode="AppBarColor.Dark">
                 <SfButton Type="button" CssClass="e-inherit" IconCss="e-icons e-menu" @onclick="HandleSideBard"></SfButton>
                 <span class="regular">Bot bot</span>
                 <AppBarSpacer/>
                 <LoginDisplay/>
             </SfAppBar>
-    
-            <SfSidebar Width="200px" @bind-IsOpen="SidebarToggle">
+          
+            <SfSidebar Target=".maincontent" Width="200px" @bind-IsOpen="SidebarToggle">
                 <ChildContent>
                     <nav id="sidebarMenu" class="sidebar">
-                        <div class="nav-item px-3 border-bottom mb-3 py-3 thick-border">
-                            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <div class="nav-item px-3 border-bottom py-3 thick-border">
+                            <NavLink class="nav-link" href="accueil" Match="NavLinkMatch.All">
                                 <i data-feather="home" class="icon-spacing"></i>Home
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3 border-bottom py-3 thick-border">
+                            <NavLink class="nav-link" href="accueil" Match="NavLinkMatch.All">
+                                <i data-feather="home" class="icon-spacing"></i>test
                             </NavLink>
                         </div>
                     </nav>
                 </ChildContent>
             </SfSidebar>
-
-        </div>
+            <div class="maincontent" id="maintext">
+                <div class="content"> 
+                    @Body 
+                </div> 
+            </div>
+     
         
-        <article class="@GetContainerClass() content px-4">
-            @Body
-        </article>
+     
     </main>
 
 </div>
@@ -44,7 +50,6 @@
 
     public bool SidebarToggle;
    
-
     protected override Task OnInitializedAsync()
     {
         SidebarToggle = false;

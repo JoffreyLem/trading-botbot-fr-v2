@@ -1,23 +1,13 @@
-.sidebar-opened {
-    margin-left: 200px;
-    transition: margin-left 0.3s;
-}
-
 .sidebar {
     background-color: #f7f7f7;
-    height: 100%;
-    padding-top: 20px;
-}
-
-.nav-item {
-    margin-bottom: 15px;
+    overflow: hidden;
 }
 
 .nav-link {
     color: #333;
     display: flex;
     align-items: center;
-    transition: color 0.3s;
+    transition: color 0.3s ease;
     font-size: 16px;
 }
 
@@ -34,15 +24,9 @@
     border-bottom-width: 3px!important;
 }
 
-
 .nav-item {
     transition: all 0.3s ease; 
-    transform: translateY(0); 
-}
-
-.nav-link {
-    color: #333;
-    transition: color 0.3s ease;
+    transform: translateY(0);
 }
 
 .nav-item:hover {
@@ -57,4 +41,9 @@
 
 .icon-spacing {
     margin-right: 10px;
+}
+
+.maincontent {
+    height: 100vh;
+    background-color: rgb(244, 246, 249);
 }
