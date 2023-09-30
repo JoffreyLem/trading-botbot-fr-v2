@@ -1,11 +1,8 @@
 ﻿@page "/Accueil"
 @inherits IndexBase
 
+<ApiComponent/>
 @if (IsConnected)
-{
-    <ApiComponent/>
-}
-else
 {
     <StrategyComponent/>
 }

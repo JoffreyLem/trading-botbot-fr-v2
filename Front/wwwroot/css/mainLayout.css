@@ -1,6 +1,7 @@
 .sidebar {
     background-color: #f7f7f7;
     overflow: hidden;
+
 }
 
 .nav-link {
@@ -46,4 +47,9 @@
 .maincontent {
     height: 100vh;
     background-color: rgb(244, 246, 249);
+    padding: 20px 30px;
+}
+
+.content{
+
 }

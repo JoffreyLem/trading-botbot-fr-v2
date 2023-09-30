@@ -23,6 +23,10 @@
       <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.3.1" />
       <PackageReference Include="AutoMapper" Version="12.0.1" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.11" />
+        <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="23.1.38" />
+        <PackageReference Include="Syncfusion.Blazor.Grid" Version="23.1.38" />
+        <PackageReference Include="Syncfusion.Blazor.Inputs" Version="23.1.38" />
+        <PackageReference Include="Syncfusion.Blazor.Notifications" Version="23.1.38" />
       <PackageReference Include="Syncfusion.Blazor.Buttons" Version="23.1.38" />
       <PackageReference Include="Syncfusion.Blazor.Navigations" Version="23.1.38" />
       <PackageReference Include="Syncfusion.Blazor.Themes" Version="23.1.38" />
@@ -56,14 +60,21 @@
       <Compile Update="Pages\IndexBase.cs">
         <DependentUpon>Index.razor</DependentUpon>
       </Compile>
+      <Compile Update="Composants\ApiProvider\ApiComponentBase.cs">
+        <DependentUpon>ApiComponent.razor</DependentUpon>
+      </Compile>
+      <Compile Update="Composants\ToastCustomBase.cs">
+        <DependentUpon>ToastCustomComponent.razor</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 
 
 
-    <ItemGroup>
-      <Folder Include="Services\" />
-    </ItemGroup>
+
+
+
+
 
 
 </Project>

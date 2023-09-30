@@ -1,4 +1,5 @@
 using Front;
+using Front.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using StrategyApi.StrategyBackgroundService;
@@ -11,7 +12,7 @@ builder.AddAuthentification();
 builder.AddSyncFusion();
 builder.AddDependencyRobot();
 builder.AddLogger();
-
+builder.Services.AddSingleton<ShowToastService>();
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
