@@ -1,19 +1,25 @@
 ﻿@inherits StrategyComponentBase
 
-<ShadowCardComponent Title="Strategy">
+
+<ShadowCardComponent Title="Strategy" OnLoading="OnLoading">
     <Body>
-    @if (IsInitialized)
-    {
-        <StrategyDataComponent/>
-    }
-    else
-    {
-        <StrategyInitFormComponent StrategyFormUpdateRequested="@HandleStrategyForm"/>
-    }
+    <CascadingValue Value="OnLoading">
+        @if (IsInitialized)
+        {
+            <div class="container mt-4">
+                <div class="mb-3">
+                    <SfButton @onclick="DeleteStrategy">Delete Strategy</SfButton>
+                </div>
+                <div>
+                    <StrategyDataComponent/>
+                </div>
+            </div>
+        }
+        else
+        {
+            <StrategyInitFormComponent StrategyFormUpdateRequested="@HandleStrategyForm"/>
+        }
+    </CascadingValue>
+        
     </Body>
-
 </ShadowCardComponent>
-
-@code {
-
-}

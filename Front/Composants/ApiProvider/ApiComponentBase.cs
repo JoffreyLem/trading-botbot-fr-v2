@@ -78,7 +78,6 @@ public class ApiComponentBase : ComponentBase
             {
                 OnLoading = true;
                 await ApiConnectService.Disconnect();
-                OnLoading = false;
                 ToastService.ShowToastSuccess("Deconnecter");
                 IsConnected = false;
                 ApiSelected = null;
@@ -92,8 +91,12 @@ public class ApiComponentBase : ComponentBase
         }
         catch (Exception e)
         {
-            OnLoading = false;
+
             ToastService.ShowToastError(e);
+        }
+        finally
+        {
+            OnLoading = false;
         }
     }
 

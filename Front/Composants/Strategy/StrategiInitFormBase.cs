@@ -1,4 +1,5 @@
-﻿using Front.Services;
+﻿using Front.Modeles;
+using Front.Services;
 using Microsoft.AspNetCore.Components;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Services;
@@ -9,7 +10,7 @@ public class StrategiInitFormBase : ComponentBase
 {
     protected StrategyInitDto _strategyInitDto = new();
 
-    protected bool OnLoading;
+    protected bool OnLoading { get; set; } = false;
 
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
 
@@ -41,7 +42,6 @@ public class StrategiInitFormBase : ComponentBase
         try
         {
             OnLoading = true;
-
             await _apiStrategyService.InitStrategy(_strategyInitDto.StrategyType, _strategyInitDto.Symbol,
                 _strategyInitDto.Timeframe, _strategyInitDto.Timeframe2);
             ToastService.ShowToastSuccess("Strategy initialisée");
@@ -55,5 +55,6 @@ public class StrategiInitFormBase : ComponentBase
         {
             OnLoading = false;
         }
+      
     }
 }

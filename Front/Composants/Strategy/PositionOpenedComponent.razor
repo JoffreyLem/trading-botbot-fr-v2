@@ -2,7 +2,7 @@
 @inherits PositionOpenedComponentBase
 
 
-<SfGrid @ref="Grid" DataSource="@Positions" AllowPaging="true" AllowPaging="true" AllowResizing="true" EnableAdaptiveUI="true">
+<SfGrid @ref="Grid" DataSource="@Positions"  AllowPaging="true" AllowResizing="true" EnableAdaptiveUI="true">
     <GridPageSettings PageSize="5"></GridPageSettings>
     <GridColumns>
         <GridColumn Field="@nameof(PositionDto.Symbol)" HeaderText="Symbol"></GridColumn>

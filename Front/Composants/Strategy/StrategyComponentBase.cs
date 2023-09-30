@@ -1,4 +1,5 @@
-﻿using Front.Services;
+﻿using Front.Modeles;
+using Front.Services;
 using Microsoft.AspNetCore.Components;
 using StrategyApi.StrategyBackgroundService.Services;
 
@@ -11,6 +12,8 @@ public class StrategyComponentBase : ComponentBase
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
 
     [Inject] private ShowToastService ToastService { get; set; }
+
+    protected bool OnLoading { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -30,6 +33,25 @@ public class StrategyComponentBase : ComponentBase
         finally
         {
             StateHasChanged();
+        }
+    }
+    
+    protected async Task DeleteStrategy()
+    {
+        try
+        {
+            OnLoading = true;
+            await _apiStrategyService.CloseStrategy();
+            ToastService.ShowToastSuccess("Strategy supprimée");
+            await InitializeStrategy();
+        }
+        catch (Exception e)
+        {
+            ToastService.ShowToastError(e);
+        }
+        finally
+        {
+            OnLoading = false;
         }
     }
 
