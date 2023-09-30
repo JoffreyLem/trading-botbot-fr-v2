@@ -1,7 +1,7 @@
 ﻿@using StrategyApi.StrategyBackgroundService.Dto.Services
 @inherits PositionClosedComponentBase
 
-<SfGrid @ref="Grid" DataSource="@Positions" AllowPaging="true" AllowResizing="true">
+<SfGrid @ref="Grid" DataSource="@Positions" AllowPaging="true" AllowResizing="true" EnableAdaptiveUI="true">
     <GridPageSettings PageSize="20"></GridPageSettings>
     <GridColumns>
         <GridColumn Field="@nameof(PositionDto.Symbol)" HeaderText="Symbol"></GridColumn>
