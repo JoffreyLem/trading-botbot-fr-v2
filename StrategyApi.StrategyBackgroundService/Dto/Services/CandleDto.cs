@@ -2,7 +2,7 @@ namespace StrategyApi.StrategyBackgroundService.Dto.Services;
 
 public class CandleDto
 {
-    public double BidVolume { get; set; } 
+    public double BidVolume { get; set; }
     public double AskVolume { get; set; }
     public DateTime Date { get; set; }
 

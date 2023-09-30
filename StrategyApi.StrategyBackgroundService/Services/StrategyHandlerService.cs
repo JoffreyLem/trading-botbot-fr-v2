@@ -1,17 +1,19 @@
 using System.Threading.Channels;
 using RobotAppLibraryV2.Modeles;
+using Serilog;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
-using ILogger = Serilog.ILogger;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 
 public class StrategyHandlerService : IStrategyHandlerService
 {
     private readonly ILogger _logger;
-    private ChannelWriter<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)> _channelStrategyWriter;
+
+    private readonly ChannelWriter<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)>
+        _channelStrategyWriter;
 
     public StrategyHandlerService(ILogger logger,
         ChannelWriter<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)> channelStrategyWriter)
@@ -26,13 +28,13 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        InitStrategyCommandDto apiCommandDto = new InitStrategyCommandDto()
+        var apiCommandDto = new InitStrategyCommandDto
         {
             StrategyCommand = StrategyCommand.InitStrategy,
             StrategyType = strategyType,
             Symbol = symbol,
             Timeframe = timeframe,
-            timeframe2 = timeframe2,
+            timeframe2 = timeframe2
         };
 
         await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
@@ -44,9 +46,9 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        StrategyCommandBaseDto apiCommandDto = new StrategyCommandBaseDto()
+        var apiCommandDto = new StrategyCommandBaseDto
         {
-            StrategyCommand = StrategyCommand.IsInitialized,
+            StrategyCommand = StrategyCommand.IsInitialized
         };
 
         await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
@@ -60,9 +62,9 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        StrategyCommandBaseDto apiCommandDto = new StrategyCommandBaseDto()
+        var apiCommandDto = new StrategyCommandBaseDto
         {
-            StrategyCommand = StrategyCommand.GetStrategyInfo,
+            StrategyCommand = StrategyCommand.GetStrategyInfo
         };
 
         await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
@@ -86,9 +88,9 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        StrategyCommandBaseDto apiCommandDto = new StrategyCommandBaseDto()
+        var apiCommandDto = new StrategyCommandBaseDto
         {
-            StrategyCommand = StrategyCommand.CloseStrategy,
+            StrategyCommand = StrategyCommand.CloseStrategy
         };
 
         await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
@@ -101,9 +103,9 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        StrategyCommandBaseDto apiCommandDto = new StrategyCommandBaseDto()
+        var apiCommandDto = new StrategyCommandBaseDto
         {
-            StrategyCommand = StrategyCommand.GetStrategyPosition,
+            StrategyCommand = StrategyCommand.GetStrategyPosition
         };
 
         await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
@@ -117,9 +119,9 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        StrategyCommandBaseDto apiCommandDto = new StrategyCommandBaseDto()
+        var apiCommandDto = new StrategyCommandBaseDto
         {
-            StrategyCommand = StrategyCommand.GetResults,
+            StrategyCommand = StrategyCommand.GetResults
         };
 
         await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
@@ -133,10 +135,10 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        StrategyBoolCommand apiCommandDto = new StrategyBoolCommand()
+        var apiCommandDto = new StrategyBoolCommand
         {
             StrategyCommand = StrategyCommand.SetCanRun,
-            Bool = value,
+            Bool = value
         };
 
         await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
@@ -149,10 +151,10 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        StrategyBoolCommand apiCommandDto = new StrategyBoolCommand()
+        var apiCommandDto = new StrategyBoolCommand
         {
             StrategyCommand = StrategyCommand.SetSecureControlPosition,
-            Bool = value,
+            Bool = value
         };
 
         await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
@@ -164,9 +166,9 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        StrategyCommandBaseDto apiCommandDto = new StrategyCommandBaseDto()
+        var apiCommandDto = new StrategyCommandBaseDto
         {
-            StrategyCommand = StrategyCommand.GetOpenedPosition,
+            StrategyCommand = StrategyCommand.GetOpenedPosition
         };
 
         await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));

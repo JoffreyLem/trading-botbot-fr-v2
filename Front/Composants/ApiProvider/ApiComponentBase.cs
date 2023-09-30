@@ -12,28 +12,26 @@ public class ApiComponentBase : ComponentBase
 {
     protected bool IsConnected { get; set; }
     protected bool OnLoading { get; set; }
-    
+
     protected bool ApiHandlerListEnabled { get; set; }
     protected SfDropDownList<string, string> _dropDownList { get; set; }
     [Inject] private IApiConnectService ApiConnectService { get; set; }
     [Inject] private ShowToastService ToastService { get; set; }
-    protected List<string> ApiProviders { get; set; } = new List<string>();
-    protected ConnectDto ConnectDto { get; set; } = new ConnectDto();
+    protected List<string> ApiProviders { get; set; } = new();
+    protected ConnectDto ConnectDto { get; set; } = new();
     protected string? ApiSelected { get; set; } = "";
-    
-    [Parameter]
-    public EventCallback ApiComponentUpdateRequested { get; set; }
-    
+
+    [Parameter] public EventCallback ApiComponentUpdateRequested { get; set; }
+
     private async Task NotifyParentToUpdate()
     {
         await ApiComponentUpdateRequested.InvokeAsync();
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-       
             if (await ApiConnectService.IsConnected() == ConnexionStateEnum.Connected)
             {
                 IsConnected = true;
@@ -43,6 +41,7 @@ public class ApiComponentBase : ComponentBase
             {
                 ApiHandlerListEnabled = true;
             }
+
             await GetListHandler();
         }
         catch (Exception e)
@@ -59,10 +58,9 @@ public class ApiComponentBase : ComponentBase
             ApiProviders = await ApiConnectService.GetListHandler();
             if (IsConnected)
             {
-                string? data = await ApiConnectService.GetTypeHandler();
+                var data = await ApiConnectService.GetTypeHandler();
                 data = data.Replace("\"", "");
                 ApiSelected = ApiProviders.First(x => x == data);
-                
             }
         }
         catch (Exception e)
@@ -105,7 +103,7 @@ public class ApiComponentBase : ComponentBase
         try
         {
             OnLoading = true;
-            await ApiConnectService.Connect(ConnectDto.User,ConnectDto.Pwd);
+            await ApiConnectService.Connect(ConnectDto.User, ConnectDto.Pwd);
             ToastService.ShowToastSuccess("Connecter");
             IsConnected = true;
             ApiHandlerListEnabled = false;
@@ -129,7 +127,7 @@ public class ApiComponentBase : ComponentBase
         {
             if (obj.IsInteracted && !IsConnected)
             {
-                ApiHandlerEnum apiHandlerEnum = Enum.Parse<ApiHandlerEnum>(obj.Value);
+                var apiHandlerEnum = Enum.Parse<ApiHandlerEnum>(obj.Value);
                 await ApiConnectService.InitHandler(apiHandlerEnum);
                 ToastService.ShowToastSuccess($"Handler set to {obj.Value}");
             }

@@ -1,6 +1,5 @@
 ﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
-using RobotAppLibraryV2.Modeles;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Services;
 
@@ -8,7 +7,7 @@ namespace Front.Composants.Strategy;
 
 public class StrategiInitFormBase : ComponentBase
 {
-    protected StrategyInitDto _strategyInitDto = new StrategyInitDto();
+    protected StrategyInitDto _strategyInitDto = new();
 
     protected bool OnLoading;
 
@@ -18,19 +17,18 @@ public class StrategiInitFormBase : ComponentBase
 
     [Inject] private ShowToastService ToastService { get; set; }
 
-    
-    [Parameter]
-    public EventCallback StrategyFormUpdateRequested { get; set; }
-    
+
+    [Parameter] public EventCallback StrategyFormUpdateRequested { get; set; }
+
     protected List<string>? StrategyTypes { get; set; }
     protected List<string>? TimeFrames { get; set; }
     protected List<string>? Symbols { get; set; }
-    
+
     private async Task NotifyParentToUpdate()
     {
         await StrategyFormUpdateRequested.InvokeAsync();
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
         StrategyTypes = await _apiStrategyService.GetListStrategy();
@@ -43,8 +41,9 @@ public class StrategiInitFormBase : ComponentBase
         try
         {
             OnLoading = true;
-      
-            await _apiStrategyService.InitStrategy(_strategyInitDto.StrategyType,_strategyInitDto.Symbol,_strategyInitDto.Timeframe,_strategyInitDto.Timeframe2);
+
+            await _apiStrategyService.InitStrategy(_strategyInitDto.StrategyType, _strategyInitDto.Symbol,
+                _strategyInitDto.Timeframe, _strategyInitDto.Timeframe2);
             ToastService.ShowToastSuccess("Strategy initialisée");
             await NotifyParentToUpdate();
         }

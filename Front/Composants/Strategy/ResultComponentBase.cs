@@ -7,7 +7,7 @@ namespace Front.Composants.Strategy;
 
 public class ResultComponentBase : ComponentBase
 {
-    protected ResultDto? ResultData { get; set; } = new ResultDto();
+    protected ResultDto? ResultData { get; set; } = new();
 
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
 
@@ -28,7 +28,7 @@ public class ResultComponentBase : ComponentBase
 
     private async Task<ResultDto?> GetResults()
     {
-        ResultDto data = await _strategyService.GetResult();
+        var data = await _strategyService.GetResult();
 
         return data;
     }

@@ -7,9 +7,9 @@ namespace StrategyApi.Mail;
 
 public class EmailService : IEmailService
 {
-    private readonly SmtpSettings _smtpSettings;
-    private readonly SmtpClient _smtpClient;
     private readonly ILogger _logger;
+    private readonly SmtpClient _smtpClient;
+    private readonly SmtpSettings _smtpSettings;
 
     public EmailService(IOptions<SmtpSettings> smtpSettings, ILogger logger)
     {
@@ -37,17 +37,16 @@ public class EmailService : IEmailService
             {
                 Subject = subject,
                 Body = body,
-                Priority = MailPriority.High,
+                Priority = MailPriority.High
             };
-            _logger.Information("Send mail : {@Mail}",message);
+            _logger.Information("Send mail : {@Mail}", message);
             _smtpClient.Send(message);
         }
         catch (Exception e)
         {
-            _logger.Error(e,"Can't send mail");
+            _logger.Error(e, "Can't send mail");
         }
 
-        return Task.CompletedTask; 
-     
+        return Task.CompletedTask;
     }
 }

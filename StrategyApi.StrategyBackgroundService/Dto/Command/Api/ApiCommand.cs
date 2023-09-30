@@ -7,5 +7,5 @@ public enum ApiCommand
     GetAllSymbols = 2,
     IsConnected = 3,
     Connect = 4,
-    Disconnect = 5,
+    Disconnect = 5
 }

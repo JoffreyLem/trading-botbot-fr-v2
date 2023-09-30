@@ -8,5 +8,5 @@ public enum EventType
     Fatal,
     Update,
     Close,
-    Treshold,
+    Treshold
 }

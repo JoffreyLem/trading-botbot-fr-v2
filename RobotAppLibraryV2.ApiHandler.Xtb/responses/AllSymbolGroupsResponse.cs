@@ -8,6 +8,5 @@ public class AllSymbolGroupsResponse : BaseResponse
     {
     }
 
-    public virtual LinkedList<SymbolGroupRecord> SymbolGroupRecords { get; } =
-        new LinkedList<SymbolGroupRecord>();
+    public virtual LinkedList<SymbolGroupRecord> SymbolGroupRecords { get; } = new();
 }

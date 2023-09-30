@@ -1,15 +1,15 @@
 using System.Threading.Channels;
+using Serilog;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
-using ILogger = Serilog.ILogger;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 
 public class ApiConnectService : IApiConnectService
 {
     private readonly ILogger _logger;
-    private ChannelWriter<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)> _channelApiWriter;
+    private readonly ChannelWriter<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)> _channelApiWriter;
 
     public ApiConnectService(ILogger logger,
         ChannelWriter<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)> channelWriter)
@@ -23,11 +23,11 @@ public class ApiConnectService : IApiConnectService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        ApiConnectCommandDto apiCommandDto = new ApiConnectCommandDto()
+        var apiCommandDto = new ApiConnectCommandDto
         {
             ApiCommandEnum = ApiCommand.Connect,
             User = user,
-            Password = pwd,
+            Password = pwd
         };
 
         await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
@@ -39,9 +39,9 @@ public class ApiConnectService : IApiConnectService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        ApiCommandBaseDto apiCommandDto = new ApiCommandBaseDto()
+        var apiCommandDto = new ApiCommandBaseDto
         {
-            ApiCommandEnum = ApiCommand.Disconnect,
+            ApiCommandEnum = ApiCommand.Disconnect
         };
 
         await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
@@ -53,9 +53,9 @@ public class ApiConnectService : IApiConnectService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        ApiCommandBaseDto apiCommandDto = new ApiCommandBaseDto()
+        var apiCommandDto = new ApiCommandBaseDto
         {
-            ApiCommandEnum = ApiCommand.IsConnected,
+            ApiCommandEnum = ApiCommand.IsConnected
         };
 
         await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
@@ -70,10 +70,10 @@ public class ApiConnectService : IApiConnectService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        InitHandlerCommandDto apiCommandDto = new InitHandlerCommandDto()
+        var apiCommandDto = new InitHandlerCommandDto
         {
             ApiCommandEnum = ApiCommand.InitHandler,
-            ApiHandlerEnum = @enum,
+            ApiHandlerEnum = @enum
         };
 
         await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
@@ -85,9 +85,9 @@ public class ApiConnectService : IApiConnectService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        ApiCommandBaseDto apiCommandDto = new ApiCommandBaseDto()
+        var apiCommandDto = new ApiCommandBaseDto
         {
-            ApiCommandEnum = ApiCommand.GetTypeHandler,
+            ApiCommandEnum = ApiCommand.GetTypeHandler
         };
 
         await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
@@ -106,9 +106,9 @@ public class ApiConnectService : IApiConnectService
     {
         var tcs = new TaskCompletionSource<CommandResultBase>();
 
-        ApiCommandBaseDto apiCommandDto = new ApiCommandBaseDto()
+        var apiCommandDto = new ApiCommandBaseDto
         {
-            ApiCommandEnum = ApiCommand.GetAllSymbols,
+            ApiCommandEnum = ApiCommand.GetAllSymbols
         };
 
         await _channelApiWriter.WriteAsync((apiCommandDto, tcs));

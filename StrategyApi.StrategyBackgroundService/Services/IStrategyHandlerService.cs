@@ -7,7 +7,7 @@ namespace StrategyApi.StrategyBackgroundService.Services;
 public interface IStrategyHandlerService
 {
     Task InitStrategy(StrategyTypeEnum strategyType, string symbol, Timeframe timeframe, Timeframe? timeframe2);
-    
+
     Task<IsInitializedDto> IsInitialized();
 
     Task<List<string>> GetListStrategy();

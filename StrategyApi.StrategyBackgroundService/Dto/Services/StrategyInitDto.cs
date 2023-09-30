@@ -8,7 +8,7 @@ public class StrategyInitDto
 {
     [Required] public StrategyTypeEnum StrategyType { get; set; }
     [Required] public string Symbol { get; set; }
-    
+
     [Required] public Timeframe Timeframe { get; set; }
     [Required] public Timeframe Timeframe2 { get; set; }
 }

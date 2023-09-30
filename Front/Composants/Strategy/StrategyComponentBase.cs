@@ -7,16 +7,16 @@ namespace Front.Composants.Strategy;
 public class StrategyComponentBase : ComponentBase
 {
     protected bool IsInitialized;
-    
+
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
-    
+
     [Inject] private ShowToastService ToastService { get; set; }
-    
+
     protected override async Task OnInitializedAsync()
     {
         await InitializeStrategy();
     }
-    
+
     private async Task InitializeStrategy()
     {
         try

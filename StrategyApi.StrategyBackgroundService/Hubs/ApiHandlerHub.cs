@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 
 namespace StrategyApi.StrategyBackgroundService.Hubs;
 
-[Microsoft.AspNetCore.Authorization.Authorize]
+[Authorize]
 public class ApiHandlerHub : Hub<IApiHandlerHub>
 {
     public async Task SendBalanceState(AccountBalanceDto modele)

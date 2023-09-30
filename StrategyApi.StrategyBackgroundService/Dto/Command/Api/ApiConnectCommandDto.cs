@@ -6,6 +6,5 @@ public class ApiConnectCommandDto : ApiCommandBaseDto
 {
     public string User { get; set; }
 
-    [LogMasked]
-    public string Password { get; set; }
+    [LogMasked] public string Password { get; set; }
 }

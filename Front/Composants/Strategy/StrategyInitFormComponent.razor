@@ -1,10 +1,10 @@
-﻿@using RobotAppLibraryV2.Modeles
-@using StrategyApi.StrategyBackgroundService.Dto.Services.Enum
+﻿@using StrategyApi.StrategyBackgroundService.Dto.Services.Enum
+@using RobotAppLibraryV2.Modeles
 @inherits StrategiInitFormBase
 
 <div>
     <div class="row">
-        <div class="col-md-4" >
+        <div class="col-md-4">
             <EditForm Model="@_strategyInitDto" OnValidSubmit="InitStrategy" class="mt-3">
                 <DataAnnotationsValidator/>
                 <ValidationSummary/>
@@ -33,5 +33,5 @@
 
 
 @code {
-    
+
 }

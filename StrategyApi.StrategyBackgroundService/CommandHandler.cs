@@ -11,6 +11,7 @@ using Serilog;
 using StrategyApi.Mail;
 using StrategyApi.Strategy.Main;
 using StrategyApi.Strategy.StrategySar;
+using StrategyApi.Strategy.Test;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
@@ -18,22 +19,21 @@ using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using StrategyApi.StrategyBackgroundService.Exception;
 using StrategyApi.StrategyBackgroundService.Hubs;
-using ILogger = Serilog.ILogger;
 
 namespace StrategyApi.StrategyBackgroundService;
 
 public class CommandHandler
 {
     private const string DefaultEmail = "lemery.joffrey@outlook.fr";
-    
-    private IApiHandler? _apiHandlerBase;
-    private StrategyBase? _strategyBase;
+    private readonly IHubContext<ApiHandlerHub, IApiHandlerHub> _apiHandlerHub;
+    private readonly IEmailService _emailService;
 
     private readonly ILogger _logger;
-    private readonly IHubContext<ApiHandlerHub, IApiHandlerHub> _apiHandlerHub;
-    private readonly IHubContext<StrategyHub, IStrategyHub> _strategyHub;
     private readonly IMapper _mapper;
-    private readonly IEmailService _emailService;
+    private readonly IHubContext<StrategyHub, IStrategyHub> _strategyHub;
+
+    private IApiHandler? _apiHandlerBase;
+    private StrategyBase? _strategyBase;
 
     public CommandHandler(ILogger logger, IHubContext<ApiHandlerHub, IApiHandlerHub> apiHandlerHub, IMapper mapper,
         IHubContext<StrategyHub, IStrategyHub> strategyHub, IEmailService emailService)
@@ -73,7 +73,7 @@ public class CommandHandler
         }
     }
 
-    public  Task HandleStrategyCommand(StrategyCommandBaseDto command, TaskCompletionSource<CommandResultBase> tcs)
+    public Task HandleStrategyCommand(StrategyCommandBaseDto command, TaskCompletionSource<CommandResultBase> tcs)
     {
         _logger.Information("Strategy command received {@Command}", command);
         switch (command.StrategyCommand)
@@ -112,14 +112,27 @@ public class CommandHandler
         return Task.CompletedTask;
     }
 
+
+    private void CheckApiHandlerNotNull()
+    {
+        if (_apiHandlerBase is null) throw new CommandException("The Api handler is not connected");
+    }
+
+    private void CheckStrategyNotNull()
+    {
+        if (_strategyBase is null) throw new CommandException("The strategy is not initialized");
+    }
+
+    public async Task Shutdown()
+    {
+        if (_apiHandlerBase is not null) await _apiHandlerBase.DisconnectAsync();
+    }
+
     #region StrategyCommand
 
     private void InitStrategy(StrategyCommandBaseDto command, TaskCompletionSource<CommandResultBase> tcs)
     {
-        if (_strategyBase is not null)
-        {
-            throw new CommandException("The strategy is not null, close it");
-        }
+        if (_strategyBase is not null) throw new CommandException("The strategy is not null, close it");
 
         if (command is InitStrategyCommandDto initStrategyCommandDto)
         {
@@ -142,6 +155,7 @@ public class CommandHandler
             {
                 throw new CommandExceptionInternalError("Can't initialize strategy");
             }
+
             tcs.SetResult(new CommandExecutedResult());
         }
         else
@@ -155,18 +169,17 @@ public class CommandHandler
         var message = $"Strategy closed cause of treshold : {e.ToString()}";
         await _emailService.SendEmail(DefaultEmail, "Strategy closed", message);
         await _strategyHub.Clients.All.SendEvent(EventType.Treshold, e.ToString());
-
     }
 
     private async void StrategyBaseOnStrategyClosed(object? sender, StrategyReasonClosed e)
     {
         if (e is not StrategyReasonClosed.User)
         {
-            _logger.Warning("Strategy closed : {Reason}, send email to user",e.ToString());
+            _logger.Warning("Strategy closed : {Reason}, send email to user", e.ToString());
             var message = $"Strategy closed cause : {e.ToString()}";
             await _emailService.SendEmail(DefaultEmail, "Strategy closed", message);
         }
-    
+
         await _strategyHub.Clients.All.SendEvent(EventType.Close, "Strategy closing");
     }
 
@@ -192,13 +205,13 @@ public class CommandHandler
 
     private async void StrategyBaseOnCandleEvent(object? sender, Candle e)
     {
-        CandleDto candleDto = _mapper.Map<CandleDto>(e);
+        var candleDto = _mapper.Map<CandleDto>(e);
         await _strategyHub.Clients.All.SendCandle(candleDto);
     }
 
     private async void StrategyBaseOnTickEvent(object? sender, Tick e)
     {
-        TickDto tickDto = _mapper.Map<TickDto>(e);
+        var tickDto = _mapper.Map<TickDto>(e);
         await _strategyHub.Clients.All.SendTick(tickDto);
     }
 
@@ -206,20 +219,16 @@ public class CommandHandler
     {
         var result = new IsInitializedDto();
         if (_strategyBase is not null)
-        {
             result.Initialized = true;
-        }
         else
-        {
             result.Initialized = false;
-        }
         tcs.SetResult(new CommandExecutedTypedResult<IsInitializedDto>(result));
     }
 
     private void GetStrategyInfo(TaskCompletionSource<CommandResultBase> tcs)
     {
         CheckStrategyNotNull();
-        StrategyInfoDto strategyInfoDto = _mapper.Map<StrategyInfoDto>(_strategyBase);
+        var strategyInfoDto = _mapper.Map<StrategyInfoDto>(_strategyBase);
         tcs.SetResult(new CommandExecutedTypedResult<StrategyInfoDto>(strategyInfoDto));
     }
 
@@ -237,7 +246,7 @@ public class CommandHandler
     private void GetStrategyPosition(TaskCompletionSource<CommandResultBase> tcs)
     {
         CheckStrategyNotNull();
-        var data = new ListPositionsDto()
+        var data = new ListPositionsDto
         {
             Positions = _mapper.Map<List<PositionDto>>(_strategyBase.Positions.ToList())
         };
@@ -254,13 +263,14 @@ public class CommandHandler
     private void GetOpenedPosition(TaskCompletionSource<CommandResultBase> tcs)
     {
         CheckStrategyNotNull();
-        ListPositionsDto listPositionsDto = new ListPositionsDto();
- 
+        var listPositionsDto = new ListPositionsDto();
+
         if (_strategyBase.PositionOpened is not null)
         {
             var position = _mapper.Map<PositionDto>(_strategyBase.PositionOpened);
             listPositionsDto.Positions.Add(position);
         }
+
         tcs.SetResult(new CommandExecutedTypedResult<ListPositionsDto>(listPositionsDto));
     }
 
@@ -297,7 +307,7 @@ public class CommandHandler
     {
         return type switch
         {
-            StrategyTypeEnum.Test => new Strategy.Test.TestStrategy(),
+            StrategyTypeEnum.Test => new TestStrategy(),
             StrategyTypeEnum.Main => new MainStrategy(),
             StrategyTypeEnum.Sar => new StrategySar(),
             _ => throw new CommandException($"Strategy {type} non gérer")
@@ -314,11 +324,9 @@ public class CommandHandler
         if (command is InitHandlerCommandDto initHandlerCommandDto)
         {
             if (_apiHandlerBase is not null && _apiHandlerBase.IsConnected())
-            {
                 throw new CommandException("Api handler already connected, disconnect first");
-            }
 
-            _logger.Information("Init handler to type {Enum}", @initHandlerCommandDto.ApiHandlerEnum);
+            _logger.Information("Init handler to type {Enum}", initHandlerCommandDto.ApiHandlerEnum);
             _apiHandlerBase = GetApiByType(initHandlerCommandDto.ApiHandlerEnum.GetValueOrDefault());
             taskCompletionSource.SetResult(new CommandExecutedResult());
         }
@@ -371,7 +379,7 @@ public class CommandHandler
 
     private void GetTypeHandler(TaskCompletionSource<CommandResultBase> tcs)
     {
-        string? data = ResolveHandlerApiType(_apiHandlerBase?.GetType().Name);
+        var data = ResolveHandlerApiType(_apiHandlerBase?.GetType().Name);
         _logger.Information("Api handler type is {Data}", data);
         tcs.SetResult(new CommandExecutedTypedResult<string>(data));
     }
@@ -387,17 +395,11 @@ public class CommandHandler
     private void IsConnected(TaskCompletionSource<CommandResultBase> tcs)
     {
         if (_apiHandlerBase is null)
-        {
             tcs.SetResult(new CommandExecutedTypedResult<ConnexionStateEnum>(ConnexionStateEnum.NotInitialized));
-        }
         else if ((bool)_apiHandlerBase?.IsConnected())
-        {
             tcs.SetResult(new CommandExecutedTypedResult<ConnexionStateEnum>(ConnexionStateEnum.Connected));
-        }
         else
-        {
             tcs.SetResult(new CommandExecutedTypedResult<ConnexionStateEnum>(ConnexionStateEnum.Disconnected));
-        }
     }
 
     private IApiHandler GetApiByType(ApiHandlerEnum api)
@@ -422,29 +424,4 @@ public class CommandHandler
     }
 
     #endregion
-
-
-    private void CheckApiHandlerNotNull()
-    {
-        if (_apiHandlerBase is null)
-        {
-            throw new CommandException("The Api handler is not connected");
-        }
-    }
-
-    private void CheckStrategyNotNull()
-    {
-        if (_strategyBase is null)
-        {
-            throw new CommandException("The strategy is not initialized");
-        }
-    }
-
-    public async Task Shutdown()
-    {
-        if (_apiHandlerBase is not null)
-        {
-           await _apiHandlerBase.DisconnectAsync();
-        }
-    }
 }

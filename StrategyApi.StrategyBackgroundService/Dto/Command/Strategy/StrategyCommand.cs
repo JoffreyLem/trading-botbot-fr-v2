@@ -10,5 +10,5 @@ public enum StrategyCommand
     GetResults = 5,
     GetOpenedPosition = 6,
     SetCanRun = 7,
-    SetSecureControlPosition = 8,
+    SetSecureControlPosition = 8
 }

@@ -8,40 +8,39 @@
 </HeadContent>
 <div class="page">
     <main>
-     
-        
-            <SfAppBar ColorMode="AppBarColor.Dark">
-                <SfButton Type="button" CssClass="e-inherit" IconCss="e-icons e-menu" @onclick="HandleSideBard"></SfButton>
-                <span class="regular">Bot bot</span>
-                <AppBarSpacer/>
-                <LoginDisplay/>
-            </SfAppBar>
-          
-            <SfSidebar Target=".maincontent" Width="200px" @bind-IsOpen="SidebarToggle">
-                <ChildContent>
-                    <nav id="sidebarMenu" class="sidebar">
-                        <div class="nav-item px-3 border-bottom py-3 thick-border">
-                            <NavLink class="nav-link" href="accueil" Match="NavLinkMatch.All">
-                                <i data-feather="home" class="icon-spacing"></i>Home
-                            </NavLink>
-                        </div>
-                        <div class="nav-item px-3 border-bottom py-3 thick-border">
-                            <NavLink class="nav-link" href="accueil" Match="NavLinkMatch.All">
-                                <i data-feather="home" class="icon-spacing"></i>test
-                            </NavLink>
-                        </div>
-                    </nav>
-                </ChildContent>
-            </SfSidebar>
+
+
+        <SfAppBar ColorMode="AppBarColor.Dark">
+            <SfButton Type="button" CssClass="e-inherit" IconCss="e-icons e-menu" @onclick="HandleSideBard"></SfButton>
+            <span class="regular">Bot bot</span>
+            <AppBarSpacer/>
+            <LoginDisplay/>
+        </SfAppBar>
+
+        <SfSidebar Target=".maincontent" Width="200px" @bind-IsOpen="SidebarToggle">
+            <ChildContent>
+                <nav id="sidebarMenu" class="sidebar">
+                    <div class="nav-item px-3 border-bottom py-3 thick-border">
+                        <NavLink class="nav-link" href="accueil" Match="NavLinkMatch.All">
+                            <i data-feather="home" class="icon-spacing"></i>Home
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3 border-bottom py-3 thick-border">
+                        <NavLink class="nav-link" href="accueil" Match="NavLinkMatch.All">
+                            <i data-feather="home" class="icon-spacing"></i>test
+                        </NavLink>
+                    </div>
+                </nav>
+            </ChildContent>
+        </SfSidebar>
         <div class="maincontent" id="maintext">
             <div class="content">
                 <ToastCustomComponent/>
                 @Body
             </div>
         </div>
-     
-        
-     
+
+
     </main>
 
 </div>
@@ -50,16 +49,16 @@
 {
 
     public bool SidebarToggle;
-   
+
     protected override Task OnInitializedAsync()
     {
         SidebarToggle = false;
         return Task.CompletedTask;
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender) 
+        if (firstRender)
         {
             await JsRuntime.InvokeVoidAsync("feather.replace");
         }

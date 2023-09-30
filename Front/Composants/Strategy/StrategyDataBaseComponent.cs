@@ -4,5 +4,4 @@ namespace Front.Composants.Strategy;
 
 public class StrategyDataBaseComponent : ComponentBase
 {
-    
 }

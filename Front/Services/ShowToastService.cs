@@ -28,7 +28,7 @@ public class ShowToastService
 
     public void ShowToastSuccess(string message)
     {
-        ToastOptions options = new ToastOptions
+        var options = new ToastOptions
         {
             Title = "Success",
             Content = message,
@@ -39,7 +39,7 @@ public class ShowToastService
 
     public void ShowToastInformation(string message)
     {
-        ToastOptions options = new ToastOptions
+        var options = new ToastOptions
         {
             Title = "Information",
             Content = message,
@@ -50,7 +50,7 @@ public class ShowToastService
 
     public void ShowToastWarning(string message)
     {
-        ToastOptions options = new ToastOptions
+        var options = new ToastOptions
         {
             Title = "Warning",
             Content = message,
@@ -61,7 +61,7 @@ public class ShowToastService
 
     public void ShowToastError(string message)
     {
-        ToastOptions options = new ToastOptions
+        var options = new ToastOptions
         {
             Title = "Error",
             Content = message,
@@ -72,7 +72,7 @@ public class ShowToastService
 
     public void ShowToastError(Exception ex)
     {
-        ToastOptions options = new ToastOptions
+        var options = new ToastOptions
         {
             Title = "Error",
             Content = ex.Message ?? "ERROR",

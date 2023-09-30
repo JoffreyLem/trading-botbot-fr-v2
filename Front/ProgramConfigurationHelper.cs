@@ -1,24 +1,15 @@
-﻿using System.Threading.Channels;
-using Destructurama;
+﻿using Destructurama;
 using Elasticsearch.Net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Serilog.Core;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
-using StrategyApi.Mail;
-using StrategyApi.StrategyBackgroundService;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
-using StrategyApi.StrategyBackgroundService.Mapper;
-using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor;
 using Syncfusion.Licensing;
 
@@ -26,22 +17,24 @@ namespace Front;
 
 public static class ProgramConfigurationHelper
 {
-
     public static void AddSyncFusion(this WebApplicationBuilder builder)
     {
-        SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NHaF5cXmtCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWXZceHVURmFfVkNwWEI=");
+        SyncfusionLicenseProvider.RegisterLicense(
+            "Ngo9BigBOggjHTQxAR8/V1NHaF5cXmtCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWXZceHVURmFfVkNwWEI=");
         builder.Services.AddSyncfusionBlazor();
     }
-    
+
     public static void AddAuthentification(this WebApplicationBuilder builder)
     {
-        builder.Services.AddAuthentication(options => {
+        builder.Services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddCookie()
-            .AddOpenIdConnect("Auth0", options => {
+            .AddOpenIdConnect("Auth0", options =>
+            {
                 options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}";
 
                 options.ClientId = builder.Configuration["Auth0:ClientId"];
@@ -56,13 +49,13 @@ public static class ProgramConfigurationHelper
                 options.CallbackPath = new PathString("/callback");
                 options.ClaimsIssuer = "Auth0";
                 options.SaveTokens = true;
-                
+
                 options.Events.OnTokenValidated = context =>
                 {
                     var claims = context.Principal.Claims;
                     return Task.CompletedTask;
                 };
-                
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name"
@@ -71,9 +64,10 @@ public static class ProgramConfigurationHelper
                 // Add handling of lo
                 options.Events = new OpenIdConnectEvents
                 {
-                    OnRedirectToIdentityProviderForSignOut = (context) =>
+                    OnRedirectToIdentityProviderForSignOut = context =>
                     {
-                        var logoutUri = $"https://{builder.Configuration["Auth0:Domain"]}/v2/logout?client_id={builder.Configuration["Auth0:ClientId"]}";
+                        var logoutUri =
+                            $"https://{builder.Configuration["Auth0:Domain"]}/v2/logout?client_id={builder.Configuration["Auth0:ClientId"]}";
 
                         var postLogoutUri = context.Properties.RedirectUri;
                         if (!string.IsNullOrEmpty(postLogoutUri))
@@ -81,9 +75,11 @@ public static class ProgramConfigurationHelper
                             if (postLogoutUri.StartsWith("/"))
                             {
                                 var request = context.Request;
-                                postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
+                                postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase +
+                                                postLogoutUri;
                             }
-                            logoutUri += $"&returnTo={ Uri.EscapeDataString(postLogoutUri)}";
+
+                            logoutUri += $"&returnTo={Uri.EscapeDataString(postLogoutUri)}";
                         }
 
                         context.Response.Redirect(logoutUri);
@@ -95,11 +91,10 @@ public static class ProgramConfigurationHelper
             });
     }
 
-  
 
     public static void AddLogger(this WebApplicationBuilder builder)
     {
-        LoggerConfiguration loggerConfig = new LoggerConfiguration()
+        var loggerConfig = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .Enrich.WithExceptionDetails()
             .Destructure.UsingAttributes()
@@ -113,35 +108,33 @@ public static class ProgramConfigurationHelper
             .WriteTo.Console(
                 outputTemplate: "[{Timestamp:HH:mm:ss}] [{SourceContext}] [{Level}] {Message}{NewLine}{Exception}");
         if (builder.Environment.IsProduction())
-        {
-            loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(builder.Configuration["ELASTIC_URI"]))
-            {
-                FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
-                EmitEventFailure =
-                    EmitEventFailureHandling.WriteToSelfLog |
-                    EmitEventFailureHandling.RaiseCallback |
-                    EmitEventFailureHandling.ThrowException,
-                TypeName = null,
-                DetectElasticsearchVersion = false,
-                AutoRegisterTemplate = true,
-                AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
-                IndexFormat = $"Robot-api-{builder.Environment.EnvironmentName}",
-                CustomFormatter = new ElasticsearchJsonFormatter(),
-
-                ModifyConnectionSettings = x =>
+            loggerConfig.WriteTo.Elasticsearch(
+                new ElasticsearchSinkOptions(new Uri(builder.Configuration["ELASTIC_URI"]))
                 {
-                    return x.ServerCertificateValidationCallback((o, certificate, arg3, arg4) => true)
-                        .ApiKeyAuthentication(new ApiKeyAuthenticationCredentials(builder.Configuration["ELASTIC_APIKEY"]));
-                }
-            });
-        }
-        
-        Logger logger = loggerConfig.CreateLogger();
+                    FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
+                    EmitEventFailure =
+                        EmitEventFailureHandling.WriteToSelfLog |
+                        EmitEventFailureHandling.RaiseCallback |
+                        EmitEventFailureHandling.ThrowException,
+                    TypeName = null,
+                    DetectElasticsearchVersion = false,
+                    AutoRegisterTemplate = true,
+                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
+                    IndexFormat = $"Robot-api-{builder.Environment.EnvironmentName}",
+                    CustomFormatter = new ElasticsearchJsonFormatter(),
+
+                    ModifyConnectionSettings = x =>
+                    {
+                        return x.ServerCertificateValidationCallback((o, certificate, arg3, arg4) => true)
+                            .ApiKeyAuthentication(
+                                new ApiKeyAuthenticationCredentials(builder.Configuration["ELASTIC_APIKEY"]));
+                    }
+                });
+
+        var logger = loggerConfig.CreateLogger();
         SelfLog.Enable(Console.Error);
         builder.Host.UseSerilog(logger);
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(logger);
     }
-
- 
 }

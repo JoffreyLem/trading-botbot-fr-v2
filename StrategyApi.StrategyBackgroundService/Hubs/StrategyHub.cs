@@ -1,11 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using RobotAppLibraryV2.Modeles;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Hubs;
 
-[Microsoft.AspNetCore.Authorization.Authorize]
+[Authorize]
 public class StrategyHub : Hub<IStrategyHub>
 {
     public async Task SendTick(TickDto tick)

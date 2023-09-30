@@ -1,4 +1,3 @@
-using RobotAppLibraryV2.Modeles;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 

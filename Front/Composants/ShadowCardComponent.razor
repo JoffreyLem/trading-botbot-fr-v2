@@ -19,13 +19,14 @@
 
 @code {
     private string uniqueId = $"retractableContent-{Guid.NewGuid()}";
-    
+
     [Parameter]
     public bool OnLoading { get; set; }
-    
+
     [Parameter]
     public string Title { get; set; }
-    
-    [Parameter] public RenderFragment Body { get; set; }
-    
+
+    [Parameter]
+    public RenderFragment Body { get; set; }
+
 }

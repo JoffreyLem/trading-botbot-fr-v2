@@ -1,5 +1,4 @@
-﻿@using System.Security.Claims
-<AuthorizeView>
+﻿<AuthorizeView>
     <Authorized>
         <span style="color: white; margin-right: 10px;">Hello, @context.User.Identity?.Name ! </span>
         <form method="post" action="Account/LogOut">
@@ -10,6 +9,7 @@
         <a href="Account/Login" style="color: white;">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
+
 @code {
 
 }

@@ -9,13 +9,13 @@ namespace Front.Composants.Strategy;
 public class PositionClosedComponentBase : ComponentBase
 {
     protected SfGrid<PositionDto> Grid { get; set; }
-    protected ObservableCollection<PositionDto> Positions { get; set; } = new ObservableCollection<PositionDto>();
+    protected ObservableCollection<PositionDto> Positions { get; set; } = new();
 
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        ListPositionsDto data = await _apiStrategyService.GetStrategyPosition();
+        var data = await _apiStrategyService.GetStrategyPosition();
         Positions = new ObservableCollection<PositionDto>(data.Positions);
     }
 }

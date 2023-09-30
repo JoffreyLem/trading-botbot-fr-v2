@@ -10,19 +10,19 @@ public abstract class StrategyImplementationBase
 {
     internal Func<decimal, TypePosition, decimal> CalculateStopLossFunc;
     internal Func<decimal, TypePosition, decimal> CalculateTakeProfitFunc;
+
+    protected internal ILogger Logger;
     protected internal List<Candle> History { get; set; }
-    
+
     protected internal bool CanRun { get; set; }
 
     internal Action<TypePosition, decimal, decimal, long?, double?> OpenPositionAction { get; set; }
-
-    protected internal ILogger Logger;
     protected internal Tick LastPrice { get; set; }
 
     protected internal Candle LastCandle { get; set; }
 
     protected internal Candle CurrentCandle { get; set; }
-    
+
     protected internal int DefaultStopLoss { get; set; }
     protected internal int DefaultTp { get; set; }
     protected internal bool RunOnTick { get; set; }
@@ -34,7 +34,7 @@ public abstract class StrategyImplementationBase
     internal void RunInternal()
     {
         Run();
-    } 
+    }
 
     protected void OpenPosition(TypePosition typePosition, decimal sl = 0, decimal tp = 0,
         long? expiration = 0, double? volume = null)

@@ -1,6 +1,5 @@
 using System.Threading.Channels;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StrategyApi.Mail;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
@@ -21,12 +20,13 @@ public static class DependencyExtension
         var channelApi = Channel.CreateUnbounded<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)>();
         builder.Services.AddSingleton(channelApi.Reader);
         builder.Services.AddSingleton(channelApi.Writer);
-        var channelStrategy = Channel.CreateUnbounded<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)>();
+        var channelStrategy =
+            Channel.CreateUnbounded<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)>();
         builder.Services.AddSingleton(channelStrategy.Reader);
         builder.Services.AddSingleton(channelStrategy.Writer);
         builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
-        builder.Services.AddSingleton<IEmailService,EmailService>();
-    
+        builder.Services.AddSingleton<IEmailService, EmailService>();
+
         builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfilesBackgroundServices>(); },
             typeof(MappingProfilesBackgroundServices).Assembly
         );
