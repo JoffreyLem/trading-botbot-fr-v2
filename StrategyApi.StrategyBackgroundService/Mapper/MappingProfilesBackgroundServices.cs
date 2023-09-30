@@ -1,7 +1,7 @@
 using AutoMapper;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Strategy;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Services;
 
 namespace StrategyApi.StrategyBackgroundService.Mapper;
 

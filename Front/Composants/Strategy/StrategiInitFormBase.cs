@@ -1,7 +1,7 @@
 ﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
 using RobotAppLibraryV2.Modeles;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Composants.Strategy;

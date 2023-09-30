@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Services;
 
 namespace StrategyApi.StrategyBackgroundService.Hubs;
 

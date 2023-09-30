@@ -1,7 +1,7 @@
 ﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.DropDowns;

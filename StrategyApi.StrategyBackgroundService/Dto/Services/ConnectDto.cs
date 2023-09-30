@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+namespace StrategyApi.StrategyBackgroundService.Dto.Services;
 
 public class ConnectDto
 {

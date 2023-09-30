@@ -14,7 +14,7 @@ using StrategyApi.Strategy.StrategySar;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using StrategyApi.StrategyBackgroundService.Exception;
 using StrategyApi.StrategyBackgroundService.Hubs;

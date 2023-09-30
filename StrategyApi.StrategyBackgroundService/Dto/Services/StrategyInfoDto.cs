@@ -1,4 +1,4 @@
-namespace StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+namespace StrategyApi.StrategyBackgroundService.Dto.Services;
 
 public class StrategyInfoDto
 {

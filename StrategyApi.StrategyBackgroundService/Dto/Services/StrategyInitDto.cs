@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using RobotAppLibraryV2.Modeles;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
-namespace StrategyApi.StrategyBackgroundService.Dto.Services.Dto;
+namespace StrategyApi.StrategyBackgroundService.Dto.Services;
 
 public class StrategyInitDto
 {

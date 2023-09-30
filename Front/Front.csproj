@@ -74,6 +74,15 @@
       <Compile Update="Composants\Strategy\StrategyDataBaseComponent.cs">
         <DependentUpon>StrategyDataComponent.razor</DependentUpon>
       </Compile>
+      <Compile Update="Composants\Strategy\PositionClosedComponentBase.cs">
+        <DependentUpon>PositionClosedComponent.razor</DependentUpon>
+      </Compile>
+      <Compile Update="Composants\Strategy\PositionOpenedComponentBase.cs">
+        <DependentUpon>PositionOpenedComponent.razor</DependentUpon>
+      </Compile>
+      <Compile Update="Composants\Strategy\ResultComponentBase.cs">
+        <DependentUpon>ResultComponent.razor</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 
