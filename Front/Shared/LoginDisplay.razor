@@ -1,7 +1,7 @@
 ﻿@using System.Security.Claims
 <AuthorizeView>
     <Authorized>
-        <span style="color: white;">Hello, @context.User.Identity?.Name ! </span>
+        <span style="color: white; margin-right: 10px;">Hello, @context.User.Identity?.Name ! </span>
         <form method="post" action="Account/LogOut">
             <button type="submit" class="nav-link btn btn-link" style="color: white;"> Log out</button>
         </form>

@@ -12,13 +12,21 @@ public class IndexBase : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadConnectionState();
+    }
+    
+    protected async Task HandleApiUpdate()
+    {
+        await LoadConnectionState();
+    }
+    
+    private async Task LoadConnectionState()
+    {
         var isConnected = await ApiConnectService.IsConnected();
 
-        if (isConnected == ConnexionStateEnum.Connected)
-        {
-            IsConnected = true;
-        }
-        
-    
+        IsConnected = isConnected == ConnexionStateEnum.Connected;
+
+        StateHasChanged();  
     }
+
 }

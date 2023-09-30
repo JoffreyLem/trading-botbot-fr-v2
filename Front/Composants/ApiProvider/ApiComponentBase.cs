@@ -21,6 +21,14 @@ public class ApiComponentBase : ComponentBase
     protected ConnectDto ConnectDto { get; set; } = new ConnectDto();
     protected string? ApiSelected { get; set; } = "";
     
+    [Parameter]
+    public EventCallback OnChildUpdateRequested { get; set; }
+    
+    private async Task NotifyParentToUpdate()
+    {
+        await OnChildUpdateRequested.InvokeAsync();
+    }
+    
     protected override async Task OnInitializedAsync()
     {
         try
@@ -77,6 +85,7 @@ public class ApiComponentBase : ComponentBase
                 IsConnected = false;
                 ApiSelected = null;
                 ApiHandlerListEnabled = true;
+                await NotifyParentToUpdate();
             }
             else
             {
@@ -101,6 +110,7 @@ public class ApiComponentBase : ComponentBase
             IsConnected = true;
             ApiHandlerListEnabled = false;
             ConnectDto = new ConnectDto();
+            await NotifyParentToUpdate();
         }
         catch (Exception e)
         {
