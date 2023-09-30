@@ -2,7 +2,7 @@ using StrategyApi.Dto.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 
-internal interface IApiConnectService
+public interface IApiConnectService
 {
     Task Connect(string user, string pwd);
 

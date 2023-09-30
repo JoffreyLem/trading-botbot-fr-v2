@@ -1,6 +1,7 @@
 using Front;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using StrategyApi.StrategyBackgroundService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -8,6 +9,10 @@ builder.Services.AddServerSideBlazor();
 
 builder.AddAuthentification();
 builder.AddSyncFusion();
+builder.AddDependencyRobot();
+builder.AddLogger();
+
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 

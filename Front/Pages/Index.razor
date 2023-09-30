@@ -1,3 +1,11 @@
 ﻿@page "/Accueil"
+@inherits IndexBase
 
-<h1>Hello, world!</h1>
+@if (IsConnected)
+{
+    <ApiComponent/>
+}
+else
+{
+    <StrategyComponent/>
+}

@@ -6,7 +6,7 @@ using ILogger = Serilog.ILogger;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 
-internal class ApiConnectService : IApiConnectService
+public class ApiConnectService : IApiConnectService
 {
     private readonly ILogger _logger;
     private ChannelWriter<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)> _channelApiWriter;

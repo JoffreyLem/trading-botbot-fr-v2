@@ -1,7 +1,24 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System.Threading.Channels;
+using Destructurama;
+using Elasticsearch.Net;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Core;
+using Serilog.Debugging;
+using Serilog.Events;
+using Serilog.Exceptions;
+using Serilog.Formatting.Elasticsearch;
+using Serilog.Sinks.Elasticsearch;
+using StrategyApi.Mail;
+using StrategyApi.StrategyBackgroundService;
+using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
+using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
+using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
+using StrategyApi.StrategyBackgroundService.Mapper;
+using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor;
 using Syncfusion.Licensing;
 
@@ -77,4 +94,54 @@ public static class ProgramConfigurationHelper
                 };
             });
     }
+
+  
+
+    public static void AddLogger(this WebApplicationBuilder builder)
+    {
+        LoggerConfiguration loggerConfig = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .Enrich.WithExceptionDetails()
+            .Destructure.UsingAttributes()
+            .Enrich.FromLogContext()
+            .Enrich.WithEnvironmentName()
+            .Enrich.WithProperty("ApplicationName", "Robot-API")
+            .Enrich.With(new RemovePropertiesEnricher())
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+            .MinimumLevel.Override("System", LogEventLevel.Error)
+            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:HH:mm:ss}] [{SourceContext}] [{Level}] {Message}{NewLine}{Exception}");
+        if (builder.Environment.IsProduction())
+        {
+            loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(builder.Configuration["ELASTIC_URI"]))
+            {
+                FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
+                EmitEventFailure =
+                    EmitEventFailureHandling.WriteToSelfLog |
+                    EmitEventFailureHandling.RaiseCallback |
+                    EmitEventFailureHandling.ThrowException,
+                TypeName = null,
+                DetectElasticsearchVersion = false,
+                AutoRegisterTemplate = true,
+                AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
+                IndexFormat = $"Robot-api-{builder.Environment.EnvironmentName}",
+                CustomFormatter = new ElasticsearchJsonFormatter(),
+
+                ModifyConnectionSettings = x =>
+                {
+                    return x.ServerCertificateValidationCallback((o, certificate, arg3, arg4) => true)
+                        .ApiKeyAuthentication(new ApiKeyAuthenticationCredentials(builder.Configuration["ELASTIC_APIKEY"]));
+                }
+            });
+        }
+        
+        Logger logger = loggerConfig.CreateLogger();
+        SelfLog.Enable(Console.Error);
+        builder.Host.UseSerilog(logger);
+        builder.Logging.ClearProviders();
+        builder.Logging.AddSerilog(logger);
+    }
+
+ 
 }

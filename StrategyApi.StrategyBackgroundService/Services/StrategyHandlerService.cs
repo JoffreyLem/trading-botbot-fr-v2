@@ -8,7 +8,7 @@ using ILogger = Serilog.ILogger;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 
-internal class StrategyHandlerService : IStrategyHandlerService
+public class StrategyHandlerService : IStrategyHandlerService
 {
     private readonly ILogger _logger;
     private ChannelWriter<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)> _channelStrategyWriter;

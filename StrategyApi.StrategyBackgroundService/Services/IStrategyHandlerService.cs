@@ -4,7 +4,7 @@ using StrategyApi.Dto.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 
-internal interface IStrategyHandlerService
+public interface IStrategyHandlerService
 {
     Task InitStrategy(StrategyTypeEnum strategyType, string symbol, Timeframe timeframe, Timeframe? timeframe2);
     
