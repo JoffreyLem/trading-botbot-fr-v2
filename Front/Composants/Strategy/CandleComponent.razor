@@ -1,22 +1,15 @@
 @using StrategyApi.StrategyBackgroundService.Dto.Services
-@using ApiFront
 @inject IJSRuntime JSRuntime
 @code {
 
     [Parameter]
     public CandleDto Candle { get; set; } = new CandleDto();
 
-    private string? _localDate;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _localDate = await Utils.ConvertToLocalTimeAsync(JSRuntime, Candle.Date);
-    }
 }
 
 <div class="candle-card">
     <div><strong>Last candle</strong></div>
-    <div><strong>Date:</strong> @_localDate</div>
+    <div><strong>Date:</strong> @Candle.Date</div>
     <div><strong>Open:</strong> @Candle.Open</div>
     <div><strong>High:</strong> @Candle.High</div>
     <div><strong>Low:</strong> @Candle.Low</div>
