@@ -1,0 +1,35 @@
+@using StrategyApi.StrategyBackgroundService.Dto.Services
+@using ApiFront
+@inject IJSRuntime JSRuntime
+@code {
+
+    [Parameter]
+    public TickDto Tick { get; set; } = new TickDto();
+
+    private string? _localDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _localDate = await Utils.ConvertToLocalTimeAsync(JSRuntime, Tick.Date);
+    }
+}
+
+<div class="tick-card">
+    <div><strong>Last tick</strong></div>
+    <div><strong>Date:</strong> @_localDate</div>
+    <div><strong>Ask:</strong> @Tick.Ask</div>
+    <div><strong>Ask Volume:</strong> @Tick.AskVolume</div>
+    <div><strong>Bid:</strong> @Tick.Bid</div>
+    <div><strong>Bid Volume:</strong> @Tick.BidVolume</div>
+    <div><strong>Spread:</strong> @Tick.Spread</div>
+</div>
+
+<style>
+    .tick-card {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>

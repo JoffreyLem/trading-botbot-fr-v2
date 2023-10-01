@@ -5,6 +5,7 @@ using StrategyApi.Mail;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
+using StrategyApi.StrategyBackgroundService.Hubs;
 using StrategyApi.StrategyBackgroundService.Mapper;
 using StrategyApi.StrategyBackgroundService.Services;
 
@@ -30,5 +31,11 @@ public static class DependencyExtension
         builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfilesBackgroundServices>(); },
             typeof(MappingProfilesBackgroundServices).Assembly
         );
+    }
+
+    public static void AddDependency2(this WebApplication app)
+    {
+        app.MapHub<StrategyHub>(StrategyHub.HubName);
+        app.MapHub<ApiHandlerHub>(ApiHandlerHub.ApiHubName);
     }
 }

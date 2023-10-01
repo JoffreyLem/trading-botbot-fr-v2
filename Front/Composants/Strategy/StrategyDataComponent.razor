@@ -1,6 +1,73 @@
 ﻿@inherits StrategyDataBaseComponent
 
-<h3>StrategyDataComponent</h3>
+<div>
+    <div>
+        <div >
+            <label for="Strategy" class="col-sm-2">Strategy</label>
+            <SfTextBox ID="Strategy" Value="@StrategyInfo?.StrategyName" Readonly="true"/>
+        </div>
+        <div >
+            <label for="Symbol" class="col-sm-2">Symbol</label>
+            <SfTextBox ID="Symbol" Value="@StrategyInfo?.Symbol" Readonly="true"/>
+        </div>
+        <div >
+            <label for="Timeframe" class="col-sm-2">Timeframe</label>
+            <SfTextBox ID="Timeframe" Value="@StrategyInfo?.Timeframe.ToString()" Readonly="true"/>
+        </div>
+        <div >
+            <label for="Timeframe2" class="col-sm-2">Timeframe</label>
+            <SfTextBox ID="Timeframe2" Value="@StrategyInfo?.Timeframe2.ToString()" Readonly="true"/>
+        </div>
+              
+        <div >
+            <label for="CanRun" style="padding: 10px 10px 10px 0">Can Run</label>
+            <SfSwitch @bind-Checked="StrategyInfo.CanRun" ValueChange="OnCanRunChange" TChecked="bool?"></SfSwitch>
+        </div>
+        <div >
+            <label for="SecureControlPosition" style="padding: 10px 10px 10px 0">Secure Control Position</label>
+            <SfSwitch @bind-Checked="StrategyInfo.SecureControlPosition" ValueChange="OnSecureControlePositionChange" TChecked="bool"></SfSwitch>
+        </div>
+    </div>
+    <div>
+        <div>
+            <CandleComponent Candle="StrategyInfo.LastCandle"></CandleComponent>
+        </div>
+        <div>
+            <TickComponent Tick="StrategyInfo.LastTick"></TickComponent>
+        </div>
+    </div>
+    <div>
+        <SfTab LoadOn="ContentLoad.Dynamic" @bind-SelectedItem="@SelectedTab">
+            <TabItems>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Position Ouvertes"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <PositionOpenedComponent @ref="PositionOpenedCompoennt"/>
+                    </ContentTemplate>
+                </TabItem>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Position Closes"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <PositionClosedComponent @ref="PositionClosedComponent"/>
+                    </ContentTemplate>
+                </TabItem>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Result"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <ResultComponent @ref="ResultComponent"/>
+                    </ContentTemplate>
+                </TabItem>
+            </TabItems>
+        
+        </SfTab>
+    </div>
+</div>
 
 @code {
 

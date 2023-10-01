@@ -8,7 +8,7 @@ namespace Front.Composants.Strategy;
 
 public class PositionOpenedComponentBase : ComponentBase
 {
-    protected ObservableCollection<PositionDto> Positions { get; set; } = new();
+    internal ObservableCollection<PositionDto> Positions { get; set; } = new();
     protected SfGrid<PositionDto> Grid { get; set; }
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
 

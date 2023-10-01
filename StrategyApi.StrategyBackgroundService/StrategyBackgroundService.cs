@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
+using RobotAppLibraryV2.Interfaces;
 using Serilog;
 using StrategyApi.Mail;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Api;

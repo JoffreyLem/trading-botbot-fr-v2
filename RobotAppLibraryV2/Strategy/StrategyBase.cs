@@ -5,6 +5,7 @@ using RobotAppLibraryV2.ApiHandler.Interfaces;
 using RobotAppLibraryV2.Attributes;
 using RobotAppLibraryV2.Indicators;
 using RobotAppLibraryV2.Indicators.Attributes;
+using RobotAppLibraryV2.Interfaces;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Modeles.Enum;
 using RobotAppLibraryV2.Positions;
@@ -14,7 +15,7 @@ using Skender.Stock.Indicators;
 
 namespace RobotAppLibraryV2.Strategy;
 
-public class StrategyBase : IDisposable
+public class StrategyBase : IStrategyEvent, IDisposable
 {
     private readonly IApiHandler _apiHandler;
     private readonly CandleList.CandleList _history;

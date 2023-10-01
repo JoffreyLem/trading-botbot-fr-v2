@@ -37,4 +37,13 @@
         <Folder Include="Dto\Command\"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Services\ApiConnectService.cs">
+        <DependentUpon>IApiConnectService.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\StrategyHandlerService.cs">
+        <DependentUpon>IStrategyHandlerService.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

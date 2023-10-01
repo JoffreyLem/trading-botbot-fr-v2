@@ -12,6 +12,8 @@ public class StrategyComponentBase : ComponentBase
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
 
     [Inject] private ShowToastService ToastService { get; set; }
+    
+    [Inject] private NavigationManager NavigationManager { get; set; }
 
     protected bool OnLoading { get; set; } = false;
 
@@ -30,10 +32,7 @@ public class StrategyComponentBase : ComponentBase
         {
             ToastService.ShowToastError("Error on initialization");
         }
-        finally
-        {
-            StateHasChanged();
-        }
+       
     }
     
     protected async Task DeleteStrategy()
@@ -55,8 +54,10 @@ public class StrategyComponentBase : ComponentBase
         }
     }
 
-    protected async Task HandleStrategyForm()
+    protected async Task HandleChildEvent()
     {
         await InitializeStrategy();
     }
+    
+
 }

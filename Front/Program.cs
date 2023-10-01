@@ -1,10 +1,12 @@
 using Front;
 using Front.Services;
 using StrategyApi.StrategyBackgroundService;
+using StrategyApi.StrategyBackgroundService.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSignalR();
 
 builder.AddAuthentification();
 builder.AddSyncFusion();
@@ -30,6 +32,8 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+
+app.AddDependency2();
+
 
 app.Run();
