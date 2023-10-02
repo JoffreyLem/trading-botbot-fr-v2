@@ -15,6 +15,9 @@ FROM build AS publish
 RUN dotnet publish "RobotFront.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+ENV ASPNETCORE_ENVIRONMENT=production
+ENV ASPNETCORE_URLS="http://*:7000;"
+EXPOSE 7000
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "RobotFront.dll"]

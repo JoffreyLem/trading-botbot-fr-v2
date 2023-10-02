@@ -1,0 +1,3 @@
+include:
+  - project: 'tradingbot3941224/cicd'
+    file: '.gitlab-ci.yml'
