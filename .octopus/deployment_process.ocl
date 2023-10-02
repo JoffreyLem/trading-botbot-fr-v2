@@ -35,14 +35,14 @@ step "run-a-docker-container" {
             Octopus.Action.ExecutionTimeout.Minutes = "20"
             Octopus.Action.Package.DownloadOnTentacle = "False"
             Octopus.Action.Package.FeedId = "gitlab-container-registry"
-            Octopus.Action.Package.PackageId = "tradingbot3941224/robotapi"
+            Octopus.Action.Package.PackageId = "tradingbot3941224/robotapp"
         }
         worker_pool_variable = ""
 
         packages {
             acquisition_location = "Server"
             feed = "gitlab-container-registry"
-            package_id = "tradingbot3941224/robotapi"
+            package_id = "tradingbot3941224/robotapp"
             properties = {
                 SelectionMode = "immediate"
             }
