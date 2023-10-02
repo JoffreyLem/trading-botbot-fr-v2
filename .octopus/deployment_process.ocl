@@ -1,0 +1,51 @@
+step "stop-a-docker-resource" {
+    name = "Stop a Docker Resource"
+    properties = {
+        Octopus.Action.TargetRoles = "RobotApp"
+    }
+
+    action {
+        action_type = "Octopus.DockerStop"
+        is_required = true
+        properties = {
+            Octopus.Action.Docker.Remove = "True"
+            Octopus.Action.Docker.RemoveByEnvironment = "True"
+            Octopus.Action.Docker.RemoveByRelease = "True"
+            Octopus.Action.Docker.RemoveSteps = "96e51e58-8265-4ca6-bd57-86a2aef00318"
+            Octopus.Action.ExecutionTimeout.Minutes = "20"
+        }
+        worker_pool_variable = ""
+    }
+}
+
+step "run-a-docker-container" {
+    name = "Run a Docker Container"
+    properties = {
+        Octopus.Action.TargetRoles = "RobotApp"
+    }
+
+    action {
+        action_type = "Octopus.DockerRun"
+        properties = {
+            Octopus.Action.Docker.Args = "--name robot-api -v /etc/timezone:/etc/timezone:ro -v /etc/localtime:/etc/localtime:ro"
+            Octopus.Action.Docker.EnvVariable = "{\"ELASTIC_APIKEY\":\"#{ELASTIC_APIKEY}\",\"ELASTIC_URI\":\"#{ELASTIC_URI}\",\"MONGO_URL\":\"#{MONGO_URL}\",\"Serilog__MinimumLevel__Default\":\"Information\",\"TZ\":\"Europe/Paris\"}"
+            Octopus.Action.Docker.NetworkName = "bot"
+            Octopus.Action.Docker.NetworkType = "network"
+            Octopus.Action.Docker.PortMapping = "{\"7000\":\"127.0.0.1:7000\"}"
+            Octopus.Action.ExecutionTimeout.Minutes = "20"
+            Octopus.Action.Package.DownloadOnTentacle = "False"
+            Octopus.Action.Package.FeedId = "gitlab-container-registry"
+            Octopus.Action.Package.PackageId = "tradingbot3941224/robotapi"
+        }
+        worker_pool_variable = ""
+
+        packages {
+            acquisition_location = "Server"
+            feed = "gitlab-container-registry"
+            package_id = "tradingbot3941224/robotapi"
+            properties = {
+                SelectionMode = "immediate"
+            }
+        }
+    }
+}
