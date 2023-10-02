@@ -1,38 +1,38 @@
 ﻿@inherits StrategyDataBaseComponent
 
-<div>
-    <div>
-        <div >
-            <label for="Strategy" class="col-sm-2">Strategy</label>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <label for="Strategy">Strategy</label>
             <SfTextBox ID="Strategy" Value="@StrategyInfo?.StrategyName" Readonly="true"/>
         </div>
-        <div >
-            <label for="Symbol" class="col-sm-2">Symbol</label>
+        <div class="col-md-4">
+            <label for="Symbol">Symbol</label>
             <SfTextBox ID="Symbol" Value="@StrategyInfo?.Symbol" Readonly="true"/>
         </div>
-        <div >
-            <label for="Timeframe" class="col-sm-2">Timeframe</label>
+        <div class="col-md-4">
+            <label for="Timeframe">Timeframe</label>
             <SfTextBox ID="Timeframe" Value="@StrategyInfo?.Timeframe" Readonly="true"/>
         </div>
-        <div >
-            <label for="Timeframe2" class="col-sm-2">Timeframe</label>
+        <div class="col-md-4">
+            <label for="Timeframe2">Timeframe</label>
             <SfTextBox ID="Timeframe2" Value="@StrategyInfo?.Timeframe2" Readonly="true"/>
         </div>
               
-        <div >
+        <div class="col-md-4">
             <label for="CanRun" style="padding: 10px 10px 10px 0">Can Run</label>
             <SfSwitch @bind-Checked="StrategyInfo.CanRun" ValueChange="OnCanRunChange" TChecked="bool?"></SfSwitch>
         </div>
-        <div >
+        <div class="col-md-4">
             <label for="SecureControlPosition" style="padding: 10px 10px 10px 0">Secure Control Position</label>
             <SfSwitch @bind-Checked="StrategyInfo.SecureControlPosition" ValueChange="OnSecureControlePositionChange" TChecked="bool"></SfSwitch>
         </div>
     </div>
-    <div>
-        <div>
+    <div style="display: flex;">
+        <div style="flex: 1;">
             <CandleComponent Candle="StrategyInfo.LastCandle"></CandleComponent>
         </div>
-        <div>
+        <div style="flex: 1;">
             <TickComponent Tick="StrategyInfo.LastTick"></TickComponent>
         </div>
     </div>
