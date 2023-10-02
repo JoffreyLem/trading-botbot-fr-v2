@@ -30,10 +30,11 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.AddDependency2();
 app.MapRazorPages();
 app.MapBlazorHub();
 
-app.AddDependency2();
+
 
 
 app.Run();

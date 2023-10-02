@@ -12,6 +12,7 @@ public class TestStrategy : StrategyImplementationBase
     {
         RunOnTick = true;
         CloseOnTick = true;
+        CanRun = true;
     }
 
     public SarIndicator SarIndicator { get; set; } = new();

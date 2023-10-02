@@ -31,11 +31,15 @@ public static class DependencyExtension
         builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfilesBackgroundServices>(); },
             typeof(MappingProfilesBackgroundServices).Assembly
         );
+
+        builder.Services.AddSignalR();
+        builder.Services.AddSingleton<IEventBus, EventBus>();
     }
 
     public static void AddDependency2(this WebApplication app)
     {
         app.MapHub<StrategyHub>(StrategyHub.HubName);
         app.MapHub<ApiHandlerHub>(ApiHandlerHub.ApiHubName);
+        
     }
 }

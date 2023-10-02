@@ -20,6 +20,7 @@ using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using StrategyApi.StrategyBackgroundService.Exception;
 using StrategyApi.StrategyBackgroundService.Hubs;
+using StrategyApi.StrategyBackgroundService.Services;
 
 namespace StrategyApi.StrategyBackgroundService;
 
@@ -32,18 +33,20 @@ public class CommandHandler
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
     private readonly IHubContext<StrategyHub, IStrategyHub> _strategyHub;
+    private readonly IEventBus _eventBus;
 
     private IApiHandler? _apiHandlerBase;
     private StrategyBase? _strategyBase;
 
     public CommandHandler(ILogger logger, IHubContext<ApiHandlerHub, IApiHandlerHub> apiHandlerHub, IMapper mapper,
-        IHubContext<StrategyHub, IStrategyHub> strategyHub, IEmailService emailService)
+        IHubContext<StrategyHub, IStrategyHub> strategyHub, IEmailService emailService, IEventBus eventBus)
     {
         _logger = logger.ForContext<CommandHandler>();
         _apiHandlerHub = apiHandlerHub;
         _mapper = mapper;
         _strategyHub = strategyHub;
         _emailService = emailService;
+        _eventBus = eventBus;
     }
 
     public async Task HandleApiCommand(ApiCommandBaseDto command, TaskCompletionSource<CommandResultBase> tcs)
@@ -186,34 +189,44 @@ public class CommandHandler
 
     private async void StrategyBaseOnPositionRejectedEvent(object? sender, Position e)
     {
-        await _strategyHub.Clients.All.SendPositionState(_mapper.Map<PositionDto>(e), PositionStateEnum.Rejected);
+        var posDto = _mapper.Map<PositionDto>(e);
+        await _strategyHub.Clients.All.SendPositionState(posDto, PositionStateEnum.Rejected);
+        await _eventBus.PublishAsync(posDto,PositionStateEnum.Rejected);
     }
 
     private async void StrategyBaseOnPositionClosedEvent(object? sender, Position e)
     {
-        await _strategyHub.Clients.All.SendPositionState(_mapper.Map<PositionDto>(e), PositionStateEnum.Closed);
+        var posDto = _mapper.Map<PositionDto>(e);
+        await _strategyHub.Clients.All.SendPositionState(posDto, PositionStateEnum.Closed);
+        await _eventBus.PublishAsync(posDto,PositionStateEnum.Closed);
     }
 
     private async void StrategyBaseOnPositionUpdatedEvent(object? sender, Position e)
     {
-        await _strategyHub.Clients.All.SendPositionState(_mapper.Map<PositionDto>(e), PositionStateEnum.Updated);
+        var posDto = _mapper.Map<PositionDto>(e);
+        await _strategyHub.Clients.All.SendPositionState(posDto, PositionStateEnum.Updated);
+        await _eventBus.PublishAsync(posDto,PositionStateEnum.Updated);
     }
 
     private async void StrategyBaseOnPositionOpenedEvent(object? sender, Position e)
     {
-        await _strategyHub.Clients.All.SendPositionState(_mapper.Map<PositionDto>(e), PositionStateEnum.Opened);
+        var posDto = _mapper.Map<PositionDto>(e);
+        await _strategyHub.Clients.All.SendPositionState(posDto, PositionStateEnum.Opened);
+        await _eventBus.PublishAsync(posDto,PositionStateEnum.Opened);
     }
 
     private async void StrategyBaseOnCandleEvent(object? sender, Candle e)
     {
         var candleDto = _mapper.Map<CandleDto>(e);
         await _strategyHub.Clients.All.SendCandle(candleDto);
+        await _eventBus.PublishAsync(candleDto);
     }
 
     private async void StrategyBaseOnTickEvent(object? sender, Tick e)
     {
         var tickDto = _mapper.Map<TickDto>(e);
         await _strategyHub.Clients.All.SendTick(tickDto);
+        await _eventBus.PublishAsync(tickDto);
     }
 
     private void IsInitialized(TaskCompletionSource<CommandResultBase> tcs)

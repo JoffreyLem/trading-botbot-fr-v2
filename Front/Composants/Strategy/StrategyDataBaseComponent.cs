@@ -22,6 +22,8 @@ public class StrategyDataBaseComponent : ComponentBase
 
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
     [Inject] private ShowToastService ToastService { get; set; }
+    [Inject] private IEventBus _eventBus { get; set; }
+    
     [Parameter] public EventCallback StrategyCloseRequested { get; set; }
 
     protected int SelectedTab { get; set; } = 0;
@@ -31,11 +33,10 @@ public class StrategyDataBaseComponent : ComponentBase
         try
         {
             StrategyInfo = await _strategyService.GetStrategyInfo();
-            StrategyHub.OnEventReceived += StrategyHubOnOnEventReceived;
-            StrategyHub.OnCandleReceived += StrategyHubOnOnCandleReceived;
-            StrategyHub.OnTickReceived += StrategyHubOnOnTickReceived;
-            StrategyHub.OnPositionStateReceived += StrategyHubOnOnPositionStateReceived;
-      
+            _eventBus.Subscribe<EventType,string>(StrategyHubOnOnEventReceived);
+            _eventBus.Subscribe<CandleDto>(StrategyHubOnOnCandleReceived);
+            _eventBus.Subscribe<TickDto>(StrategyHubOnOnTickReceived);
+            _eventBus.Subscribe<PositionDto,PositionStateEnum>(StrategyHubOnOnPositionStateReceived);
         }
         catch (Exception e)
         {
@@ -45,57 +46,73 @@ public class StrategyDataBaseComponent : ComponentBase
 
     private void StrategyHubOnOnPositionStateReceived(PositionDto position, PositionStateEnum state)
     {
-        switch (state)
-        {
-            case PositionStateEnum.Opened:
-                PositionOpenedCompoennt.Positions.Add(position);
-                break;
-            case PositionStateEnum.Updated:
+       
+            switch (state)
             {
-                int selected = PositionOpenedCompoennt.Positions
-                    .Where((x, i) => x?.Id?.ToString() == position?.Id)
-                    .Select((x, i) => i).FirstOrDefault();
-                if (selected >= 0 && selected < PositionOpenedCompoennt.Positions.Count)
+                case PositionStateEnum.Opened:
+                    PositionOpenedCompoennt.Positions.Add(position);
+                    break;
+                case PositionStateEnum.Updated:
                 {
-                    PositionOpenedCompoennt.Positions[selected] = position;
-                }
+                    int selected = PositionOpenedCompoennt.Positions
+                        .Where((x, i) => x?.Id?.ToString() == position?.Id)
+                        .Select((x, i) => i).FirstOrDefault();
+                    if (selected >= 0 && selected < PositionOpenedCompoennt.Positions.Count)
+                    {
+                        PositionOpenedCompoennt.Positions[selected] = position;
+                    }
 
-                break;
-            }
-            case PositionStateEnum.Closed:
-            case PositionStateEnum.Rejected:
-            {
-                int selected = PositionOpenedCompoennt.Positions.Where((x, i) => x.Id == position.Id)
-                    .Select((x, i) => i).FirstOrDefault();
-                if (selected >= 0 && selected < PositionOpenedCompoennt.Positions.Count)
-                {
-                    PositionOpenedCompoennt.Positions.RemoveAt(selected);
+                    break;
                 }
-                break;
+                case PositionStateEnum.Closed:
+                case PositionStateEnum.Rejected:
+                {
+                    int selected = PositionOpenedCompoennt.Positions.Where((x, i) => x.Id == position.Id)
+                        .Select((x, i) => i).FirstOrDefault();
+                    if (selected >= 0 && selected < PositionOpenedCompoennt.Positions.Count)
+                    {
+                        PositionOpenedCompoennt.Positions.RemoveAt(selected);
+                    }
+
+                    break;
+                }
             }
-        }
+     
+
     }
 
     private void StrategyHubOnOnTickReceived(TickDto obj)
     {
-        StrategyInfo.LastTick = obj;
-        StateHasChanged();
+        InvokeAsync(() =>
+        {
+            StrategyInfo.LastTick = obj;
+            StateHasChanged();
+        });
     }
 
     private void StrategyHubOnOnCandleReceived(CandleDto obj)
     {
-        StrategyInfo.LastCandle = obj;
-        StateHasChanged();
+        InvokeAsync(() =>
+        {
+            StrategyInfo.LastCandle = obj;
+            StateHasChanged();
+        });
+  
     }
 
-    private async void StrategyHubOnOnEventReceived(EventType eventType, string message)
+    private void StrategyHubOnOnEventReceived(EventType eventType, string message)
     {
-        ToastService.ShowToast(eventType, message);
-        if (eventType is EventType.Fatal or EventType.Close)
+        InvokeAsync(async () =>
         {
-            await StrategyCloseRequested.InvokeAsync();
-        }
-        StateHasChanged();
+            ToastService.ShowToast(eventType, message);
+            if (eventType is EventType.Fatal or EventType.Close)
+            {
+                await StrategyCloseRequested.InvokeAsync();
+            }
+
+            StateHasChanged();
+        });
+
     }
     
     protected async void OnCanRunChange(Syncfusion.Blazor.Buttons.ChangeEventArgs<bool?> args)

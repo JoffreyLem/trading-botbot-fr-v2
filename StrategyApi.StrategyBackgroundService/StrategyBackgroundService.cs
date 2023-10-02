@@ -9,6 +9,7 @@ using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
 using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
 using StrategyApi.StrategyBackgroundService.Hubs;
+using StrategyApi.StrategyBackgroundService.Services;
 
 namespace StrategyApi.StrategyBackgroundService;
 
@@ -27,12 +28,12 @@ public class StrategyBackgroundService : BackgroundService
         ChannelReader<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)> channelStrategyReader,
         IHubContext<ApiHandlerHub, IApiHandlerHub> apiHandlerHub, IMapper mapper,
         IHubContext<StrategyHub, IStrategyHub> strategyHub,
-        IEmailService emailService)
+        IEmailService emailService,IEventBus eventBus)
     {
         _logger = logger;
         _channelApiReader = channelApiReader;
         _channelStrategyReader = channelStrategyReader;
-        _apiHandlerGestion = new CommandHandler(logger, apiHandlerHub, mapper, strategyHub, emailService);
+        _apiHandlerGestion = new CommandHandler(logger, apiHandlerHub, mapper, strategyHub, emailService,eventBus);
     }
 
 

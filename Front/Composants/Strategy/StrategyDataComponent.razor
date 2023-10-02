@@ -37,6 +37,35 @@
         </div>
     </div>
     <div>
+        <SfTab LoadOn="ContentLoad.Dynamic" @bind-SelectedItem="@SelectedTab">
+            <TabItems>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Position Ouvertes"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <PositionOpenedComponent @ref="PositionOpenedCompoennt"/>
+                    </ContentTemplate>
+                </TabItem>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Position Closes"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <PositionClosedComponent @ref="PositionClosedComponent"/>
+                    </ContentTemplate>
+                </TabItem>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Result"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <ResultComponent @ref="ResultComponent"/>
+                    </ContentTemplate>
+                </TabItem>
+            </TabItems>
+    
+        </SfTab>
      
     </div>
 </div>

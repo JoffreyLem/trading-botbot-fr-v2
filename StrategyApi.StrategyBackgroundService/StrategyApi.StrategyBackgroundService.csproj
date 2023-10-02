@@ -44,6 +44,15 @@
       <Compile Update="Services\StrategyHandlerService.cs">
         <DependentUpon>IStrategyHandlerService.cs</DependentUpon>
       </Compile>
+      <Compile Update="Hubs\ApiHandlerHub.cs">
+        <DependentUpon>IApiHandlerHub.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Hubs\StrategyHub.cs">
+        <DependentUpon>IStrategyHub.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Services\EventBus.cs">
+        <DependentUpon>IEventBus.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
