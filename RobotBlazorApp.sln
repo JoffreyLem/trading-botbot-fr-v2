@@ -26,8 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Front", "Front\Front.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{D81FFD52-342A-41BE-B48D-953BF5DFA1C4}"
 	ProjectSection(SolutionItems) = preProject
-		RobotFront\Dockerfile = RobotFront\Dockerfile
 		.gitlab-ci.yml = .gitlab-ci.yml
+		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
 Global

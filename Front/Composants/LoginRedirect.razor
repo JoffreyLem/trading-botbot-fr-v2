@@ -4,7 +4,13 @@
 
     protected override void OnInitialized()
     {
-        Navigation.NavigateTo("/login?returnUrl=" + Uri.EscapeDataString(Navigation.Uri), true);
+        var url = Uri.EscapeDataString(Navigation.Uri);
+        if (Uri.TryCreate(Navigation.Uri, UriKind.Absolute, out var uri) && !uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+        {
+            url = "https://" + uri.Host + uri.PathAndQuery;
+        }
+        Console.WriteLine($"URL:{url}");
+        Navigation.NavigateTo("/login?returnUrl=" + url, true);
     }
 
 }

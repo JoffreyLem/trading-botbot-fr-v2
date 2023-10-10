@@ -8,20 +8,17 @@
 </HeadContent>
 <div class="page">
     <main>
-
-
         <SfAppBar ColorMode="AppBarColor.Dark">
             <SfButton Type="button" CssClass="e-inherit" IconCss="e-icons e-menu" @onclick="HandleSideBard"></SfButton>
             <span class="regular">Bot bot</span>
             <AppBarSpacer/>
             <LoginDisplay/>
         </SfAppBar>
-
         <SfSidebar Target=".maincontent" Width="200px" @bind-IsOpen="SidebarToggle">
             <ChildContent>
                 <nav id="sidebarMenu" class="sidebar">
                     <div class="nav-item px-3 border-bottom py-3 thick-border">
-                        <NavLink class="nav-link" href="accueil" Match="NavLinkMatch.All">
+                        <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
                             <i data-feather="home" class="icon-spacing"></i>Home
                         </NavLink>
                     </div>

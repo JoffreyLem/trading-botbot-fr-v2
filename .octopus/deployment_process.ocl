@@ -9,9 +9,9 @@ step "stop-a-docker-resource" {
         is_required = true
         properties = {
             Octopus.Action.Docker.Remove = "True"
-            Octopus.Action.Docker.RemoveByEnvironment = "True"
-            Octopus.Action.Docker.RemoveByRelease = "True"
-            Octopus.Action.Docker.RemoveSteps = "96e51e58-8265-4ca6-bd57-86a2aef00318"
+            Octopus.Action.Docker.RemoveByEnvironment = "False"
+            Octopus.Action.Docker.RemoveByRelease = "False"
+            Octopus.Action.Docker.RemoveSteps = "run-a-docker-container"
             Octopus.Action.ExecutionTimeout.Minutes = "20"
         }
         worker_pool_variable = ""
@@ -27,7 +27,7 @@ step "run-a-docker-container" {
     action {
         action_type = "Octopus.DockerRun"
         properties = {
-            Octopus.Action.Docker.Args = "--name robot-api -v /etc/timezone:/etc/timezone:ro -v /etc/localtime:/etc/localtime:ro"
+            Octopus.Action.Docker.Args = "--name robot-app -v /etc/timezone:/etc/timezone:ro -v /etc/localtime:/etc/localtime:ro"
             Octopus.Action.Docker.EnvVariable = "{\"ELASTIC_APIKEY\":\"#{ELASTIC_APIKEY}\",\"ELASTIC_URI\":\"#{ELASTIC_URI}\",\"MONGO_URL\":\"#{MONGO_URL}\",\"Serilog__MinimumLevel__Default\":\"Information\",\"TZ\":\"Europe/Paris\"}"
             Octopus.Action.Docker.NetworkName = "bot"
             Octopus.Action.Docker.NetworkType = "network"
