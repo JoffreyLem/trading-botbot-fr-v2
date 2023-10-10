@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Front.Services;
+using Microsoft.AspNetCore.Components;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Composants;
 
-public class HeathCheckComponentBase : ComponentBase , IDisposable, IAsyncDisposable
+public class HeathCheckComponentBase : ComponentBase 
 {
     [Inject]
     private IApiConnectService _ApiConnectService { get; set; }
@@ -12,17 +13,16 @@ public class HeathCheckComponentBase : ComponentBase , IDisposable, IAsyncDispos
     [Inject]
     private IStrategyHandlerService _apiStrategyService { get; set; }
     
-    private Timer _statusCheckTimer;
+    [Inject] private ShowToastService ToastService { get; set; }
+
+    
     
     public ConnexionStateEnum Api { get; set; } = ConnexionStateEnum.Disconnected;
-    public ConnexionStateEnum Strategy { get; set; } = ConnexionStateEnum.Disconnected;
+    public ConnexionStateEnum Strategy { get; set; } = ConnexionStateEnum.NotInitialized;
     
     protected override async Task OnInitializedAsync()
     {
         await InitializeStatus();
-        
-        _statusCheckTimer = new Timer(async _ => await InvokeAsync(InitializeStatus), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
-
     }
 
     private async Task InitializeStatus()
@@ -33,7 +33,10 @@ public class HeathCheckComponentBase : ComponentBase , IDisposable, IAsyncDispos
             await CheckStrategyState();
             StateHasChanged();
         }
-        catch (Exception) { }
+        catch (Exception)
+        {
+            ToastService.ShowToastError("Can't get status.");
+        }
     }
     
     
@@ -45,7 +48,7 @@ public class HeathCheckComponentBase : ComponentBase , IDisposable, IAsyncDispos
         }
         catch (Exception e)
         {
-            Api = ConnexionStateEnum.Disconnected;
+            Api = ConnexionStateEnum.Inconnue;
         }
     }
     
@@ -58,17 +61,9 @@ public class HeathCheckComponentBase : ComponentBase , IDisposable, IAsyncDispos
         }
         catch (Exception e)
         {
-            Strategy = ConnexionStateEnum.Disconnected;
+            Strategy = ConnexionStateEnum.Inconnue;
         }
     }
 
-    public void Dispose()
-    {
-        _statusCheckTimer.Dispose();
-    }
 
-    public async ValueTask DisposeAsync()
-    {
-        await _statusCheckTimer.DisposeAsync();
-    }
 }

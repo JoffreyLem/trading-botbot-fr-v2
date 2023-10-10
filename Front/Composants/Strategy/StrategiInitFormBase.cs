@@ -17,8 +17,7 @@ public class StrategiInitFormBase : ComponentBase
     [Inject] private IApiConnectService _apiConnectService { get; set; }
 
     [Inject] private ShowToastService ToastService { get; set; }
-
-
+    
     [Parameter] public EventCallback StrategyFormUpdateRequested { get; set; }
 
     protected List<string>? StrategyTypes { get; set; }
@@ -32,9 +31,17 @@ public class StrategiInitFormBase : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        StrategyTypes = await _apiStrategyService.GetListStrategy();
-        TimeFrames = await _apiStrategyService.GetListTimeframes();
-        Symbols = await _apiConnectService.GetAllSymbol();
+        try
+        {
+            StrategyTypes = await _apiStrategyService.GetListStrategy();
+            TimeFrames = await _apiStrategyService.GetListTimeframes();
+            Symbols = await _apiConnectService.GetAllSymbol();
+        }
+        catch
+        {
+            ToastService.ShowToastError("Can't initialize strategy form.");
+        }
+   
     }
 
     protected async Task InitStrategy()

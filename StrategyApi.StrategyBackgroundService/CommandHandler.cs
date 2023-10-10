@@ -154,6 +154,7 @@ public class CommandHandler
                 _strategyBase.PositionRejectedEvent += StrategyBaseOnPositionRejectedEvent;
                 _strategyBase.StrategyClosed += StrategyBaseOnStrategyClosed;
                 _strategyBase.TresholdEvent += StrategyBaseOnTresholdEvent;
+                _eventBus.PublishAsync(ReferentEnum.Strategy,ConnexionStateEnum.Initialized);
             }
             catch (System.Exception e)
             {
@@ -167,6 +168,8 @@ public class CommandHandler
             throw new CommandException($"Bad command for {nameof(InitStrategy)}");
         }
     }
+
+
 
     private async void StrategyBaseOnTresholdEvent(object? sender, MoneyManagementTresholdType e)
     {
@@ -246,12 +249,13 @@ public class CommandHandler
         tcs.SetResult(new CommandExecutedTypedResult<StrategyInfoDto>(strategyInfoDto));
     }
 
-    private void CloseStrategy(TaskCompletionSource<CommandResultBase> tcs)
+    private async void CloseStrategy(TaskCompletionSource<CommandResultBase> tcs)
     {
         if (_strategyBase is not null)
         {
             _strategyBase.CloseStrategy();
             _strategyBase = null;
+            await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.NotInitialized);
         }
 
         tcs.SetResult(new CommandExecutedResult());
@@ -360,6 +364,7 @@ public class CommandHandler
             _apiHandlerBase.Connected += ApiHandlerBaseOnConnected;
             _apiHandlerBase.Disconnected += ApiHandlerBaseOnDisconnected;
             _apiHandlerBase.NewBalanceEvent += ApiHandlerBaseOnNewBalanceEvent;
+            await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Connected);
             taskCompletionSource.SetResult(new CommandExecutedResult());
         }
         else
@@ -373,14 +378,14 @@ public class CommandHandler
         _apiHandlerHub.Clients.All.SendBalanceState(_mapper.Map<AccountBalanceDto>(e));
     }
 
-    private void ApiHandlerBaseOnDisconnected(object? sender, EventArgs e)
+    private async void ApiHandlerBaseOnDisconnected(object? sender, EventArgs e)
     {
-        // TODO : a voir quoi faire ici ? 
+        await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Disconnected);
     }
 
-    private void ApiHandlerBaseOnConnected(object? sender, EventArgs e)
+    private async void ApiHandlerBaseOnConnected(object? sender, EventArgs e)
     {
-        _logger.Information("Api handler connected");
+        await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Connected);
     }
 
     private async Task Disconnect(TaskCompletionSource<CommandResultBase> taskCompletionSource)
@@ -388,6 +393,7 @@ public class CommandHandler
         CheckApiHandlerNotNull();
         await _apiHandlerBase.DisconnectAsync();
         _apiHandlerBase = null;
+        await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Disconnected);
         taskCompletionSource.SetResult(new CommandExecutedResult());
     }
 
