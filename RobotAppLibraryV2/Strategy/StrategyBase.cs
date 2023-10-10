@@ -60,7 +60,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
         }
     }
 
-    public string StrategyName => GetType().Name;
+    public string StrategyName => StrategyImplementation.Name;
     public string Version => GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ?? "0.0.1";
 
     /// <summary>

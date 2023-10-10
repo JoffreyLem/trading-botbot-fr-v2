@@ -8,6 +8,9 @@ namespace RobotAppLibraryV2.Strategy;
 /// </summary>
 public abstract class StrategyImplementationBase
 {
+
+    public string Name => GetType().Name;
+    
     internal Func<decimal, TypePosition, decimal> CalculateStopLossFunc;
     internal Func<decimal, TypePosition, decimal> CalculateTakeProfitFunc;
 
