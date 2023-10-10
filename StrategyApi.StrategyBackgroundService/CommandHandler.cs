@@ -337,7 +337,7 @@ public class CommandHandler
 
     #region ApiCommand
 
-    private void InitHandler(ApiCommandBaseDto command, TaskCompletionSource<CommandResultBase> taskCompletionSource)
+    private async void InitHandler(ApiCommandBaseDto command, TaskCompletionSource<CommandResultBase> taskCompletionSource)
     {
         if (command is InitHandlerCommandDto initHandlerCommandDto)
         {
@@ -346,6 +346,7 @@ public class CommandHandler
 
             _logger.Information("Init handler to type {Enum}", initHandlerCommandDto.ApiHandlerEnum);
             _apiHandlerBase = GetApiByType(initHandlerCommandDto.ApiHandlerEnum.GetValueOrDefault());
+            await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Initialized);
             taskCompletionSource.SetResult(new CommandExecutedResult());
         }
         else

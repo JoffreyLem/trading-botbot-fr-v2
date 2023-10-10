@@ -16,7 +16,7 @@ public class HeathCheckComponentBase : ComponentBase
     [Inject] private ShowToastService ToastService { get; set; }
 
     
-    
+    [Inject] private IEventBus _eventBus { get; set; }
     public ConnexionStateEnum Api { get; set; } = ConnexionStateEnum.Disconnected;
     public ConnexionStateEnum Strategy { get; set; } = ConnexionStateEnum.NotInitialized;
     
@@ -31,12 +31,31 @@ public class HeathCheckComponentBase : ComponentBase
         {
             await CheckApiHandlerState();
             await CheckStrategyState();
+            _eventBus.Subscribe<ReferentEnum,ConnexionStateEnum>(BackgroundServiceConnectionStatusReceived);
             StateHasChanged();
         }
         catch (Exception)
         {
             ToastService.ShowToastError("Can't get status.");
         }
+    }
+    
+    private void BackgroundServiceConnectionStatusReceived(ReferentEnum referentEnum, ConnexionStateEnum connexionStateEnum)
+    {
+        InvokeAsync(() =>
+        {
+            if (referentEnum == ReferentEnum.Api)
+            {
+                Api = connexionStateEnum;
+            }
+            else if (referentEnum == ReferentEnum.Strategy)
+            {
+                Strategy = connexionStateEnum;
+            }
+            StateHasChanged();
+          
+        });
+
     }
     
     
