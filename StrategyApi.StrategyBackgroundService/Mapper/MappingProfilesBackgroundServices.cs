@@ -11,11 +11,11 @@ public class MappingProfilesBackgroundServices : Profile
     {
         CreateMap<StrategyBase, StrategyInfoDto>()
             .ForMember(x => x.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(x => x.StrategyType, opt => opt.MapFrom(src => src.GetType().Name))
+            .ForMember(x => x.StrategyType, opt => opt.MapFrom(src => src.StrategyName))
             .ForMember(x => x.Symbol, opt => opt.MapFrom(src => src.Symbol))
             .ForMember(x => x.Timeframe, opt => opt.MapFrom(src => src.Timeframe))
             .ForMember(x => x.Timeframe2, opt => opt.MapFrom(src => src.Timeframe2))
-            .ForMember(x => x.StrategyName, opt => opt.MapFrom(src => src.GetType().Name))
+            .ForMember(x => x.StrategyName, opt => opt.MapFrom(src => src.StrategyName))
             .ForMember(x => x.CanRun, opt => opt.MapFrom(src => src.CanRun))
             .ForMember(x => x.SecureControlPosition, opt => opt.MapFrom(src => src.SecureControlPosition))
             .ForMember(x => x.LastCandle, opt => opt.MapFrom(src => src.LastCandle))
