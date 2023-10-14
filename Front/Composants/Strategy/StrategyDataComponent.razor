@@ -1,6 +1,6 @@
 ﻿@inherits StrategyDataBaseComponent
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
             <label for="Strategy">Strategy</label>
@@ -28,15 +28,10 @@
             <SfSwitch @bind-Checked="StrategyInfo.SecureControlPosition" ValueChange="OnSecureControlePositionChange" TChecked="bool"></SfSwitch>
         </div>
     </div>
-    <div style="display: flex;">
-        <div style="flex: 1;">
-            <CandleComponent Candle="StrategyInfo.LastCandle"></CandleComponent>
-        </div>
-        <div style="flex: 1;">
-            <TickComponent Tick="StrategyInfo.LastTick"></TickComponent>
-        </div>
+    <div class="row" style="margin: 20px;">
+        <ChartComponent/>
     </div>
-    <div>
+    <div class="row">
         <SfTab LoadOn="ContentLoad.Dynamic" @bind-SelectedItem="@SelectedTab">
             <TabItems>
                 <TabItem>

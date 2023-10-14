@@ -3,18 +3,18 @@
 
 <div style="display: flex;">
     <div style="flex: 1; padding-right: 10px;">
-        <ApiComponent ApiComponentUpdateRequested="@HandleApiUpdate" />
+        
+        <ApiComponent ApiComponentUpdateRequested="@HandleApiUpdate"/>
     </div>
     <div style="flex: 1; padding-left: 10px;">
         <HealthCheckComponent />
     </div>
 </div>
 
-
 @if (IsConnected)
 {
-    <div>
-     <StrategyComponent/>
+    <div class="container-fluid">
+        <StrategyComponent/>
     </div>
    
 }

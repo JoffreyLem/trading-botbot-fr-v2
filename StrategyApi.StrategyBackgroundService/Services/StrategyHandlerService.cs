@@ -177,4 +177,20 @@ public class StrategyHandlerService : IStrategyHandlerService
 
         return result.value;
     }
+
+    public async Task<List<CandleDto>> GetChart()
+    {
+        var tcs = new TaskCompletionSource<CommandResultBase>();
+
+        var apiCommandDto = new StrategyCommandBaseDto
+        {
+            StrategyCommand = StrategyCommand.GetChart
+        };
+
+        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
+
+        var result = await tcs.Task as CommandExecutedTypedResult<List<CandleDto>>;
+
+        return result.value;
+    }
 }

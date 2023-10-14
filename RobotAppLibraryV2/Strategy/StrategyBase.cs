@@ -18,7 +18,7 @@ namespace RobotAppLibraryV2.Strategy;
 public class StrategyBase : IStrategyEvent, IDisposable
 {
     private readonly IApiHandler _apiHandler;
-    private readonly CandleList.CandleList _history;
+    public readonly CandleList.CandleList History;
     private readonly object _lockTickEvent = new();
 
     private readonly ILogger _logger;
@@ -49,7 +49,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
 
             _apiHandler = apiHandler;
 
-            _history = new CandleList.CandleList(apiHandler, _logger, timeframe, symbol);
+            History = new CandleList.CandleList(apiHandler, _logger, timeframe, symbol);
             _moneyManagement = new MoneyManagement.MoneyManagement(apiHandler, symbol, logger, StrategyIdPosition);
             _positionHandler = new PositionHandler(logger, apiHandler, symbol);
             Init();
@@ -92,10 +92,10 @@ public class StrategyBase : IStrategyEvent, IDisposable
 
     public Position? PositionOpened => _positionHandler.PositionOpened;
     public Modeles.Result Results => _moneyManagement.StrategyResult.Results;
-    public Tick LastPrice => _history.LastPrice.GetValueOrDefault();
-    public Candle LastCandle => _history[_history.Count - 2];
+    public Tick LastPrice => History.LastPrice.GetValueOrDefault();
+    public Candle LastCandle => History[History.Count - 2];
 
-    public Candle CurrentCandle => _history.Last();
+    public Candle CurrentCandle => History.Last();
 
     private List<IIndicator> IndicatorsList { get; } = new();
     private List<IIndicator> IndicatorsList2 { get; } = new();
@@ -118,7 +118,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
     public void Dispose()
     {
         _moneyManagement.Dispose();
-        _history.Dispose();
+        History.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -135,8 +135,8 @@ public class StrategyBase : IStrategyEvent, IDisposable
     private void Init()
     {
         _apiHandler.Disconnected += ApiOnDisconnected;
-        _history.OnTickEvent += HistoryOnOnTickEvent;
-        _history.OnCandleEvent += HistoryOnOnCandleEvent;
+        History.OnTickEvent += HistoryOnOnTickEvent;
+        History.OnCandleEvent += HistoryOnOnCandleEvent;
         _moneyManagement.TreshHoldEvent += MoneyManagementOnTreshHoldEvent;
         _apiHandler.PositionOpenedEvent += (_, position) => PositionOpenedEvent?.Invoke(this, position);
         _apiHandler.PositionUpdatedEvent += (_, position) => PositionUpdatedEvent?.Invoke(this, position);
@@ -159,7 +159,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
 
     private void InitStrategyImplementation()
     {
-        StrategyImplementation.History = _history;
+        StrategyImplementation.History = History;
         StrategyImplementation.LastPrice = LastPrice;
         StrategyImplementation.LastCandle = LastCandle;
         StrategyImplementation.CurrentCandle = CurrentCandle;
@@ -215,7 +215,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
                 }
 
                 TickEvent?.Invoke(this, tick);
-                CandleEvent?.Invoke(this, _history.LastOrDefault());
+                CandleEvent?.Invoke(this, History.LastOrDefault());
             }
             catch (Exception e)
             {
@@ -260,13 +260,13 @@ public class StrategyBase : IStrategyEvent, IDisposable
         try
         {
             //TODO : TU : check si le count des indicators augmente.
-            var candles = _history.TakeLast(1000).ToList();
+            var candles = History.TakeLast(1000).ToList();
 
             foreach (var indicator in IndicatorsList) indicator.UpdateIndicator(candles);
 
             if (Timeframe2 is not null)
             {
-                var candles2 = _history.Aggregate(Timeframe2.GetValueOrDefault().ToPeriodSize()).AsEnumerable()
+                var candles2 = History.Aggregate(Timeframe2.GetValueOrDefault().ToPeriodSize()).AsEnumerable()
                     .Select(x => new Candle()
                         .SetOpen(x.Open)
                         .SetHigh(x.High)
@@ -298,8 +298,8 @@ public class StrategyBase : IStrategyEvent, IDisposable
         else
         {
             var entryPrice = typePosition == TypePosition.Buy
-                ? _history.LastPrice.GetValueOrDefault().Ask.GetValueOrDefault()
-                : _history.LastPrice.GetValueOrDefault().Bid.GetValueOrDefault();
+                ? History.LastPrice.GetValueOrDefault().Ask.GetValueOrDefault()
+                : History.LastPrice.GetValueOrDefault().Bid.GetValueOrDefault();
             volume ??= _moneyManagement.CalculatePositionSize(entryPrice, sl);
         }
 

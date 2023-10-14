@@ -1,0 +1,67 @@
+﻿@inherits ChartComponentBase
+
+@if (Candles is {Count: 0})
+{
+    <div class="stockchartloader"></div> 
+}
+else
+{
+    <div class="@loadClass"></div>
+    <div class="@loadDiv">
+        <SfStockChart Title="Chart" EnableSelector="true" Width="90%" Height="100%">
+             <StockChartPeriods>
+                    <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="1" Text='1m'></StockChartPeriod>
+                    <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="30" Text='30m'></StockChartPeriod>
+                    <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="1" Text='1h'></StockChartPeriod>
+                    <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="12" Text='12h'></StockChartPeriod>
+                 <StockChartPeriod Text="1D"></StockChartPeriod>
+                 <StockChartPeriod Text="All" Selected="true"></StockChartPeriod>
+                </StockChartPeriods>
+            <StockChartEvents RangeChange="@RangeChanged" OnLoaded="@ChartLoaded"></StockChartEvents>
+            <StockChartPrimaryXAxis Maximum="LastCandle.Date">
+                <StockChartAxisMajorGridLines Width="0"></StockChartAxisMajorGridLines>
+                <StockChartAxisCrosshairTooltip Enable="true"></StockChartAxisCrosshairTooltip>
+            </StockChartPrimaryXAxis>
+            <StockChartPrimaryYAxis>
+                <StockChartAxisLineStyle Width="0"></StockChartAxisLineStyle>
+                <StockChartAxisMajorTickLines Width="0"></StockChartAxisMajorTickLines>
+                 <StockChartAxisCrosshairTooltip Enable="true"></StockChartAxisCrosshairTooltip>
+            </StockChartPrimaryYAxis>
+            <StockChartTooltipSettings Enable="true"></StockChartTooltipSettings>
+            <StockChartCrosshairSettings Enable="true"></StockChartCrosshairSettings>
+            <StockChartZoomSettings EnablePan="true"></StockChartZoomSettings>
+            <StockChartSeriesCollection>
+                <StockChartSeries DataSource="@Candles" Type="ChartSeriesType.Candle" XName="Date" YName="Close" Open="Open" High="High" Low="Low" Close="Close" Volume="Volume"></StockChartSeries>
+            </StockChartSeriesCollection>
+           <StockChartChartArea>
+                   <StockChartChartAreaBorder Width="0"></StockChartChartAreaBorder>
+               </StockChartChartArea>
+        </SfStockChart>
+        
+    </div>
+    
+}
+
+<style>
+        .stockchartloader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #7a0fff;
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 46%;
+            left: 46%;
+            border-radius: 50%;
+            -webkit-animation: loader 2s linear infinite;
+            animation: loader 2s linear infinite;
+        }
+        .stockchartdiv {
+            visibility: hidden;
+        }
+        div[id*="_stockChart_rangeSelector_leftTooltip"], div[id*="_stockChart_rangeSelector_rightTooltip"] {
+            top: 10px !important;
+        }
+        div[id*="_selector_Secondary_Element"] {
+            transform: translate(0px, @translateY) !important;
+        }
+    </style>

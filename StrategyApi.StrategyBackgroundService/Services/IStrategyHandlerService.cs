@@ -25,4 +25,6 @@ public interface IStrategyHandlerService
     Task SetSecureControlPosition(bool value);
 
     Task<ListPositionsDto> GetOpenedPositions();
+    
+    Task<List<CandleDto>> GetChart();
 }

@@ -109,6 +109,9 @@ public class CommandHandler
             case StrategyCommand.SetSecureControlPosition:
                 SetSecureControlPosition(tcs, command);
                 break;
+            case StrategyCommand.GetChart:
+                GetChart(tcs);
+                break;
             default:
                 throw new CommandException($"Commande {command.StrategyCommand} non gérer");
         }
@@ -169,12 +172,28 @@ public class CommandHandler
         }
     }
 
+    private  void GetChart(TaskCompletionSource<CommandResultBase> tcs)
+    {
+        CheckStrategyNotNull();
+        List<CandleDto> candles = _strategyBase.History.Select( x=>new CandleDto()
+        {
+            Open =(double) x.Open,
+            High =(double) x.High,
+            Low =(double) x.Low,
+            Close =(double) x.Close,
+            Date = x.Date,
+            Volume =(double) x.Volume
+        }).ToList();
+        tcs.SetResult(new CommandExecutedTypedResult<List<CandleDto>>(candles));
+    }
+
 
 
     private async void StrategyBaseOnTresholdEvent(object? sender, MoneyManagementTresholdType e)
     {
         var message = $"Strategy closed cause of treshold : {e.ToString()}";
         await _emailService.SendEmail(DefaultEmail, "Strategy closed", message);
+        // TODO : reset threshHold
         await _strategyHub.Clients.All.SendEvent(EventType.Treshold, e.ToString());
     }
 
@@ -186,7 +205,7 @@ public class CommandHandler
             var message = $"Strategy closed cause : {e.ToString()}";
             await _emailService.SendEmail(DefaultEmail, "Strategy closed", message);
         }
-
+        await _eventBus.PublishAsync(ReferentEnum.Strategy,ConnexionStateEnum.NotInitialized);
         await _strategyHub.Clients.All.SendEvent(EventType.Close, "Strategy closing");
     }
 
