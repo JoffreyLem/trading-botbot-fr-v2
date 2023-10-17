@@ -85,8 +85,8 @@
         <Compile Update="Composants\HeathCheckComponentBase.cs">
           <DependentUpon>HealthCheckComponent.razor</DependentUpon>
         </Compile>
-        <Compile Update="Composants\ChartComponentBase.cs">
-          <DependentUpon>ChartComponent.razor</DependentUpon>
+        <Compile Update="Composants\CandleChartComponentBase.cs">
+          <DependentUpon>CandleChartComponent.razor</DependentUpon>
         </Compile>
     </ItemGroup>
 

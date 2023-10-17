@@ -1,4 +1,4 @@
-﻿@inherits ChartComponentBase
+﻿@inherits CandleChartComponentBase
 
 @if (Candles is {Count: 0})
 {
@@ -10,15 +10,15 @@ else
     <div class="row @loadDiv">
         <SfStockChart Title="Chart" EnableSelector="true" Width="90%" Height="100%">
              <StockChartPeriods>
-                    <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="1" Text='1m'></StockChartPeriod>
-                    <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="30" Text='30m'></StockChartPeriod>
-                    <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="1" Text='1h'></StockChartPeriod>
-                    <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="12" Text='12h'></StockChartPeriod>
-                 <StockChartPeriod Text="1D"></StockChartPeriod>
-                 <StockChartPeriod Text="All" Selected="true"></StockChartPeriod>
+                 <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="1" Text='1m' Selected="true"></StockChartPeriod>
+                         <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="30" Text='30m'></StockChartPeriod>
+                         <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="1" Text='1h'></StockChartPeriod>
+                         <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="12" Text='12h' ></StockChartPeriod>
+                         <StockChartPeriod Text="1D"></StockChartPeriod>
                 </StockChartPeriods>
-            <StockChartEvents RangeChange="@RangeChanged" OnLoaded="@ChartLoaded"></StockChartEvents>
-            <StockChartPrimaryXAxis Maximum="LastCandle.Date">
+            <StockChartEvents  RangeChange="@RangeChanged" OnLoaded="@ChartLoaded"></StockChartEvents>
+     
+            <StockChartPrimaryXAxis >
                 <StockChartAxisMajorGridLines Width="0"></StockChartAxisMajorGridLines>
                 <StockChartAxisCrosshairTooltip Enable="true"></StockChartAxisCrosshairTooltip>
             </StockChartPrimaryXAxis>
@@ -29,9 +29,12 @@ else
             </StockChartPrimaryYAxis>
             <StockChartTooltipSettings Enable="true"></StockChartTooltipSettings>
             <StockChartCrosshairSettings Enable="true"></StockChartCrosshairSettings>
-            <StockChartZoomSettings EnablePan="true"></StockChartZoomSettings>
+                   <StockChartZoomSettings EnablePan="true" EnableMouseWheelZooming="true" EnableSelectionZooming="true"></StockChartZoomSettings>
             <StockChartSeriesCollection>
-                <StockChartSeries DataSource="@Candles" Type="ChartSeriesType.Candle" XName="Date" YName="Close" Open="Open" High="High" Low="Low" Close="Close" Volume="Volume"></StockChartSeries>
+                <StockChartSeries DataSource="@Candles" Type="ChartSeriesType.Candle" XName="Date" YName="Close" Open="Open" High="High" Low="Low" Close="Close" Volume="Volume">
+                    <StockChartSeriesAnimation Enable="false"></StockChartSeriesAnimation>
+
+                </StockChartSeries>
             </StockChartSeriesCollection>
            <StockChartChartArea>
                    <StockChartChartAreaBorder Width="0"></StockChartChartAreaBorder>

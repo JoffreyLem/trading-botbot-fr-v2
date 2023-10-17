@@ -13,11 +13,6 @@ public class StrategyDataBaseComponent : ComponentBase
     protected bool OnLoading;
     
     protected StrategyInfoDto StrategyInfo = new();
-
-    protected PositionClosedComponent PositionClosedComponent { get; set; }
-
-    protected PositionOpenedComponent PositionOpenedCompoennt { get; set; }
-
     protected ResultComponent ResultComponent { get; set; }
 
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
@@ -34,9 +29,7 @@ public class StrategyDataBaseComponent : ComponentBase
         {
             StrategyInfo = await _strategyService.GetStrategyInfo();
             _eventBus.Subscribe<EventType,string>(StrategyHubOnOnEventReceived);
-            _eventBus.Subscribe<CandleDto>(StrategyHubOnOnCandleReceived);
-            _eventBus.Subscribe<TickDto>(StrategyHubOnOnTickReceived);
-            _eventBus.Subscribe<PositionDto,PositionStateEnum>(StrategyHubOnOnPositionStateReceived);
+  
         }
         catch (Exception e)
         {
@@ -44,61 +37,7 @@ public class StrategyDataBaseComponent : ComponentBase
         }
     }
 
-    private void StrategyHubOnOnPositionStateReceived(PositionDto position, PositionStateEnum state)
-    {
-       
-            switch (state)
-            {
-                case PositionStateEnum.Opened:
-                    PositionOpenedCompoennt.Positions.Add(position);
-                    break;
-                case PositionStateEnum.Updated:
-                {
-                    int selected = PositionOpenedCompoennt.Positions
-                        .Where((x, i) => x?.Id?.ToString() == position?.Id)
-                        .Select((x, i) => i).FirstOrDefault();
-                    if (selected >= 0 && selected < PositionOpenedCompoennt.Positions.Count)
-                    {
-                        PositionOpenedCompoennt.Positions[selected] = position;
-                    }
 
-                    break;
-                }
-                case PositionStateEnum.Closed:
-                case PositionStateEnum.Rejected:
-                {
-                    int selected = PositionOpenedCompoennt.Positions.Where((x, i) => x.Id == position.Id)
-                        .Select((x, i) => i).FirstOrDefault();
-                    if (selected >= 0 && selected < PositionOpenedCompoennt.Positions.Count)
-                    {
-                        PositionOpenedCompoennt.Positions.RemoveAt(selected);
-                    }
-
-                    break;
-                }
-            }
-     
-
-    }
-
-    private void StrategyHubOnOnTickReceived(TickDto obj)
-    {
-        InvokeAsync(() =>
-        {
-            StrategyInfo.LastTick = obj;
-            StateHasChanged();
-        });
-    }
-
-    private void StrategyHubOnOnCandleReceived(CandleDto obj)
-    {
-        InvokeAsync(() =>
-        {
-            StrategyInfo.LastCandle = obj;
-            StateHasChanged();
-        });
-  
-    }
 
     private void StrategyHubOnOnEventReceived(EventType eventType, string message)
     {
@@ -112,7 +51,6 @@ public class StrategyDataBaseComponent : ComponentBase
 
             StateHasChanged();
         });
-
     }
     
     protected async void OnCanRunChange(Syncfusion.Blazor.Buttons.ChangeEventArgs<bool?> args)

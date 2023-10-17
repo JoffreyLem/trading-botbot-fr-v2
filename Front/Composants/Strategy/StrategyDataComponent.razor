@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="row" style="margin: 20px;">
-        <ChartComponent/>
+        <CandleChartComponent/>
     </div>
     <div class="row">
         <SfTab LoadOn="ContentLoad.Dynamic" @bind-SelectedItem="@SelectedTab">
@@ -39,7 +39,7 @@
                         <TabHeader Text="Position Ouvertes"></TabHeader>
                     </ChildContent>
                     <ContentTemplate>
-                        <PositionOpenedComponent @ref="PositionOpenedCompoennt"/>
+                        <PositionOpenedComponent />
                     </ContentTemplate>
                 </TabItem>
                 <TabItem>
@@ -47,7 +47,7 @@
                         <TabHeader Text="Position Closes"></TabHeader>
                     </ChildContent>
                     <ContentTemplate>
-                        <PositionClosedComponent @ref="PositionClosedComponent"/>
+                        <PositionClosedComponent />
                     </ContentTemplate>
                 </TabItem>
                 <TabItem>

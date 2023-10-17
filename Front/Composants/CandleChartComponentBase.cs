@@ -9,37 +9,36 @@ using Syncfusion.Blazor.Charts;
 
 namespace Front.Composants;
 
-public class ChartComponentBase : ComponentBase
+public class CandleChartComponentBase : ComponentBase
 {
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
     [Inject] private ShowToastService ToastService { get; set; }
     [Inject] private IEventBus _eventBus { get; set; }
 
-    protected CandleDto LastCandle
+    protected CandleDto? LastCandle
     {
-        get
-        {
-            if (Candles.Last().Open == 0 && Candles.Last().High == 0 && Candles.Last().Low == 0 &&
-                Candles.Last().Close == 0)
-            {
-                return Candles[^2];
-            }
-
-            return Candles.Last();
-        }
+        get => Candles.LastOrDefault();
+        set => Candles[^1] = value;
     }
+
+    protected TickDto LastTick = new TickDto();
+
 
     protected ObservableCollection<CandleDto> Candles { get; set; } = new ObservableCollection<CandleDto>();
 
     protected string translateY = "-5px";
     protected string loadClass = "stockchartloader";
     protected string loadDiv = "stockchartdiv";
+
+    private bool loaded = false;
     
     protected override async Task OnInitializedAsync()
     {
         try
         {
             Candles = new ObservableCollection<CandleDto>((await _strategyService.GetChart()));
+            _eventBus.Subscribe<CandleDto>(StrategyHubOnOnCandleReceived);
+            _eventBus.Subscribe<TickDto>(StrategyHubOnOnTickReceived);
         }
         catch
         {
@@ -52,12 +51,35 @@ public class ChartComponentBase : ComponentBase
     {
         loadClass = "";
         loadDiv = "";
+        loaded = true;
         StateHasChanged();
     }
     
     public void RangeChanged(StockChartRangeChangeEventArgs args)
     {
-        // Here you can customize your code
+       
+    }
+    
+    private void StrategyHubOnOnTickReceived(TickDto obj)
+    {
+        if (loaded)
+        {
+            InvokeAsync(() =>
+            {
+                LastTick = obj;
+            });
+        }
+    }
+
+    private void StrategyHubOnOnCandleReceived(CandleDto obj)
+    {
+        if (loaded)
+        {
+            InvokeAsync(() =>
+            {
+                LastCandle = obj;
+            });
+        }
     }
 
 }
