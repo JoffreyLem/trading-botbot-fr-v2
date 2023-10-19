@@ -63,6 +63,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
     public string StrategyName => StrategyImplementation.Name;
     public string Version => GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ?? "0.0.1";
 
+
     /// <summary>
     ///     Used for position definition comment.
     /// </summary>
@@ -100,6 +101,8 @@ public class StrategyBase : IStrategyEvent, IDisposable
     private List<IIndicator> IndicatorsList { get; } = new();
     private List<IIndicator> IndicatorsList2 { get; } = new();
 
+    private bool Closing = false;
+
     protected int DefaultStopLoss
     {
         get => _positionHandler.DefaultSl;
@@ -117,7 +120,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
     [ExcludeFromCodeCoverage]
     public void Dispose()
     {
-        _moneyManagement.Dispose();
+   
         History.Dispose();
         GC.SuppressFinalize(this);
     }
@@ -193,6 +196,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
 
     private void HistoryOnOnTickEvent(Tick tick)
     {
+        
         // TODO : Perf tests et voir temporisation dans history event tick ?
         lock (_lockTickEvent)
         {
@@ -309,40 +313,44 @@ public class StrategyBase : IStrategyEvent, IDisposable
             .GetAwaiter().GetResult();
     }
 
-    public void CloseStrategy(StrategyReasonClosed strategyReasonClosed = StrategyReasonClosed.User)
+    public void CloseStrategy(StrategyReasonClosed strategyReasonClosed)
     {
-        try
-        {
-            _logger.Fatal("On Closing strategy for reason {Reason}", strategyReasonClosed);
-
-            CanRun = false;
-
-            if (strategyReasonClosed is StrategyReasonClosed.Api)
+            Closing = true;
+            try
             {
-                var trades = _apiHandler.GetCurrentTradesAsync().Result;
+                _logger.Fatal("On Closing strategy for reason {Reason}", strategyReasonClosed);
 
-                foreach (var position in trades.Where(x => x.Symbol == Symbol)
-                             .Where(x => x.StrategyId == StrategyIdPosition))
+                CanRun = false;
+
+                if (strategyReasonClosed is not StrategyReasonClosed.Api)
                 {
-                    var price = _apiHandler.GetTickPriceAsync(Symbol).Result;
-                    var closeprice =
-                        position.TypePosition == TypePosition.Buy ? price.Ask : price.Bid;
-                    _apiHandler.ClosePositionAsync(closeprice.GetValueOrDefault(),
-                        position).GetAwaiter().GetResult();
+                    var trades = _apiHandler.GetCurrentTradesAsync().Result;
+
+                    foreach (var position in trades.Where(x => x.Symbol == Symbol)
+                                 .Where(x => x.StrategyId == StrategyIdPosition))
+                    {
+                        var price = _apiHandler.GetTickPriceAsync(Symbol).Result;
+                        var closeprice =
+                            position.TypePosition == TypePosition.Buy ? price.Ask : price.Bid;
+                        _apiHandler.ClosePositionAsync(closeprice.GetValueOrDefault(),
+                            position).GetAwaiter().GetResult();
+                    }
+                    _moneyManagement.Dispose();
+                    _apiHandler.UnsubscribePrice(Symbol);
                 }
+
+      
+                StrategyClosed?.Invoke(this, strategyReasonClosed);
+                StrategyClosed = null;
+                Dispose();
+                _logger.Fatal("Strategy closed");
             }
 
-            _apiHandler.UnsubscribePrice(Symbol);
-            StrategyClosed?.Invoke(this, strategyReasonClosed);
-            Dispose();
-            _logger.Fatal("Strategy closed");
-        }
-
-        catch (Exception e)
-        {
-            _logger.Fatal(e, "can't closing strategy");
-            throw new StrategyException();
-        }
+            catch (Exception e)
+            {
+                _logger.Fatal(e, "can't closing strategy");
+                throw new StrategyException();
+            }
     }
 
     private void RunHandler()

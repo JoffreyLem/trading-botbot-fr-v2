@@ -19,7 +19,7 @@ public class EmailService : IEmailService
         {
             Host = _smtpSettings.Host,
             Port = _smtpSettings.Port,
-            EnableSsl = _smtpSettings.EnableSsl,
+            EnableSsl = true,
             DeliveryMethod = SmtpDeliveryMethod.Network,
             UseDefaultCredentials = false,
             Credentials = new NetworkCredential(_smtpSettings.User, _smtpSettings.Password)
@@ -37,7 +37,7 @@ public class EmailService : IEmailService
             {
                 Subject = subject,
                 Body = body,
-                Priority = MailPriority.High
+                Priority = MailPriority.High,
             };
             _logger.Information("Send mail : {@Mail}", message);
             _smtpClient.Send(message);

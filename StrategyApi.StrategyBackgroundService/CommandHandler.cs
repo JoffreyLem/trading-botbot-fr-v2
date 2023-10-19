@@ -204,6 +204,7 @@ public class CommandHandler
             _logger.Warning("Strategy closed : {Reason}, send email to user", e.ToString());
             var message = $"Strategy closed cause : {e.ToString()}";
             await _emailService.SendEmail(DefaultEmail, "Strategy closed", message);
+            _strategyBase = null;
         }
         await _eventBus.PublishAsync(ReferentEnum.Strategy,ConnexionStateEnum.NotInitialized);
         await _strategyHub.Clients.All.SendEvent(EventType.Close, "Strategy closing");
@@ -272,7 +273,7 @@ public class CommandHandler
     {
         if (_strategyBase is not null)
         {
-            _strategyBase.CloseStrategy();
+            _strategyBase.CloseStrategy(StrategyReasonClosed.User);
             _strategyBase = null;
             await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.NotInitialized);
         }

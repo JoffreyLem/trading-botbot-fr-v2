@@ -151,9 +151,10 @@ public class StrategyBaseTest
 
         // Act
 
-        _fakeStrategyTest.Object.CloseStrategy(StrategyReasonClosed.Api);
+        _fakeStrategyTest.Object.CloseStrategy(StrategyReasonClosed.User);
 
         // Assert
+
 
         _apiHandlerMock.Verify(x => x.ClosePositionAsync(It.IsAny<decimal>(), It.IsAny<Position>()), Times.Exactly(2));
         _apiHandlerMock.Verify(x => x.UnsubscribePrice(_fakeStrategyTest.Object.Symbol), Times.AtLeastOnce);

@@ -67,10 +67,23 @@ public sealed class XtbApi : IApiHandler, IDisposable
             _apiCommandExecutor.ExecuteLoginCommand(Connector, credentials, true);
             Connector.StreamingApiConnector.Connect();
             Connector.StreamingApiConnector.OnConnected += server =>
+            {
                 _logger.Information("Xtb streaming connector connected to server {Server}:{Port}", server.Address,
                     server.MainPort);
+            };
+              
             Connector.StreamingApiConnector.OnDisconnectedStreamingCallback +=
-                () => _logger.Information("Xtb streaming connector disconnected");
+                () =>
+                {
+                    _logger.Information("Xtb streaming connector disconnected");
+                    Disconnected?.Invoke(this,EventArgs.Empty);
+                };
+
+            Connector.OnDisconnectedCallBack += () =>
+            {
+                _logger.Information("Xtb streaming connector");
+                Disconnected?.Invoke(this, EventArgs.Empty);
+            };
 
             Connector.StreamingApiConnector.BalanceRecordReceived += StreamingApiConnectorOnBalanceRecordReceived;
             Connector.StreamingApiConnector.NewsRecordReceived += StreamingApiConnectorOnNewsRecordReceived;
@@ -122,8 +135,7 @@ public sealed class XtbApi : IApiHandler, IDisposable
                     _logger.Error(e, "Can't close position {Position}", positionModele.Id);
                 }
 
-            Connector.StreamingApiConnector.Disconnect();
-            Connector.Disconnect();
+   
             Dispose();
         }
         catch (System.Exception e)
@@ -589,6 +601,8 @@ public sealed class XtbApi : IApiHandler, IDisposable
     public void Dispose()
     {
         _timer.Dispose();
+        Connector.StreamingApiConnector.Disconnect();
+        Connector.Disconnect();
     }
 
     private void EnableStreaming()

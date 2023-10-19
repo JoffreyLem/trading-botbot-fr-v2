@@ -152,6 +152,6 @@ public class LotValueCalculator : IDisposable
     protected virtual void Dispose(bool disposing)
     {
         _apiHandler.TickEvent += null;
-        if (_secondarySymbolAccount is not null) _apiHandler.UnsubscribePrice(_secondarySymbolAccount);
+        if (_secondarySymbolAccount is not null && _apiHandler.IsConnected()) _apiHandler.UnsubscribePrice(_secondarySymbolAccount);
     }
 }

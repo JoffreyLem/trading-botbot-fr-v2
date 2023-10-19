@@ -1,4 +1,5 @@
 using Auth0.AspNetCore.Authentication;
+using DotNetEnv;
 using Front;
 using Front.Services;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
@@ -6,7 +7,12 @@ using Microsoft.AspNetCore.HttpOverrides;
 using StrategyApi.StrategyBackgroundService;
 using StrategyApi.StrategyBackgroundService.Hubs;
 
+
+
+
 var builder = WebApplication.CreateBuilder(args);
+Env.Load();
+builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSignalR();
@@ -31,7 +37,7 @@ builder.WebHost.ConfigureAppConfiguration((ctx, cb) =>
 );
 
 var app = builder.Build();
-
+ 
 var forwardedHeaderOptions = new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
