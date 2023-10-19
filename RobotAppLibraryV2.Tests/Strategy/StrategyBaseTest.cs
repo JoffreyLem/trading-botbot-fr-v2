@@ -128,7 +128,7 @@ public class StrategyBaseTest
 
         var p1 = new Position()
             .SetSymbol("EURUSD")
-            .SetStrategyId("StrategyBaseProxy-0.0.1-EURUSD-FifteenMinutes");
+            .SetStrategyId("FakeStrategyBaseTest-0.0.1-EURUSD-FifteenMinutes");
 
         var p2 = new Position()
             .SetSymbol("test")
@@ -136,7 +136,7 @@ public class StrategyBaseTest
 
         var p3 = new Position()
             .SetSymbol("EURUSD")
-            .SetStrategyId("StrategyBaseProxy-0.0.1-EURUSD-FifteenMinutes");
+            .SetStrategyId("FakeStrategyBaseTest-0.0.1-EURUSD-FifteenMinutes");
 
         listPositions.AddRange(new[] { p1, p2, p3 });
 

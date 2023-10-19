@@ -79,7 +79,7 @@ public sealed class XtbApi : IApiHandler, IDisposable
             Connector.StreamingApiConnector.TradeStatusRecordReceived +=
                 StreamingApiConnectorOnTradeStatusRecordReceived;
             Connector.StreamingApiConnector.TradeRecordReceived += StreamingApiConnectorOnTradeRecordReceived;
-            GetSymbolsInternal();
+    
             EnableStreaming();
             _timer.AutoReset = true;
             _timer.Enabled = true;
@@ -251,6 +251,10 @@ public sealed class XtbApi : IApiHandler, IDisposable
     {
         try
         {
+            if (SymbolsCompressed is null || SymbolsCompressed.Length == 0)
+            {
+                GetSymbolsInternal();
+            }
             using var compressedMemoryStream = new MemoryStream(SymbolsCompressed);
             using var decompressedMemoryStream = new MemoryStream();
             using var gZipStream = new GZipStream(compressedMemoryStream, CompressionMode.Decompress);
