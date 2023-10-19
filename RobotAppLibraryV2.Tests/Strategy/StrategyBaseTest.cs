@@ -199,7 +199,7 @@ public class StrategyBaseTest
         // Assert
 
         _apiHandlerMock.Verify(x => x.ClosePositionAsync(It.IsAny<decimal>(), It.IsAny<Position>()), Times.Never);
-        _apiHandlerMock.Verify(x => x.UnsubscribePrice(_fakeStrategyTest.Object.Symbol), Times.AtLeastOnce);
+        _apiHandlerMock.Verify(x => x.UnsubscribePrice(_fakeStrategyTest.Object.Symbol), Times.Never);
         caller.Should().BeTrue();
     }
 

@@ -504,7 +504,7 @@ public class CandleListTest
     public void Test_CurrentHoursRecord_NoBoucle_inferior_from()
     {
         // Arrange
-        var now = DateTime.Now;
+        var now = new DateTime(2022, 01, 01, 14, 17, 0);;
         var todayWithTimeZeroed = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
         var candles = TestUtils.GenerateCandle(TimeSpan.FromMinutes(15), 100);
         candles.Last().SetDate(now.AddMinutes(-15));
@@ -515,7 +515,7 @@ public class CandleListTest
 
         tradingHour.HoursRecords.Add(new TradeHourRecord.HoursRecordData
         {
-            Day = DateTime.Now.DayOfWeek,
+            Day = now.DayOfWeek,
             From = todayWithTimeZeroed.AddHours(1).TimeOfDay,
             To = todayWithTimeZeroed.AddHours(2).TimeOfDay
         });
@@ -540,7 +540,7 @@ public class CandleListTest
     public void Test_CurrentHoursRecord_NoBoucle_inferior_from_2()
     {
         // Arrange
-        var now = DateTime.Now;
+        var now = new DateTime(2022, 01, 01, 14, 17, 0);;
         var todayWithTimeZeroed = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
         var candles = TestUtils.GenerateCandle(TimeSpan.FromMinutes(15), 100);
         candles.Last().SetDate(now.AddMinutes(-15));
@@ -551,7 +551,7 @@ public class CandleListTest
 
         tradingHour.HoursRecords.Add(new TradeHourRecord.HoursRecordData
         {
-            Day = DateTime.Now.DayOfWeek,
+            Day = now.DayOfWeek,
             From = todayWithTimeZeroed.AddHours(1).AddMinutes(10).TimeOfDay,
             To = todayWithTimeZeroed.AddHours(2).TimeOfDay
         });
@@ -576,7 +576,7 @@ public class CandleListTest
     public void Test_CurrentHoursRecord_NoBoucle_inferior_from_and_newTick()
     {
         // Arrange
-        var now = DateTime.Now;
+        var now = new DateTime(2022, 01, 01, 14, 17, 0);;
         var todayWithTimeZeroed = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
         var candles = TestUtils.GenerateCandle(TimeSpan.FromMinutes(15), 100);
         candles.Last().SetDate(now.AddMinutes(-15));
@@ -587,7 +587,7 @@ public class CandleListTest
 
         tradingHour.HoursRecords.Add(new TradeHourRecord.HoursRecordData
         {
-            Day = DateTime.Now.DayOfWeek,
+            Day = now.DayOfWeek,
             From = todayWithTimeZeroed.AddHours(1).TimeOfDay,
             To = todayWithTimeZeroed.AddHours(2).TimeOfDay
         });
