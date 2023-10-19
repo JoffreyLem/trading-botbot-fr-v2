@@ -1,7 +1,9 @@
+using System.Buffers;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json;
 using RobotAppLibraryV2.ApiHandler.Xtb.commands;
 using RobotAppLibraryV2.ApiHandler.Xtb.errors;
 using RobotAppLibraryV2.ApiHandler.Xtb.utils;
@@ -71,11 +73,23 @@ public class SyncAPIConnector : Connector, ISyncApiConnector
     {
         try
         {
-            return JSONObject.Parse(ExecuteCommand(cmd.ToJSONString()));
+            var jsonString = ExecuteCommand(cmd.ToJSONString());
+
+   
+            var charArray = ArrayPool<char>.Shared.Rent(jsonString.Length);
+            jsonString.AsSpan().CopyTo(charArray);
+
+            using var stringReader = new StringReader(new string(charArray, 0, jsonString.Length));
+            using var jsonReader = new JsonTextReader(stringReader);
+            var result = JSONObject.Load(jsonReader);
+
+            ArrayPool<char>.Shared.Return(charArray);
+
+            return result;
         }
         catch (Exception ex)
         {
-            throw new APICommunicationException("Problem with executing command: " + ex.Message);
+            throw new APICommunicationException($"Problem with executing command: {ex.Message}");
         }
     }
 

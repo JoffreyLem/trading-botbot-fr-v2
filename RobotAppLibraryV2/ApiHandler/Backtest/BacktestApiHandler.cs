@@ -28,6 +28,7 @@ public class BacktestApiHandler : IApiHandler
         Init(symbol);
     }
 
+    public byte[] SymbolsCompressed { get; set; }
     public AccountBalance AccountBalance { get; set; }
 
     public event EventHandler? Connected;
@@ -76,7 +77,7 @@ public class BacktestApiHandler : IApiHandler
         return Task.FromResult(new List<Calendar>());
     }
 
-    public Task<List<string>> GetAllSymbolsAsync()
+    public Task<List<string>?> GetAllSymbolsAsync()
     {
         return Task.FromResult(new List<string>());
     }

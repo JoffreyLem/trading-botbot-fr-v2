@@ -14,8 +14,8 @@ public class PivotPoint : BaseIndicator<PivotPointsResult>
     public PeriodSize PeriodSize { get; set; }
     public PivotPointType PivotPointType { get; set; }
 
-    protected override List<PivotPointsResult> Update(List<Candle> data)
+    protected override IEnumerable<PivotPointsResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetPivotPoints(PeriodSize, PivotPointType).ToList();
+        return data.GetPivotPoints(PeriodSize, PivotPointType);
     }
 }

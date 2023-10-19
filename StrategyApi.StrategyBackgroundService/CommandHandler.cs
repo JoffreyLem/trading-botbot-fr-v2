@@ -424,12 +424,16 @@ public class CommandHandler
         tcs.SetResult(new CommandExecutedTypedResult<string>(data));
     }
 
+    private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+    // TODO : Changer pour tout retourner
     private async Task GetAllSymbol(TaskCompletionSource<CommandResultBase> tcs)
     {
+      
         CheckApiHandlerNotNull();
-        var symbols = await _apiHandlerBase.GetAllSymbolsAsync();
+        var symbols = await _apiHandlerBase?.GetAllSymbolsAsync();
 
         tcs.SetResult(new CommandExecutedTypedResult<List<string>>(symbols));
+ 
     }
 
     private void IsConnected(TaskCompletionSource<CommandResultBase> tcs)

@@ -5,8 +5,8 @@ namespace RobotAppLibraryV2.Indicators.Indicator;
 
 public class DojiIndicator : BaseIndicator<CandleResult>
 {
-    protected override List<CandleResult> Update(List<Candle> data)
+    protected override IEnumerable<CandleResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetDoji().ToList();
+        return data.GetDoji();
     }
 }

@@ -48,6 +48,32 @@ public class BaseResponse
                 throw new APIErrorResponse(errCode, errorDescr, body);
             }
     }
+    
+    public BaseResponse(JSONObject ob)
+    {
+       
+
+        status = (bool?)ob["status"];
+        errCode = new ERR_CODE((string)ob["errorCode"]);
+        errorDescr = (string)ob["errorDescr"];
+        returnData = (JSONAware)ob["returnData"];
+        CustomTag = (string)ob["customTag"];
+
+        if (status == null)
+        {
+            Console.Error.WriteLine(ob.ToString());
+            throw new APIReplyParseException("JSON Parse error: \"status\" is null!");
+        }
+
+        if (status == null || (bool)!status)
+        {
+            if (ob["redirect"] == null)
+            {
+                if (errorDescr == null) errorDescr = ERR_CODE.getErrorDescription(errCode.StringValue);
+                throw new APIErrorResponse(errCode, errorDescr, ob.ToString());
+            }
+        }
+    }
 
     public virtual object ReturnData => returnData;
 

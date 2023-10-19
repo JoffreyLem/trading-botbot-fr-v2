@@ -16,8 +16,8 @@ public class Macd : BaseIndicator<MacdResult>
     public int SlowPeriod { get; set; }
     public int SignalPeriod { get; set; }
 
-    protected override List<MacdResult> Update(List<Candle> data)
+    protected override IEnumerable<MacdResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetMacd().ToList();
+        return data.GetMacd();
     }
 }

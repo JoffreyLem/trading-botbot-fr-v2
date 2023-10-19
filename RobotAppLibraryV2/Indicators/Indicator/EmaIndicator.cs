@@ -10,8 +10,8 @@ public class EmaIndicator : BaseIndicator<EmaResult>
         LoopBackPeriod = loopBackPeriodRequested;
     }
 
-    protected override List<EmaResult> Update(List<Candle> data)
+    protected override IEnumerable<EmaResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetEma(LoopBackPeriod).ToList();
+        return data.GetEma(LoopBackPeriod);
     }
 }

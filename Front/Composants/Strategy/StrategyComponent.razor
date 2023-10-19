@@ -1,12 +1,8 @@
 ﻿@inherits StrategyComponentBase
 
 
-<ShadowCardComponent Title="Strategy" OnLoading="OnLoading" @ref="ShadowCardComponent">
-    <Body>
-
     @if (IsInitialized)
     {
-      
         <div class="container-fluid mt-4">
             <div class="mb-3">
                 <SfButton @onclick="DeleteStrategy">Delete Strategy</SfButton>
@@ -18,15 +14,6 @@
     }
     else
     {
-       
-        <StrategyInitFormComponent StrategyFormUpdateRequested="@HandleChildEvent"/>
+        <StrategyInitFormComponent @ref="StrategyInitFormComponent" StrategyFormUpdateRequested="@HandleChildEvent"/>
     }
 
-        
-    </Body>
-</ShadowCardComponent>
-
-@code
-{
-    private ShadowCardComponent ShadowCardComponent;
-}

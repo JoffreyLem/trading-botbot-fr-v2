@@ -10,8 +10,8 @@ public class SuperTrend : BaseIndicator<SuperTrendResult>
         LoopBackPeriod = loopBackPeriodRequested;
     }
 
-    protected override List<SuperTrendResult> Update(List<Candle> data)
+    protected override IEnumerable<SuperTrendResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetSuperTrend(LoopBackPeriod).ToList();
+        return data.GetSuperTrend(LoopBackPeriod);
     }
 }

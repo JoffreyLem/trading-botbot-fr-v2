@@ -1,11 +1,20 @@
 ﻿@inherits HeathCheckComponentBase
 
-<ShadowCardComponent Title="Health check">
-    <Body>
-    <div>
-        <p><strong>Strategy status:</strong> @Strategy</p>
-        <p><strong>Api status:</strong> @Api</p>
-    </div>
-    </Body>
-</ShadowCardComponent>
+<div style="margin-right: 10px; margin-left: 10px">
+    <SfTooltip CssClass="e-tooltip-css" Target="#btn-healthcheck">
+        <ContentTemplate>
+            <div id="healthcheck">
+                <p><strong>Strategy status:</strong> @Strategy</p>
+                <p><strong>Api status:</strong> @Api</p>
+            </div>
+        </ContentTemplate>
+        <ChildContent>
+            <SfButton ID="btn-healthcheck" CssClass="e-info text" IsPrimary="true" Content="Heathcheck"></SfButton>
+        </ChildContent>
+    </SfTooltip>
+</div>
+
+
+
+
 

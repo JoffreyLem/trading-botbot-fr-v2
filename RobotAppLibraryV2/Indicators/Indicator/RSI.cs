@@ -11,8 +11,8 @@ public class Rsi : BaseIndicator<RsiResult>
     }
 
 
-    protected override List<RsiResult> Update(List<Candle> data)
+    protected override IEnumerable<RsiResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetRsi(LoopBackPeriod).ToList();
+        return data.GetRsi(LoopBackPeriod);
     }
 }

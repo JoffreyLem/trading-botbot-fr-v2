@@ -4,6 +4,7 @@ namespace RobotAppLibraryV2.ApiHandler.Interfaces;
 
 public interface IApiHandler
 {
+    public byte[] SymbolsCompressed { get; set; }
     public AccountBalance AccountBalance { get; set; }
     public event EventHandler Connected;
     public event EventHandler Disconnected;
@@ -21,7 +22,7 @@ public interface IApiHandler
     public Task<AccountBalance> GetBalanceAsync();
     public Task<List<Position>> GetAllPositionsAsync();
     public Task<List<Calendar>> GetCalendarAsync();
-    public Task<List<string>> GetAllSymbolsAsync();
+    public Task<List<string>?> GetAllSymbolsAsync();
     public Task<List<Position>> GetCurrentTradesAsync();
     public Task<List<Position>> GetAllPositionsByCommentAsync(string comment);
     public Task<SymbolInfo> GetSymbolInformationAsync(string symbol);

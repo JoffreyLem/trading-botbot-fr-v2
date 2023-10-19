@@ -26,6 +26,10 @@ public class StreamingAPIConnector : Connector, IStreamingApiConnector, IDisposa
     ///     Stream session id (given on login).
     /// </summary>
     private string streamSessionId;
+    
+    private delegate void RecordReceived<T>(JSONObject data) where T : new();
+
+    private Dictionary<string, RecordReceived<object>> _commandMap;
 
     /// <summary>
     ///     Creates new StreamingAPIConnector instance based on given server data.
@@ -36,6 +40,7 @@ public class StreamingAPIConnector : Connector, IStreamingApiConnector, IDisposa
         this.server = server;
         apiConnected = false;
         OnDisconnected += () => OnDisconnectedStreamingCallback?.Invoke();
+        
     }
 
     /// <summary>
@@ -230,12 +235,16 @@ public class StreamingAPIConnector : Connector, IStreamingApiConnector, IDisposa
             apiReadStream = new StreamReader(ns);
         }
 
-        var t = new Thread(delegate()
-        {
-            while (Connected()) ReadStreamMessage();
-        });
+        CancellationTokenSource cts = new CancellationTokenSource();
 
-        t.Start();
+        Task.Run(() => 
+        {
+            while (!cts.Token.IsCancellationRequested && Connected())
+            {
+                ReadStreamMessage();
+            }
+        }, cts.Token);
+
     }
 
 

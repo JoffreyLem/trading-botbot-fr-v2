@@ -11,8 +11,8 @@ public class CciIndicator : BaseIndicator<CciResult>
     }
 
 
-    protected override List<CciResult> Update(List<Candle> data)
+    protected override IEnumerable<CciResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetCci(LoopBackPeriod).ToList();
+        return data.GetCci(LoopBackPeriod);
     }
 }

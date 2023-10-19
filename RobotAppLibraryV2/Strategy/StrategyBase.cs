@@ -188,6 +188,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
                 else
                     IndicatorsList.Add(indicator);
             }
+        UpdateIndicator();
     }
 
     private void HistoryOnOnTickEvent(Tick tick)
@@ -260,7 +261,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
         try
         {
             //TODO : TU : check si le count des indicators augmente.
-            var candles = History.TakeLast(1000).ToList();
+            var candles = History.TakeLast(1000);
 
             foreach (var indicator in IndicatorsList) indicator.UpdateIndicator(candles);
 
@@ -272,7 +273,7 @@ public class StrategyBase : IStrategyEvent, IDisposable
                         .SetHigh(x.High)
                         .SetLow(x.Low)
                         .SetClose(x.Close)
-                        .SetDate(x.Date)).ToList();
+                        .SetDate(x.Date));
 
                 foreach (var indicator in IndicatorsList2) indicator.UpdateIndicator(candles2);
             }

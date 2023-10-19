@@ -9,4 +9,10 @@ public interface IEventBus
     void Subscribe<T>(Action<T> action);
     void Subscribe<T1, T2>(Action<T1, T2> action);
     void Subscribe<T1, T2, T3>(Action<T1, T2, T3> action);
+
+    public void Unsubscribe<T>(Action<T> action);
+
+    public void Unsubscribe<T1, T2>(Action<T1, T2> action);
+
+    public void Unsubscribe<T1, T2, T3>(Action<T1, T2, T3> action);
 }

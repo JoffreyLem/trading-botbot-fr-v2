@@ -280,7 +280,7 @@ public class APICommandFactory : IApiCommandFactory
 
     public AllSymbolsResponse ExecuteAllSymbolsCommand(ISyncApiConnector connector, bool prettyPrint = false)
     {
-        return new AllSymbolsResponse(connector.ExecuteCommand(CreateAllSymbolsCommand(prettyPrint)).ToString());
+        return new AllSymbolsResponse(connector.ExecuteCommand(CreateAllSymbolsCommand(prettyPrint)));
     }
 
     public CalendarResponse ExecuteCalendarCommand(ISyncApiConnector connector, bool prettyPrint = false)

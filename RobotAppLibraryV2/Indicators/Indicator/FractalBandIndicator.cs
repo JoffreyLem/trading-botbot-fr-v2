@@ -10,8 +10,8 @@ public class FractalBandIndicator : BaseIndicator<FcbResult>
         LoopBackPeriod = loopBackPeriodRequested;
     }
 
-    protected override List<FcbResult> Update(List<Candle> data)
+    protected override IEnumerable<FcbResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetFcb(LoopBackPeriod).ToList();
+        return data.GetFcb(LoopBackPeriod);
     }
 }

@@ -11,9 +11,9 @@ public class HeikiAshiIndicator : BaseIndicator<HeikinAshiResult>
     }
 
 
-    protected override List<HeikinAshiResult> Update(List<Candle> data)
+    protected override IEnumerable<HeikinAshiResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetHeikinAshi().ToList();
+        return data.GetHeikinAshi();
     }
 }
 

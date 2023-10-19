@@ -11,8 +11,8 @@ public class BollingerBand : BaseIndicator<BollingerBandsResult>
     }
 
 
-    protected override List<BollingerBandsResult> Update(List<Candle> data)
+    protected override IEnumerable<BollingerBandsResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetBollingerBands(LoopBackPeriod).ToList();
+        return data.GetBollingerBands(LoopBackPeriod);
     }
 }

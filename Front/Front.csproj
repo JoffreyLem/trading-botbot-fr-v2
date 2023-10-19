@@ -29,6 +29,7 @@
         <PackageReference Include="Syncfusion.Blazor.Notifications" Version="23.1.40" />
         <PackageReference Include="Syncfusion.Blazor.Buttons" Version="23.1.40" />
         <PackageReference Include="Syncfusion.Blazor.Navigations" Version="23.1.40" />
+        <PackageReference Include="Syncfusion.Blazor.Popups" Version="23.1.40" />
         <PackageReference Include="Syncfusion.Blazor.StockChart" Version="23.1.40" />
         <PackageReference Include="Syncfusion.Blazor.Themes" Version="23.1.40" />
         <PackageReference Include="Serilog" Version="3.0.1"/>
@@ -58,9 +59,6 @@
         <Compile Update="Pages\IndexBase.cs">
             <DependentUpon>Index.razor</DependentUpon>
         </Compile>
-        <Compile Update="Composants\ApiProvider\ApiComponentBase.cs">
-            <DependentUpon>ApiComponent.razor</DependentUpon>
-        </Compile>
         <Compile Update="Composants\ToastCustomBase.cs">
             <DependentUpon>ToastCustomComponent.razor</DependentUpon>
         </Compile>
@@ -84,9 +82,6 @@
         </Compile>
         <Compile Update="Composants\HeathCheckComponentBase.cs">
           <DependentUpon>HealthCheckComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\CandleChartComponentBase.cs">
-          <DependentUpon>CandleChartComponent.razor</DependentUpon>
         </Compile>
     </ItemGroup>
 

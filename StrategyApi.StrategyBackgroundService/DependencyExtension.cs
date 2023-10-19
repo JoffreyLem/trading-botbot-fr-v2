@@ -16,8 +16,8 @@ public static class DependencyExtension
     public static void AddDependencyRobot(this WebApplicationBuilder builder)
     {
         builder.Services.AddHostedService<StrategyBackgroundService>();
-        builder.Services.AddScoped<IApiConnectService, ApiConnectService>();
-        builder.Services.AddScoped<IStrategyHandlerService, StrategyHandlerService>();
+        builder.Services.AddSingleton<IApiConnectService, ApiConnectService>();
+        builder.Services.AddSingleton<IStrategyHandlerService, StrategyHandlerService>();
         var channelApi = Channel.CreateUnbounded<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)>();
         builder.Services.AddSingleton(channelApi.Reader);
         builder.Services.AddSingleton(channelApi.Writer);

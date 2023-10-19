@@ -19,7 +19,7 @@ public class IndicatorTest
         sarIndicaor.UpdateIndicator(candleList);
 
         // Assert 
-        sarIndicaor.First().Date.Should().Be(candleList.First().Date);
+        sarIndicaor[0].Date.Should().Be(candleList.First().Date);
         sarIndicaor.Last().Date.Should().Be(candleList.Last().Date);
     }
 }

@@ -138,7 +138,7 @@ public class LotValueCalculator : IDisposable
         {
             var allSymbol = _apiHandler.GetAllSymbolsAsync().Result;
             var selected =
-                allSymbol?.Find(x => x.StartsWith(symbol1) && x.EndsWith(symbol2));
+                allSymbol.ToList().Find(x => x.StartsWith(symbol1) && x.EndsWith(symbol2));
             return selected ?? throw new Exception($"No matchin symbol for {symbol1} : {symbol2}");
         }
         catch (Exception e)

@@ -9,7 +9,7 @@ using Syncfusion.Blazor.Charts;
 
 namespace Front.Composants;
 
-public class CandleChartComponentBase : ComponentBase
+public class CandleChartComponentBase : ComponentBase , IDisposable
 {
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
     [Inject] private ShowToastService ToastService { get; set; }
@@ -30,6 +30,7 @@ public class CandleChartComponentBase : ComponentBase
     protected string loadClass = "stockchartloader";
     protected string loadDiv = "stockchartdiv";
 
+    
     private bool loaded = false;
     
     protected override async Task OnInitializedAsync()
@@ -62,24 +63,42 @@ public class CandleChartComponentBase : ComponentBase
     
     private void StrategyHubOnOnTickReceived(TickDto obj)
     {
-        if (loaded)
+        InvokeAsync(() =>
         {
-            InvokeAsync(() =>
+            if (loaded)
             {
                 LastTick = obj;
-            });
-        }
+
+            }
+        });
+
     }
 
     private void StrategyHubOnOnCandleReceived(CandleDto obj)
     {
-        if (loaded)
+        InvokeAsync(() =>
         {
-            InvokeAsync(() =>
+            if (loaded)
             {
-                LastCandle = obj;
-            });
-        }
+                if (LastCandle?.Date == obj.Date)
+                {
+                    LastCandle = obj;
+                }
+                else
+                {
+                    Candles.Add(obj);
+                }
+
+
+            }
+        });
+
     }
 
+    public void Dispose()
+    {
+      
+        _eventBus.Unsubscribe<CandleDto>(StrategyHubOnOnCandleReceived);
+        _eventBus.Unsubscribe<TickDto>(StrategyHubOnOnTickReceived);
+    }
 }

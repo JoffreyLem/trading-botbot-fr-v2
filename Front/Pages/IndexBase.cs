@@ -25,6 +25,5 @@ public class IndexBase : ComponentBase
 
         IsConnected = isConnected == ConnexionStateEnum.Connected;
 
-        StateHasChanged();
     }
 }

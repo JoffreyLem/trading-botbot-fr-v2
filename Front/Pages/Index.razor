@@ -1,20 +1,16 @@
 ﻿@page "/"
 @inherits IndexBase
 
-<div style="display: flex;">
-    <div style="flex: 1; padding-right: 10px;">
-        
-        <ApiComponent ApiComponentUpdateRequested="@HandleApiUpdate"/>
-    </div>
-    <div style="flex: 1; padding-left: 10px;">
-        <HealthCheckComponent />
-    </div>
-</div>
 
-@if (IsConnected)
-{
-    <div class="container-fluid">
+<div class="container-fluid">
+    @if (IsConnected)
+    {
         <StrategyComponent/>
-    </div>
+    }
+    else
+    {
+        <p>Connection à une API nécessaire</p>
+    }
+    
+</div>
    
-}

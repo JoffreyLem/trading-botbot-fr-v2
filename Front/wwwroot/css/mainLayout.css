@@ -53,3 +53,8 @@
 .content {
 
 }
+
+.nav-link.active {
+    background-color: #e9ecef; 
+    color: #000;
+}

@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.IO.Compression;
+using System.Text;
 using RobotAppLibraryV2.ApiHandler.Exception;
 using RobotAppLibraryV2.ApiHandler.Interfaces;
 using RobotAppLibraryV2.ApiHandler.Xtb;
@@ -42,6 +44,8 @@ public sealed class XtbApi : IApiHandler, IDisposable
 
     private ISyncApiConnector Connector { get; }
     public IReadOnlyList<Position> CachePosition => _cachePosition.AsReadOnly();
+
+    public byte[] SymbolsCompressed { get; set; } 
     public AccountBalance AccountBalance { get; set; } = new();
     public event EventHandler? Connected;
     public event EventHandler? Disconnected;
@@ -75,6 +79,7 @@ public sealed class XtbApi : IApiHandler, IDisposable
             Connector.StreamingApiConnector.TradeStatusRecordReceived +=
                 StreamingApiConnectorOnTradeStatusRecordReceived;
             Connector.StreamingApiConnector.TradeRecordReceived += StreamingApiConnectorOnTradeRecordReceived;
+            GetSymbolsInternal();
             EnableStreaming();
             _timer.AutoReset = true;
             _timer.Enabled = true;
@@ -221,12 +226,40 @@ public sealed class XtbApi : IApiHandler, IDisposable
         }
     }
 
-    public Task<List<string>> GetAllSymbolsAsync()
+    //TODO : Changer pour tout retourner
+    private void GetSymbolsInternal()
+    {
+        var alls = _apiCommandExecutor.ExecuteAllSymbolsCommand(Connector);
+        var listData = new List<string>(alls.SymbolRecords.Count);
+        
+        foreach (var allsSymbolRecord in alls.SymbolRecords)
+        {
+            listData.Add(allsSymbolRecord.Symbol);
+        }
+        using var memoryStream = new MemoryStream();
+        using var gZipStream = new GZipStream(memoryStream, CompressionMode.Compress);
+        var jsonData = System.Text.Json.JsonSerializer.Serialize(listData);
+        var byteArray = Encoding.UTF8.GetBytes(jsonData);
+        gZipStream.Write(byteArray, 0, byteArray.Length);
+        gZipStream.Close();
+        SymbolsCompressed = memoryStream.ToArray();
+        listData.Clear();
+        listData = null;
+    }
+
+    public Task<List<string>?> GetAllSymbolsAsync()
     {
         try
         {
-            var alls = _apiCommandExecutor.ExecuteAllSymbolsCommand(Connector);
-            return Task.FromResult(alls.SymbolRecords.Select(x => x.Symbol).ToList());
+            using var compressedMemoryStream = new MemoryStream(SymbolsCompressed);
+            using var decompressedMemoryStream = new MemoryStream();
+            using var gZipStream = new GZipStream(compressedMemoryStream, CompressionMode.Decompress);
+            gZipStream.CopyTo(decompressedMemoryStream);
+            decompressedMemoryStream.Position = 0; 
+            var jsonData = Encoding.UTF8.GetString(decompressedMemoryStream.ToArray());
+            var rsp = System.Text.Json.JsonSerializer.Deserialize<List<string>>(jsonData);
+            
+            return Task.FromResult(rsp);
         }
         catch (System.Exception e)
         {

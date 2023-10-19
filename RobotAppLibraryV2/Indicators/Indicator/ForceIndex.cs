@@ -10,8 +10,8 @@ public class ForceIndex : BaseIndicator<ForceIndexResult>
         LoopBackPeriod = loopBackPeriodRequested;
     }
 
-    protected override List<ForceIndexResult> Update(List<Candle> data)
+    protected override IEnumerable<ForceIndexResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetForceIndex(LoopBackPeriod).ToList();
+        return data.GetForceIndex(LoopBackPeriod);
     }
 }

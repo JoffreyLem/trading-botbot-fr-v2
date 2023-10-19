@@ -10,8 +10,8 @@ public class Slope : BaseIndicator<SlopeResult>
         LoopBackPeriod = loopBackPeriodRequested;
     }
 
-    protected override List<SlopeResult> Update(List<Candle> data)
+    protected override IEnumerable<SlopeResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetSlope(LoopBackPeriod).ToList();
+        return data.GetSlope(LoopBackPeriod);
     }
 }

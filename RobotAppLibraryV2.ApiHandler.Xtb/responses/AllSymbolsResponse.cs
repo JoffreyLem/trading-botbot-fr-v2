@@ -20,6 +20,19 @@ public class AllSymbolsResponse : BaseResponse
             this.symbolRecords.AddLast(symbolRecord);
         }
     }
+    
+    public AllSymbolsResponse(JSONObject jsonBody) : base(jsonBody)
+    {
+        if (jsonBody.TryGetValue("returnData", out var returnDataObject) && returnDataObject is JSONArray symbolRecordsArray)
+        {
+            foreach (JSONObject e in symbolRecordsArray)
+            {
+                var symbolRecord = new SymbolRecord();
+                symbolRecord.FieldsFromJSONObject(e);
+                symbolRecords.AddLast(symbolRecord);
+            }
+        }
+    }
 
     public virtual LinkedList<SymbolRecord> SymbolRecords => symbolRecords;
 }

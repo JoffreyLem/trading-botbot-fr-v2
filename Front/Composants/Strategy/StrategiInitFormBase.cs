@@ -6,8 +6,10 @@ using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Composants.Strategy;
 
-public class StrategiInitFormBase : ComponentBase
+public class StrategiInitFormBase : ComponentBase, IDisposable
 {
+    private bool _disposed = false; 
+    
     protected StrategyInitDto _strategyInitDto = new();
 
     protected bool OnLoading { get; set; } = false;
@@ -27,6 +29,7 @@ public class StrategiInitFormBase : ComponentBase
     private async Task NotifyParentToUpdate()
     {
         await StrategyFormUpdateRequested.InvokeAsync();
+    
     }
 
     protected override async Task OnInitializedAsync()
@@ -64,4 +67,29 @@ public class StrategiInitFormBase : ComponentBase
         }
       
     }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                Symbols?.Clear();
+                Symbols = null;
+            }
+
+
+            _disposed = true;
+        }
+
+        GC.Collect();
+    }
+
 }

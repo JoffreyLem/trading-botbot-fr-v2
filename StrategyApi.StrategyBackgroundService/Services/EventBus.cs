@@ -45,6 +45,21 @@ public class EventBus : IEventBus
     {
         SubscribeInternal(Tuple.Create(typeof(T1), typeof(T2), typeof(T3)), action);
     }
+    
+    public void Unsubscribe<T>(Action<T> action)
+    {
+        UnsubscribeInternal(typeof(T), action);
+    }
+
+    public void Unsubscribe<T1, T2>(Action<T1, T2> action)
+    {
+        UnsubscribeInternal(Tuple.Create(typeof(T1), typeof(T2)), action);
+    }
+
+    public void Unsubscribe<T1, T2, T3>(Action<T1, T2, T3> action)
+    {
+        UnsubscribeInternal(Tuple.Create(typeof(T1), typeof(T2), typeof(T3)), action);
+    }
 
     private void SubscribeInternal(object key, Delegate action)
     {
@@ -54,5 +69,17 @@ public class EventBus : IEventBus
             _subscribers[key] = handlers;
         }
         handlers.Add(action);
+    }
+    
+    private void UnsubscribeInternal(object key, Delegate action)
+    {
+        if (_subscribers.TryGetValue(key, out var handlers))
+        {
+            handlers.Remove(action);
+            if (handlers.Count == 0)
+            {
+                _subscribers.Remove(key);
+            }
+        }
     }
 }

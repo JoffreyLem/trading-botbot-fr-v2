@@ -6,9 +6,9 @@ using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.DropDowns;
 
-namespace Front.Composants.ApiProvider;
+namespace Front.Pages.Api;
 
-public class ApiComponentBase : ComponentBase
+public class ApiComponentBase : ComponentBase, IDisposable
 {
     protected bool IsConnected { get; set; }
     protected bool OnLoading { get; set; }
@@ -21,12 +21,7 @@ public class ApiComponentBase : ComponentBase
     protected ConnectDto ConnectDto { get; set; } = new();
     protected string? ApiSelected { get; set; } = "";
 
-    [Parameter] public EventCallback ApiComponentUpdateRequested { get; set; }
 
-    private async Task NotifyParentToUpdate()
-    {
-        await ApiComponentUpdateRequested.InvokeAsync();
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,7 +77,7 @@ public class ApiComponentBase : ComponentBase
                 IsConnected = false;
                 ApiSelected = null;
                 ApiHandlerListEnabled = true;
-                await NotifyParentToUpdate();
+         
             }
             else
             {
@@ -111,7 +106,7 @@ public class ApiComponentBase : ComponentBase
             IsConnected = true;
             ApiHandlerListEnabled = false;
             ConnectDto = new ConnectDto();
-            await NotifyParentToUpdate();
+        
         }
         catch (Exception e)
         {
@@ -140,5 +135,10 @@ public class ApiComponentBase : ComponentBase
             ApiSelected = obj.PreviousItemData;
             ToastService.ShowToastError(e);
         }
+    }
+    
+    public void Dispose()
+    {
+        ((IDisposable)_dropDownList).Dispose();
     }
 }

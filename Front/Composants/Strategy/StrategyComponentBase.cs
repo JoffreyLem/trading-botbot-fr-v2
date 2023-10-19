@@ -5,10 +5,12 @@ using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Composants.Strategy;
 
-public class StrategyComponentBase : ComponentBase
+public class StrategyComponentBase : ComponentBase , IDisposable
 {
     protected bool IsInitialized;
 
+    protected StrategyInitFormComponent? StrategyInitFormComponent { get; set; }
+    
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
 
     [Inject] private ShowToastService ToastService { get; set; }
@@ -16,6 +18,7 @@ public class StrategyComponentBase : ComponentBase
     [Inject] private NavigationManager NavigationManager { get; set; }
 
     protected bool OnLoading { get; set; } = false;
+    
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,13 +54,19 @@ public class StrategyComponentBase : ComponentBase
         finally
         {
             OnLoading = false;
+            GC.Collect();
         }
     }
 
     protected async Task HandleChildEvent()
     {
         await InitializeStrategy();
+   
     }
-    
 
+
+    public void Dispose()
+    {
+        StrategyInitFormComponent?.Dispose();
+    }
 }

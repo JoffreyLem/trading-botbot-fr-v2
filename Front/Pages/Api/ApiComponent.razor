@@ -1,7 +1,6 @@
 ﻿@inherits ApiComponentBase;
 
-<ShadowCardComponent OnLoading="OnLoading" Title="Gestion API">
-    <Body>
+
     <SfDropDownList Enabled="ApiHandlerListEnabled" @ref="_dropDownList" @bind-Value="@ApiSelected" Placeholder="Choisir une api" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@ApiProviders" TValue="string" TItem="string">
         <DropDownListEvents TValue="string" TItem="string" ValueChange="OnApiProviderValueChange"></DropDownListEvents>
     </SfDropDownList>
@@ -35,8 +34,6 @@
             </div>
         </div>
     }
-    </Body>
-</ShadowCardComponent>
 
 
 @code {

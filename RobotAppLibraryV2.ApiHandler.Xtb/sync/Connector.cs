@@ -104,28 +104,33 @@ public class Connector : IDisposable
 
         try
         {
-            var buffer = new byte[apiSocket.ReceiveBufferSize];
-
             string line;
-            while ((line = apiReadStream.ReadLine()) != null)
+            while (true)
             {
+                line = apiReadStream.ReadLine();
+
+                if (line == null)
+                    break;
+
                 result.Append(line);
 
-                // Last line is always empty
-                if (line == "" && lastChar == '}') break;
+                if (string.IsNullOrEmpty(line) && lastChar == '}')
+                    break;
 
-                if (line.Length != 0) lastChar = line[line.Length - 1];
+                if (line.Length != 0)
+                    lastChar = line[^1];
             }
-
             if (line == null)
             {
                 Disconnect();
                 throw new APICommunicationException("Disconnected from server");
             }
 
-            if (OnMessageReceived != null) OnMessageReceived.Invoke(result.ToString());
+            var finalResult = result.ToString();
 
-            return result.ToString();
+            OnMessageReceived?.Invoke(finalResult);
+
+            return finalResult;
         }
         catch (Exception ex)
         {

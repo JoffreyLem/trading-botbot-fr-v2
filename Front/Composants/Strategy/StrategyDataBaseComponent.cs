@@ -8,13 +8,17 @@ using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Composants.Strategy;
 
-public class StrategyDataBaseComponent : ComponentBase
+public class StrategyDataBaseComponent : ComponentBase , IDisposable
 {
     protected bool OnLoading;
     
     protected StrategyInfoDto StrategyInfo = new();
     protected ResultComponent ResultComponent { get; set; }
 
+    protected CandleDto LastCandle { get; set; } = new CandleDto();
+
+    protected TickDto LastTick { get; set; } = new TickDto();
+    
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
     [Inject] private ShowToastService ToastService { get; set; }
     [Inject] private IEventBus _eventBus { get; set; }
@@ -28,8 +32,11 @@ public class StrategyDataBaseComponent : ComponentBase
         try
         {
             StrategyInfo = await _strategyService.GetStrategyInfo();
+            LastTick = StrategyInfo.LastTick;
+            LastCandle = StrategyInfo.LastCandle;
             _eventBus.Subscribe<EventType,string>(StrategyHubOnOnEventReceived);
-  
+            _eventBus.Subscribe<CandleDto>(StrategyHubOnOnCandleReceived);
+            _eventBus.Subscribe<TickDto>(StrategyHubOnOnTickReceived);
         }
         catch (Exception e)
         {
@@ -37,6 +44,23 @@ public class StrategyDataBaseComponent : ComponentBase
         }
     }
 
+    private void StrategyHubOnOnTickReceived(TickDto obj)
+    {
+        InvokeAsync(() =>
+        {
+                LastTick = obj;
+        });
+
+    }
+
+    private void StrategyHubOnOnCandleReceived(CandleDto obj)
+    {
+        InvokeAsync(() =>
+        {
+            LastCandle = obj;
+        });
+
+    }
 
 
     private void StrategyHubOnOnEventReceived(EventType eventType, string message)
@@ -89,5 +113,12 @@ public class StrategyDataBaseComponent : ComponentBase
             OnLoading = false;
             StateHasChanged();
         }
+    }
+
+    public void Dispose()
+    {
+        _eventBus.Unsubscribe<EventType,string>(StrategyHubOnOnEventReceived);
+        _eventBus.Unsubscribe<CandleDto>(StrategyHubOnOnCandleReceived);
+        _eventBus.Unsubscribe<TickDto>(StrategyHubOnOnTickReceived);
     }
 }

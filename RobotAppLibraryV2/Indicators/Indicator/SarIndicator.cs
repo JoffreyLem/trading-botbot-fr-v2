@@ -15,9 +15,9 @@ public class SarIndicator : BaseIndicator<ParabolicSarResult>
 
     public double MaxAccelerationFactor { get; init; }
 
-    protected override List<ParabolicSarResult> Update(List<Candle> data)
+    protected override IEnumerable<ParabolicSarResult> Update(IEnumerable<Candle> data)
     {
-        return data.GetParabolicSar(AccelerationStep, MaxAccelerationFactor).ToList();
+        return data.GetParabolicSar(AccelerationStep, MaxAccelerationFactor);
     }
 
     public bool IsBuy()
