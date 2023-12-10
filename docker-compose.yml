@@ -1,7 +1,7 @@
 version: '3.7'
 services:
-  robotApp:
-    image: robotapp:latest
+  robot-app:
+    image: registry.gitlab.com/tradingbot3941224/robotapp/robotapp:latest
     restart: always
     networks:
       - proxy
