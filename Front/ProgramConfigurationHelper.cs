@@ -127,29 +127,7 @@ public static class ProgramConfigurationHelper
             .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
             .WriteTo.Console(
                 outputTemplate: "[{Timestamp:HH:mm:ss}] [{SourceContext}] [{Level}] {Message}{NewLine}{Exception}");
-        if (builder.Environment.IsProduction())
-            loggerConfig.WriteTo.Elasticsearch(
-                new ElasticsearchSinkOptions(new Uri(builder.Configuration["ELASTIC_URI"]))
-                {
-                    FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
-                    EmitEventFailure =
-                        EmitEventFailureHandling.WriteToSelfLog |
-                        EmitEventFailureHandling.RaiseCallback |
-                        EmitEventFailureHandling.ThrowException,
-                    TypeName = null,
-                    DetectElasticsearchVersion = false,
-                    AutoRegisterTemplate = true,
-                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
-                    IndexFormat = $"Robot-app-{builder.Environment.EnvironmentName}",
-                    CustomFormatter = new ElasticsearchJsonFormatter(),
-
-                    ModifyConnectionSettings = x =>
-                    {
-                        return x.ServerCertificateValidationCallback((o, certificate, arg3, arg4) => true)
-                            .ApiKeyAuthentication(
-                                new ApiKeyAuthenticationCredentials(builder.Configuration["ELASTIC_APIKEY"]));
-                    }
-                });
+   
 
         var logger = loggerConfig.CreateLogger();
         SelfLog.Enable(Console.Error);
