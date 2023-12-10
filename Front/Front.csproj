@@ -20,7 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.3.1"/>
         <PackageReference Include="AutoMapper" Version="12.0.1"/>
         <PackageReference Include="DotNetEnv" Version="2.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.11"/>
@@ -43,6 +42,9 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
         <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1"/>
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13" NoWarn="NU1605"/>
+        <PackageReference Include="Microsoft.Identity.Web" Version="1.16.0"/>
+        <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.16.0"/>
     </ItemGroup>
 
 
@@ -84,6 +86,13 @@
         <Compile Update="Composants\HeathCheckComponentBase.cs">
           <DependentUpon>HealthCheckComponent.razor</DependentUpon>
         </Compile>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Account\AccessDenied.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Account\Login.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Account\Logout.cshtml" />
     </ItemGroup>
 
 

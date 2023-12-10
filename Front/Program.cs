@@ -1,23 +1,39 @@
-using Auth0.AspNetCore.Authentication;
 using DotNetEnv;
 using Front;
 using Front.Services;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 using StrategyApi.StrategyBackgroundService;
-using StrategyApi.StrategyBackgroundService.Hubs;
-
-
 
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 builder.Configuration.AddEnvironmentVariables();
+
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+builder.Services.AddControllersWithViews(options =>
+    {
+        var policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        options.Filters.Add(new AuthorizeFilter(policy));
+    } )
+    .AddMicrosoftIdentityUI();
+builder.Services.AddAuthorization(options =>
+{
+    // By default, all incoming requests will be authorized according to the default policy
+    options.FallbackPolicy = options.DefaultPolicy;
+});
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 builder.Services.AddSignalR();
 
-builder.AddAuthentification();
 builder.AddSyncFusion();
 builder.AddDependencyRobot();
 builder.AddLogger();
@@ -62,6 +78,8 @@ app.UseAuthorization();
 
 app.AddDependency2();
 app.MapRazorPages();
+
+app.MapControllers();
 app.MapBlazorHub();
 
 app.MapFallbackToPage("/_Host");
