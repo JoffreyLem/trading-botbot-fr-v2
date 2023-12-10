@@ -1,3 +1,7 @@
 include:
   - project: 'tradingbot3941224/cicd'
+    ref: main
     file: '.gitlab-ci.yml'
+    
+variables:
+  STACK_NAME: robot-app

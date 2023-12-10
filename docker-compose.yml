@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  robotApp:
+    image: robot-app:latest
+    restart: always
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
