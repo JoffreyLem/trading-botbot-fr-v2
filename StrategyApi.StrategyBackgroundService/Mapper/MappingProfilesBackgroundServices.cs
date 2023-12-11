@@ -28,7 +28,8 @@ public class MappingProfilesBackgroundServices : Profile
         // Mapper position
         CreateMap<ReasonClosed, string>().ConvertUsing(src => src.ToString());
         CreateMap<StatusPosition, string>().ConvertUsing(src => src.ToString());
-        CreateMap<TypePosition, string>().ConvertUsing(src => src.ToString());
+        CreateMap<TypeOperation, string>().ConvertUsing(src => src.ToString());
+
         CreateMap<Timeframe, string>().ConvertUsing(src => src.ToString());
         CreateMap<Position, PositionDto>();
     }

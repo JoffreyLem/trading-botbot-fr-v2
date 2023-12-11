@@ -51,8 +51,8 @@ public class StrategySar : StrategyImplementationBase
                     if (CanOpen)
                     {
                         CanOpen = false;
-                        var tp = CalculateTakeProfit(10, TypePosition.Buy);
-                        OpenPosition(TypePosition.Buy, (decimal)sar.Sar, tp);
+                        var tp = CalculateTakeProfit(10, TypeOperation.Buy);
+                        OpenPosition(TypeOperation.Buy, (decimal)sar.Sar, tp);
                     }
             }
             else if (heiki.IsStrongSell())
@@ -61,8 +61,8 @@ public class StrategySar : StrategyImplementationBase
                     if (CanOpen)
                     {
                         CanOpen = false;
-                        var tp = CalculateTakeProfit(10, TypePosition.Buy);
-                        OpenPosition(TypePosition.Sell, (decimal)sar.Sar, tp);
+                        var tp = CalculateTakeProfit(10, TypeOperation.Buy);
+                        OpenPosition(TypeOperation.Sell, (decimal)sar.Sar, tp);
                     }
             }
             else
@@ -80,14 +80,14 @@ public class StrategySar : StrategyImplementationBase
     protected override bool ShouldUpdatePosition(Position position)
     {
         var sar = SarIndicator?.Last();
-        if (position.TypePosition == TypePosition.Buy)
+        if (position.TypePosition == TypeOperation.Buy)
         {
             if (sar?.Sar < (double?)LastPrice.Bid) position.StopLoss = (decimal?)sar.Sar;
 
             return true;
         }
 
-        if (position.TypePosition == TypePosition.Sell)
+        if (position.TypePosition == TypeOperation.Sell)
         {
             if (sar?.Sar > (double?)LastPrice.Ask) position.StopLoss = (decimal?)sar.Sar;
 
@@ -102,8 +102,8 @@ public class StrategySar : StrategyImplementationBase
     {
         var sar = SarIndicator.Last();
         var heiki = HeikiAshi?[^2];
-        var isPositionBuy = position.TypePosition == TypePosition.Buy;
-        var isPositionSell = position.TypePosition == TypePosition.Sell;
+        var isPositionBuy = position.TypePosition == TypeOperation.Buy;
+        var isPositionSell = position.TypePosition == TypeOperation.Sell;
 
         var c1 = sar.IsReversal.GetValueOrDefault();
 

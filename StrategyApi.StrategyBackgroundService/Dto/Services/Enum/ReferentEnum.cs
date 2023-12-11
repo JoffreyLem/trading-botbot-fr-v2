@@ -2,5 +2,6 @@
 
 public enum ReferentEnum
 {
-    Api,Strategy
+    Api,
+    Strategy
 }

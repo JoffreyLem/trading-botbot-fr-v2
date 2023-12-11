@@ -1,19 +1,26 @@
 ﻿using System.Collections.ObjectModel;
 using Front.Services;
 using Microsoft.AspNetCore.Components;
-using RobotAppLibraryV2.Modeles;
+using StrategyApi.StrategyBackgroundService;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Services;
-using Syncfusion.Blazor;
 using Syncfusion.Blazor.Charts;
 
 namespace Front.Composants;
 
-public class CandleChartComponentBase : ComponentBase , IDisposable
+public class CandleChartComponentBase : ComponentBase, IDisposable
 {
+    protected TickDto LastTick;
+    protected string loadClass = "stockchartloader";
+    protected string loadDiv = "stockchartdiv";
+
+
+    private bool loaded;
+
+    protected string translateY = "-5px";
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
     [Inject] private ShowToastService ToastService { get; set; }
-    [Inject] private IEventBus _eventBus { get; set; }
+
 
     protected CandleDto? LastCandle
     {
@@ -21,30 +28,52 @@ public class CandleChartComponentBase : ComponentBase , IDisposable
         set => Candles[^1] = value;
     }
 
-    protected TickDto LastTick = new TickDto();
 
+    protected ObservableCollection<CandleDto> Candles { get; set; } = new();
 
-    protected ObservableCollection<CandleDto> Candles { get; set; } = new ObservableCollection<CandleDto>();
+    public void Dispose()
+    {
+        CommandHandler.CandleEvent -= CommandHandlerOnCandleEvent;
+        CommandHandler.TickEvent -= CommandHandlerOnTickEvent;
+    }
 
-    protected string translateY = "-5px";
-    protected string loadClass = "stockchartloader";
-    protected string loadDiv = "stockchartdiv";
-
-    
-    private bool loaded = false;
-    
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Candles = new ObservableCollection<CandleDto>((await _strategyService.GetChart()));
-            _eventBus.Subscribe<CandleDto>(StrategyHubOnOnCandleReceived);
-            _eventBus.Subscribe<TickDto>(StrategyHubOnOnTickReceived);
+            Candles = new ObservableCollection<CandleDto>(await _strategyService.GetChart());
+            CommandHandler.CandleEvent += CommandHandlerOnCandleEvent;
+            CommandHandler.TickEvent += CommandHandlerOnTickEvent;
         }
         catch
         {
             ToastService.ShowToastError("Can't load graphique");
-        } 
+        }
+    }
+
+    private void CommandHandlerOnTickEvent(object? sender, TickDto e)
+    {
+        InvokeAsync(() =>
+        {
+            if (loaded) LastTick = e;
+            StateHasChanged();
+        });
+    }
+
+    private void CommandHandlerOnCandleEvent(object? sender, CandleDto e)
+    {
+        InvokeAsync(() =>
+        {
+            if (loaded)
+            {
+                if (LastCandle?.Date == e.Date)
+                    LastCandle = e;
+                else
+                    Candles.Add(e);
+
+                StateHasChanged();
+            }
+        });
     }
 
 
@@ -55,50 +84,8 @@ public class CandleChartComponentBase : ComponentBase , IDisposable
         loaded = true;
         StateHasChanged();
     }
-    
+
     public void RangeChanged(StockChartRangeChangeEventArgs args)
     {
-       
-    }
-    
-    private void StrategyHubOnOnTickReceived(TickDto obj)
-    {
-        InvokeAsync(() =>
-        {
-            if (loaded)
-            {
-                LastTick = obj;
-
-            }
-        });
-
-    }
-
-    private void StrategyHubOnOnCandleReceived(CandleDto obj)
-    {
-        InvokeAsync(() =>
-        {
-            if (loaded)
-            {
-                if (LastCandle?.Date == obj.Date)
-                {
-                    LastCandle = obj;
-                }
-                else
-                {
-                    Candles.Add(obj);
-                }
-
-
-            }
-        });
-
-    }
-
-    public void Dispose()
-    {
-      
-        _eventBus.Unsubscribe<CandleDto>(StrategyHubOnOnCandleReceived);
-        _eventBus.Unsubscribe<TickDto>(StrategyHubOnOnTickReceived);
     }
 }

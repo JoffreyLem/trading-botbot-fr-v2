@@ -9,7 +9,7 @@ namespace StrategyApi.StrategyBackgroundService.Hubs;
 public class ApiHandlerHub : Hub<IApiHandlerHub>
 {
     public const string ApiHubName = "ApiHub";
-    
+
     public async Task SendBalanceState(AccountBalanceDto modele)
     {
         await Clients.All.SendBalanceState(modele);

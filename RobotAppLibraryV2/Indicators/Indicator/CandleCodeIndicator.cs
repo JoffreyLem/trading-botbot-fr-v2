@@ -1,6 +1,5 @@
 ﻿using RobotAppLibraryV2.Indicators.Custom.CandleCode;
 using RobotAppLibraryV2.Modeles;
-using Skender.Stock.Indicators;
 
 namespace RobotAppLibraryV2.Indicators.Indicator;
 

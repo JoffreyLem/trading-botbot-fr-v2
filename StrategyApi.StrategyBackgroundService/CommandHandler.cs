@@ -1,119 +1,116 @@
 using AutoMapper;
-using Microsoft.AspNetCore.SignalR;
+using RobotAppLibraryV2.Api.Xtb;
+using RobotAppLibraryV2.ApiHandler;
 using RobotAppLibraryV2.ApiHandler.Handlers;
+using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
 using RobotAppLibraryV2.ApiHandler.Interfaces;
-using RobotAppLibraryV2.ApiHandler.Xtb;
-using RobotAppLibraryV2.ApiHandler.Xtb.sync;
-using RobotAppLibraryV2.Interfaces;
+using RobotAppLibraryV2.Factory;
 using RobotAppLibraryV2.Modeles;
-using RobotAppLibraryV2.Modeles.Enum;
 using RobotAppLibraryV2.Strategy;
 using Serilog;
 using StrategyApi.Mail;
 using StrategyApi.Strategy.Main;
 using StrategyApi.Strategy.StrategySar;
 using StrategyApi.Strategy.Test;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
+using StrategyApi.StrategyBackgroundService.Command;
+using StrategyApi.StrategyBackgroundService.Command.Api;
+using StrategyApi.StrategyBackgroundService.Command.Api.Request;
+using StrategyApi.StrategyBackgroundService.Command.Api.Result;
+using StrategyApi.StrategyBackgroundService.Command.Strategy;
+using StrategyApi.StrategyBackgroundService.Command.Strategy.Request;
+using StrategyApi.StrategyBackgroundService.Command.Strategy.Response;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Events;
 using StrategyApi.StrategyBackgroundService.Exception;
-using StrategyApi.StrategyBackgroundService.Hubs;
-using StrategyApi.StrategyBackgroundService.Services;
 
 namespace StrategyApi.StrategyBackgroundService;
 
 public class CommandHandler
 {
     private const string DefaultEmail = "lemery.joffrey@outlook.fr";
-    private readonly IHubContext<ApiHandlerHub, IApiHandlerHub> _apiHandlerHub;
+
     private readonly IEmailService _emailService;
+
 
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
-    private readonly IHubContext<StrategyHub, IStrategyHub> _strategyHub;
-    private readonly IEventBus _eventBus;
+
 
     private IApiHandler? _apiHandlerBase;
     private StrategyBase? _strategyBase;
 
-    public CommandHandler(ILogger logger, IHubContext<ApiHandlerHub, IApiHandlerHub> apiHandlerHub, IMapper mapper,
-        IHubContext<StrategyHub, IStrategyHub> strategyHub, IEmailService emailService, IEventBus eventBus)
+    public CommandHandler(ILogger logger, IMapper mapper, IEmailService emailService)
     {
         _logger = logger.ForContext<CommandHandler>();
-        _apiHandlerHub = apiHandlerHub;
+
         _mapper = mapper;
-        _strategyHub = strategyHub;
+
         _emailService = emailService;
-        _eventBus = eventBus;
     }
 
-    public async Task HandleApiCommand(ApiCommandBaseDto command, TaskCompletionSource<CommandResultBase> tcs)
+    public async Task HandleApiCommand(ServiceCommandeBaseApiAbstract command)
     {
-        _logger.Information("Api command received {@Command}", command);
-        switch (command.ApiCommandEnum)
+        _logger.Verbose("Api command received {@Command}", command);
+        switch (command)
         {
-            case ApiCommand.InitHandler:
-                InitHandler(command, tcs);
+            case InitHandlerCommand initHandlerCommand:
+                InitHandler(initHandlerCommand);
                 break;
-            case ApiCommand.GetTypeHandler:
-                GetTypeHandler(tcs);
+            case GetTypeHandlerCommand getTypeHandlerCommand:
+                GetTypeHandler(getTypeHandlerCommand);
                 break;
-            case ApiCommand.GetAllSymbols:
-                await GetAllSymbol(tcs);
+            case GetAllSymbolCommand getAllSymbolCommand:
+                await GetAllSymbol(getAllSymbolCommand);
                 break;
-            case ApiCommand.IsConnected:
-                IsConnected(tcs);
+            case IsConnectedCommand connectedCommand:
+                IsConnected(connectedCommand);
                 break;
-            case ApiCommand.Connect:
-                await Connect(command, tcs);
+            case ApiConnectCommand apiConnectCommand:
+                await Connect(apiConnectCommand);
                 break;
-            case ApiCommand.Disconnect:
-                await Disconnect(tcs);
+            case DisconnectCommand disconnectCommand:
+                await Disconnect(disconnectCommand);
                 break;
             default:
-                throw new CommandException($"Commande {command.ApiCommandEnum} non gérer");
+                throw new CommandException($"Commande {command} non gérer");
         }
     }
 
-    public Task HandleStrategyCommand(StrategyCommandBaseDto command, TaskCompletionSource<CommandResultBase> tcs)
+    public Task HandleStrategyCommand(ServiceCommandeBaseStrategyAbstract command)
     {
-        _logger.Information("Strategy command received {@Command}", command);
-        switch (command.StrategyCommand)
+        _logger.Verbose("Strategy command received {@Command}", command);
+        switch (command)
         {
-            case StrategyCommand.InitStrategy:
-                InitStrategy(command, tcs);
+            case InitStrategyCommand initStrategyCommandDto:
+                InitStrategy(initStrategyCommandDto);
                 break;
-            case StrategyCommand.IsInitialized:
-                IsInitialized(tcs);
+            case IsInitializerCommand isInitializerCommand:
+                IsInitialized(isInitializerCommand);
                 break;
-            case StrategyCommand.GetStrategyInfo:
-                GetStrategyInfo(tcs);
+            case GetStrategyInfoCommand getStrategyInfoCommand:
+                GetStrategyInfo(getStrategyInfoCommand);
                 break;
-            case StrategyCommand.CloseStrategy:
-                CloseStrategy(tcs);
+            case CloseStrategyCommand closeStrategyCommand:
+                CloseStrategy(closeStrategyCommand);
                 break;
-            case StrategyCommand.GetStrategyPosition:
-                GetStrategyPosition(tcs);
+            case GetStrategyPositionClosedCommand getStrategyPositionClosedCommand:
+                GetStrategyPositionClosed(getStrategyPositionClosedCommand);
                 break;
-            case StrategyCommand.GetResults:
-                GetStrategyResult(tcs);
+            case GetStrategyResultRequestCommand getStrategyResultRequestCommand:
+                GetStrategyResult(getStrategyResultRequestCommand);
                 break;
-            case StrategyCommand.GetOpenedPosition:
-                GetOpenedPosition(tcs);
+            case GetOpenedPositionRequestCommand getOpenedPositionRequestCommand:
+                GetOpenedPosition(getOpenedPositionRequestCommand);
                 break;
-            case StrategyCommand.SetCanRun:
-                SetCanRun(tcs, command);
+            case SetCanRunCommand setCanRunCommand:
+                SetCanRun(setCanRunCommand);
                 break;
-            case StrategyCommand.SetSecureControlPosition:
-                SetSecureControlPosition(tcs, command);
-                break;
-            case StrategyCommand.GetChart:
-                GetChart(tcs);
+            case GetChartCommandRequest getChartCommandRequest:
+                GetChart(getChartCommandRequest);
                 break;
             default:
-                throw new CommandException($"Commande {command.StrategyCommand} non gérer");
+                throw new CommandException($"Commande {command} non gérer");
         }
 
         return Task.CompletedTask;
@@ -135,66 +132,91 @@ public class CommandHandler
         if (_apiHandlerBase is not null) await _apiHandlerBase.DisconnectAsync();
     }
 
+
+    public static event EventHandler<ConnexionStateEventArgs>? ConnexionState;
+    public static event EventHandler<TickDto>? TickEvent;
+    public static event EventHandler<CandleDto>? CandleEvent;
+    public static event EventHandler<StrategyEventEvent>? StategyEvent;
+
+    public static event EventHandler<PositionDto>? PositionChangeEvent;
+
     #region StrategyCommand
 
-    private void InitStrategy(StrategyCommandBaseDto command, TaskCompletionSource<CommandResultBase> tcs)
+    private void InitStrategy(InitStrategyCommand initStrategyCommandDto)
     {
-        if (_strategyBase is not null) throw new CommandException("The strategy is not null, close it");
-
-        if (command is InitStrategyCommandDto initStrategyCommandDto)
+        CheckApiHandlerNotNull();
+        try
         {
-            CheckApiHandlerNotNull();
-            try
-            {
-                var strategyImplementation = GenerateStrategy(initStrategyCommandDto.StrategyType);
-                _strategyBase = new StrategyBase(strategyImplementation, initStrategyCommandDto.Symbol,
-                    initStrategyCommandDto.Timeframe, initStrategyCommandDto.timeframe2, _apiHandlerBase, _logger);
-                _strategyBase.TickEvent += StrategyBaseOnTickEvent;
-                _strategyBase.CandleEvent += StrategyBaseOnCandleEvent;
-                _strategyBase.PositionOpenedEvent += StrategyBaseOnPositionOpenedEvent;
-                _strategyBase.PositionUpdatedEvent += StrategyBaseOnPositionUpdatedEvent;
-                _strategyBase.PositionClosedEvent += StrategyBaseOnPositionClosedEvent;
-                _strategyBase.PositionRejectedEvent += StrategyBaseOnPositionRejectedEvent;
-                _strategyBase.StrategyClosed += StrategyBaseOnStrategyClosed;
-                _strategyBase.TresholdEvent += StrategyBaseOnTresholdEvent;
-                _eventBus.PublishAsync(ReferentEnum.Strategy,ConnexionStateEnum.Initialized);
-            }
-            catch (System.Exception e)
-            {
-                throw new CommandExceptionInternalError("Can't initialize strategy");
-            }
+            var strategyImplementation = GenerateStrategy(initStrategyCommandDto.StrategyType);
+            var istrategySerrvice = new StrategyServiceFactory();
+            _strategyBase = new StrategyBase(strategyImplementation, initStrategyCommandDto.Symbol,
+                initStrategyCommandDto.Timeframe, initStrategyCommandDto.timeframe2, _apiHandlerBase, _logger,
+                istrategySerrvice);
+            _strategyBase.TickEvent += StrategyBaseOnTickEvent;
+            _strategyBase.CandleEvent += StrategyBaseOnCandleEvent;
+            _strategyBase.PositionOpenedEvent += StrategyBaseOnPositionOpenedEvent;
+            _strategyBase.PositionUpdatedEvent += StrategyBaseOnPositionUpdatedEvent;
+            _strategyBase.PositionClosedEvent += StrategyBaseOnPositionClosedEvent;
+            _strategyBase.PositionRejectedEvent += StrategyBaseOnPositionRejectedEvent;
+            _strategyBase.StrategyClosed += StrategyBaseOnStrategyClosed;
+            _strategyBase.TresholdEvent += StrategyBaseOnTresholdEvent;
+            _strategyBase.StrategyInfoUpdated += StrategyBaseOnStrategyInfoUpdated;
 
-            tcs.SetResult(new CommandExecutedResult());
+            var connexionStateEventArgs = new ConnexionStateEventArgs
+            {
+                Referent = ReferentEnum.Strategy,
+                ConnexionState = ConnexionStateEnum.Initialized
+            };
+            ConnexionState?.Invoke(this, connexionStateEventArgs);
         }
-        else
+        catch (System.Exception e) when (e is not StrategyException)
         {
-            throw new CommandException($"Bad command for {nameof(InitStrategy)}");
+            throw;
         }
+
+        initStrategyCommandDto.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
-    private  void GetChart(TaskCompletionSource<CommandResultBase> tcs)
+    private void StrategyBaseOnStrategyInfoUpdated(object? sender, EventArgs e)
+    {
+        var strategyEvent = new StrategyEventEvent
+        {
+            EventType = EventType.Update,
+            Message = ""
+        };
+        StategyEvent?.Invoke(this, strategyEvent);
+    }
+
+    private void GetChart(GetChartCommandRequest chartCommandRequest)
     {
         CheckStrategyNotNull();
-        List<CandleDto> candles = _strategyBase.History.Select( x=>new CandleDto()
+        var candles = _strategyBase.History.Select(x => new CandleDto
         {
-            Open =(double) x.Open,
-            High =(double) x.High,
-            Low =(double) x.Low,
-            Close =(double) x.Close,
+            Open = (double)x.Open,
+            High = (double)x.High,
+            Low = (double)x.Low,
+            Close = (double)x.Close,
             Date = x.Date,
-            Volume =(double) x.Volume
+            Volume = (double)x.Volume
         }).ToList();
-        tcs.SetResult(new CommandExecutedTypedResult<List<CandleDto>>(candles));
+        chartCommandRequest.ResponseSource.SetResult(new GetChartCommandResponse
+        {
+            CandleDtos = candles
+        });
     }
 
 
-
-    private async void StrategyBaseOnTresholdEvent(object? sender, MoneyManagementTresholdType e)
+    private async void StrategyBaseOnTresholdEvent(object? sender, EventTreshold e)
     {
         var message = $"Strategy closed cause of treshold : {e.ToString()}";
         await _emailService.SendEmail(DefaultEmail, "Strategy closed", message);
         // TODO : reset threshHold
-        await _strategyHub.Clients.All.SendEvent(EventType.Treshold, e.ToString());
+        var strategyEvent = new StrategyEventEvent
+        {
+            EventType = EventType.Treshold,
+            Message = e.ToString()
+        };
+        StategyEvent?.Invoke(this, strategyEvent);
     }
 
     private async void StrategyBaseOnStrategyClosed(object? sender, StrategyReasonClosed e)
@@ -206,99 +228,124 @@ public class CommandHandler
             await _emailService.SendEmail(DefaultEmail, "Strategy closed", message);
             _strategyBase = null;
         }
-        await _eventBus.PublishAsync(ReferentEnum.Strategy,ConnexionStateEnum.NotInitialized);
-        await _strategyHub.Clients.All.SendEvent(EventType.Close, "Strategy closing");
+
+        var connexionStateEventArgs = new ConnexionStateEventArgs
+        {
+            Referent = ReferentEnum.Strategy,
+            ConnexionState = ConnexionStateEnum.NotInitialized
+        };
+        ConnexionState?.Invoke(this, connexionStateEventArgs);
+        var strategyEvent = new StrategyEventEvent
+        {
+            EventType = EventType.Close,
+            Message = "Strategy closing"
+        };
+        StategyEvent?.Invoke(this, strategyEvent);
     }
 
-    private async void StrategyBaseOnPositionRejectedEvent(object? sender, Position e)
+    private void StrategyBaseOnPositionRejectedEvent(object? sender, Position e)
     {
         var posDto = _mapper.Map<PositionDto>(e);
-        await _strategyHub.Clients.All.SendPositionState(posDto, PositionStateEnum.Rejected);
-        await _eventBus.PublishAsync(posDto,PositionStateEnum.Rejected);
+        posDto.PositionState = PositionStateEnum.Rejected;
+        PositionChangeEvent?.Invoke(this, posDto);
     }
 
-    private async void StrategyBaseOnPositionClosedEvent(object? sender, Position e)
+    private void StrategyBaseOnPositionClosedEvent(object? sender, Position e)
     {
         var posDto = _mapper.Map<PositionDto>(e);
-        await _strategyHub.Clients.All.SendPositionState(posDto, PositionStateEnum.Closed);
-        await _eventBus.PublishAsync(posDto,PositionStateEnum.Closed);
+        posDto.PositionState = PositionStateEnum.Closed;
+        PositionChangeEvent?.Invoke(this, posDto);
     }
 
-    private async void StrategyBaseOnPositionUpdatedEvent(object? sender, Position e)
+    private void StrategyBaseOnPositionUpdatedEvent(object? sender, Position e)
     {
         var posDto = _mapper.Map<PositionDto>(e);
-        await _strategyHub.Clients.All.SendPositionState(posDto, PositionStateEnum.Updated);
-        await _eventBus.PublishAsync(posDto,PositionStateEnum.Updated);
+        posDto.PositionState = PositionStateEnum.Updated;
+        PositionChangeEvent?.Invoke(this, posDto);
     }
 
     private async void StrategyBaseOnPositionOpenedEvent(object? sender, Position e)
     {
         var posDto = _mapper.Map<PositionDto>(e);
-        await _strategyHub.Clients.All.SendPositionState(posDto, PositionStateEnum.Opened);
-        await _eventBus.PublishAsync(posDto,PositionStateEnum.Opened);
+        posDto.PositionState = PositionStateEnum.Opened;
+        PositionChangeEvent?.Invoke(this, posDto);
     }
 
-    private async void StrategyBaseOnCandleEvent(object? sender, Candle e)
+    private void StrategyBaseOnCandleEvent(object? sender, Candle e)
     {
         var candleDto = _mapper.Map<CandleDto>(e);
-        await _strategyHub.Clients.All.SendCandle(candleDto);
-        await _eventBus.PublishAsync(candleDto);
+        //    await _strategyHub.Clients.All.SendCandle(candleDto);
+        CandleEvent?.Invoke(this, candleDto);
     }
 
-    private async void StrategyBaseOnTickEvent(object? sender, Tick e)
+    private void StrategyBaseOnTickEvent(object? sender, Tick e)
     {
         var tickDto = _mapper.Map<TickDto>(e);
-        await _strategyHub.Clients.All.SendTick(tickDto);
-        await _eventBus.PublishAsync(tickDto);
+
+        TickEvent?.Invoke(this, tickDto);
     }
 
-    private void IsInitialized(TaskCompletionSource<CommandResultBase> tcs)
+    private void IsInitialized(IsInitializerCommand isInitializerCommand)
     {
-        var result = new IsInitializedDto();
+        var result = new IsInitializerCommandResponse();
         if (_strategyBase is not null)
-            result.Initialized = true;
+            result.IsInitialized = true;
         else
-            result.Initialized = false;
-        tcs.SetResult(new CommandExecutedTypedResult<IsInitializedDto>(result));
+            result.IsInitialized = false;
+        isInitializerCommand.ResponseSource.SetResult(result);
     }
 
-    private void GetStrategyInfo(TaskCompletionSource<CommandResultBase> tcs)
+    private void GetStrategyInfo(GetStrategyInfoCommand getStrategyInfoCommand)
     {
         CheckStrategyNotNull();
         var strategyInfoDto = _mapper.Map<StrategyInfoDto>(_strategyBase);
-        tcs.SetResult(new CommandExecutedTypedResult<StrategyInfoDto>(strategyInfoDto));
+        getStrategyInfoCommand.ResponseSource.SetResult(new GetStrategyInfoCommandResponse
+        {
+            StrategyInfoDto = strategyInfoDto
+        });
     }
 
-    private async void CloseStrategy(TaskCompletionSource<CommandResultBase> tcs)
+    private void CloseStrategy(CloseStrategyCommand closeStrategyCommand)
     {
         if (_strategyBase is not null)
         {
             _strategyBase.CloseStrategy(StrategyReasonClosed.User);
             _strategyBase = null;
-            await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.NotInitialized);
+            var connexionStateEventArgs = new ConnexionStateEventArgs
+            {
+                Referent = ReferentEnum.Api,
+                ConnexionState = ConnexionStateEnum.NotInitialized
+            };
+            ConnexionState?.Invoke(this, connexionStateEventArgs);
         }
 
-        tcs.SetResult(new CommandExecutedResult());
+        closeStrategyCommand.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
-    private void GetStrategyPosition(TaskCompletionSource<CommandResultBase> tcs)
+    private void GetStrategyPositionClosed(GetStrategyPositionClosedCommand command)
     {
         CheckStrategyNotNull();
         var data = new ListPositionsDto
         {
-            Positions = _mapper.Map<List<PositionDto>>(_strategyBase.Positions.ToList())
+            Positions = _mapper.Map<List<PositionDto>>(_strategyBase.PositionsClosed.ToList())
         };
-        tcs.SetResult(new CommandExecutedTypedResult<ListPositionsDto>(data));
+        command.ResponseSource.SetResult(new GetStrategyPositionClosedCommandResponse
+        {
+            PositionDtos = data
+        });
     }
 
-    private void GetStrategyResult(TaskCompletionSource<CommandResultBase> tcs)
+    private void GetStrategyResult(GetStrategyResultRequestCommand strategyResultRequest)
     {
         CheckStrategyNotNull();
         var data = _mapper.Map<ResultDto>(_strategyBase.Results);
-        tcs.SetResult(new CommandExecutedTypedResult<ResultDto>(data));
+        strategyResultRequest.ResponseSource.SetResult(new GetStrategyResultCommandResponse
+        {
+            ResultDto = data
+        });
     }
 
-    private void GetOpenedPosition(TaskCompletionSource<CommandResultBase> tcs)
+    private void GetOpenedPosition(GetOpenedPositionRequestCommand command)
     {
         CheckStrategyNotNull();
         var listPositionsDto = new ListPositionsDto();
@@ -309,37 +356,19 @@ public class CommandHandler
             listPositionsDto.Positions.Add(position);
         }
 
-        tcs.SetResult(new CommandExecutedTypedResult<ListPositionsDto>(listPositionsDto));
+        command.ResponseSource.SetResult(new GetOpenedPositionResponseCommand
+        {
+            ListPositionsDto = listPositionsDto
+        });
     }
 
-    private void SetCanRun(TaskCompletionSource<CommandResultBase> tcs, StrategyCommandBaseDto strategyCommandBaseDto)
+    private void SetCanRun(SetCanRunCommand setCanRunCommand)
     {
-        if (strategyCommandBaseDto is StrategyBoolCommand strategyBoolCommand)
-        {
-            CheckStrategyNotNull();
-            _strategyBase.CanRun = strategyBoolCommand.Bool;
-            tcs.SetResult(new CommandExecutedResult());
-        }
-        else
-        {
-            throw new CommandException($"Bad command for {nameof(SetCanRun)}");
-        }
+        CheckStrategyNotNull();
+        _strategyBase.CanRun = setCanRunCommand.Bool;
+        setCanRunCommand.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
-    private void SetSecureControlPosition(TaskCompletionSource<CommandResultBase> tcs,
-        StrategyCommandBaseDto strategyCommandBaseDto)
-    {
-        if (strategyCommandBaseDto is StrategyBoolCommand strategyBoolCommand)
-        {
-            CheckStrategyNotNull();
-            _strategyBase.SecureControlPosition = strategyBoolCommand.Bool;
-            tcs.SetResult(new CommandExecutedResult());
-        }
-        else
-        {
-            throw new CommandException($"Bad command for {nameof(SetSecureControlPosition)}");
-        }
-    }
 
     private StrategyImplementationBase GenerateStrategy(StrategyTypeEnum? type)
     {
@@ -357,105 +386,118 @@ public class CommandHandler
 
     #region ApiCommand
 
-    private async void InitHandler(ApiCommandBaseDto command, TaskCompletionSource<CommandResultBase> taskCompletionSource)
+    private void InitHandler(InitHandlerCommand command)
     {
-        if (command is InitHandlerCommandDto initHandlerCommandDto)
-        {
-            if (_apiHandlerBase is not null && _apiHandlerBase.IsConnected())
-                throw new CommandException("Api handler already connected, disconnect first");
+        if (_apiHandlerBase is not null && _apiHandlerBase.IsConnected())
+            throw new CommandException("Api handler already connected, disconnect first");
 
-            _logger.Information("Init handler to type {Enum}", initHandlerCommandDto.ApiHandlerEnum);
-            _apiHandlerBase = GetApiByType(initHandlerCommandDto.ApiHandlerEnum.GetValueOrDefault());
-            await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Initialized);
-            taskCompletionSource.SetResult(new CommandExecutedResult());
-        }
-        else
+        _logger.Information("Init handler to type {Enum}", command.ApiHandlerEnum);
+        _apiHandlerBase = ApiHandlerFactory.GetApiHandler(command.ApiHandlerEnum, XtbServer.DEMO, _logger);
+        var connexionStateEventArgs = new ConnexionStateEventArgs
         {
-            throw new CommandException($"Bad command for {nameof(InitHandler)}");
-        }
+            Referent = ReferentEnum.Api,
+            ConnexionState = ConnexionStateEnum.Initialized
+        };
+        ConnexionState?.Invoke(this, connexionStateEventArgs);
+        command.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
     // TODO : a faire evol lors du multi API
-    private async Task Connect(ApiCommandBaseDto command, TaskCompletionSource<CommandResultBase> taskCompletionSource)
+    private async Task Connect(ApiConnectCommand command)
     {
         CheckApiHandlerNotNull();
-        if (command is ApiConnectCommandDto apiConnectCommand)
+
+        await _apiHandlerBase.ConnectAsync(command.Credentials);
+        _apiHandlerBase.Connected += ApiHandlerBaseOnConnected;
+        _apiHandlerBase.Disconnected += ApiHandlerBaseOnDisconnected;
+        _apiHandlerBase.NewBalanceEvent += ApiHandlerBaseOnNewBalanceEvent;
+        var connexionStateEventArgs = new ConnexionStateEventArgs
         {
-            await _apiHandlerBase.ConnectAsync(apiConnectCommand.User, apiConnectCommand.Password);
-            _apiHandlerBase.Connected += ApiHandlerBaseOnConnected;
-            _apiHandlerBase.Disconnected += ApiHandlerBaseOnDisconnected;
-            _apiHandlerBase.NewBalanceEvent += ApiHandlerBaseOnNewBalanceEvent;
-            await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Connected);
-            taskCompletionSource.SetResult(new CommandExecutedResult());
-        }
-        else
-        {
-            throw new CommandException($"Bad command for {nameof(Connect)}");
-        }
+            Referent = ReferentEnum.Api,
+            ConnexionState = ConnexionStateEnum.Connected
+        };
+        ConnexionState?.Invoke(this, connexionStateEventArgs);
+        command.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
     private void ApiHandlerBaseOnNewBalanceEvent(object? sender, AccountBalance e)
     {
-        _apiHandlerHub.Clients.All.SendBalanceState(_mapper.Map<AccountBalanceDto>(e));
+        // TODO : Mettre l'event
     }
 
     private async void ApiHandlerBaseOnDisconnected(object? sender, EventArgs e)
     {
-        await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Disconnected);
+        var connexionStateEventArgs = new ConnexionStateEventArgs
+        {
+            Referent = ReferentEnum.Api,
+            ConnexionState = ConnexionStateEnum.Disconnected
+        };
+        ConnexionState?.Invoke(this, connexionStateEventArgs);
     }
 
     private async void ApiHandlerBaseOnConnected(object? sender, EventArgs e)
     {
-        await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Connected);
+        var connexionStateEventArgs = new ConnexionStateEventArgs
+        {
+            Referent = ReferentEnum.Api,
+            ConnexionState = ConnexionStateEnum.Connected
+        };
+        ConnexionState?.Invoke(this, connexionStateEventArgs);
     }
 
-    private async Task Disconnect(TaskCompletionSource<CommandResultBase> taskCompletionSource)
+    private async Task Disconnect(DisconnectCommand command)
     {
         CheckApiHandlerNotNull();
         await _apiHandlerBase.DisconnectAsync();
         _apiHandlerBase = null;
-        await _eventBus.PublishAsync(ReferentEnum.Api,ConnexionStateEnum.Disconnected);
-        taskCompletionSource.SetResult(new CommandExecutedResult());
+        var connexionStateEventArgs = new ConnexionStateEventArgs
+        {
+            Referent = ReferentEnum.Api,
+            ConnexionState = ConnexionStateEnum.Disconnected
+        };
+        ConnexionState?.Invoke(this, connexionStateEventArgs);
+        command.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
-    private void GetTypeHandler(TaskCompletionSource<CommandResultBase> tcs)
+    private void GetTypeHandler(GetTypeHandlerCommand getTypeHandlerCommand)
     {
         var data = ResolveHandlerApiType(_apiHandlerBase?.GetType().Name);
         _logger.Information("Api handler type is {Data}", data);
-        tcs.SetResult(new CommandExecutedTypedResult<string>(data));
+        getTypeHandlerCommand.ResponseSource.SetResult(new GetTypeHandlerResultCommand
+        {
+            Handler = data
+        });
     }
 
-    private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
-    // TODO : Changer pour tout retourner
-    private async Task GetAllSymbol(TaskCompletionSource<CommandResultBase> tcs)
+
+    private async Task GetAllSymbol(GetAllSymbolCommand command)
     {
-      
         CheckApiHandlerNotNull();
         var symbols = await _apiHandlerBase?.GetAllSymbolsAsync();
 
-        tcs.SetResult(new CommandExecutedTypedResult<List<string>>(symbols));
- 
+        command.ResponseSource.SetResult(new GetAllSymbolCommandResultCommand
+        {
+            SymbolInfos = symbols
+        });
     }
 
-    private void IsConnected(TaskCompletionSource<CommandResultBase> tcs)
+    private void IsConnected(IsConnectedCommand isConnectedCommand)
     {
         if (_apiHandlerBase is null)
-            tcs.SetResult(new CommandExecutedTypedResult<ConnexionStateEnum>(ConnexionStateEnum.NotInitialized));
+            isConnectedCommand.ResponseSource.SetResult(new IsConnectedResultCommand
+            {
+                ConnexionStateEnum = ConnexionStateEnum.NotInitialized
+            });
         else if ((bool)_apiHandlerBase?.IsConnected())
-            tcs.SetResult(new CommandExecutedTypedResult<ConnexionStateEnum>(ConnexionStateEnum.Connected));
+            isConnectedCommand.ResponseSource.SetResult(new IsConnectedResultCommand
+            {
+                ConnexionStateEnum = ConnexionStateEnum.Connected
+            });
         else
-            tcs.SetResult(new CommandExecutedTypedResult<ConnexionStateEnum>(ConnexionStateEnum.Disconnected));
-    }
-
-    private IApiHandler GetApiByType(ApiHandlerEnum api)
-    {
-        return api switch
-        {
-            ApiHandlerEnum.Xtb => new XtbApi(new APICommandFactory(),
-                new SyncAPIConnector(Servers.DEMO)
-                , _logger),
-            _ => throw new ArgumentException($"{api.ToString()} not handled")
-        };
+            isConnectedCommand.ResponseSource.SetResult(new IsConnectedResultCommand
+            {
+                ConnexionStateEnum = ConnexionStateEnum.Disconnected
+            });
     }
 
 
@@ -463,19 +505,10 @@ public class CommandHandler
     {
         return name switch
         {
-            nameof(XtbApi) => ApiHandlerEnum.Xtb.ToString(),
+            nameof(XtbApiHandler) => ApiHandlerEnum.Xtb.ToString(),
             _ => throw new ArgumentOutOfRangeException(nameof(name), name, null)
         };
     }
 
     #endregion
-
-    public event EventHandler<StrategyReasonClosed>? StrategyClosed;
-    public event EventHandler<Tick>? TickEvent;
-    public event EventHandler<Candle>? CandleEvent;
-    public event EventHandler<MoneyManagementTresholdType>? TresholdEvent;
-    public event EventHandler<Position>? PositionOpenedEvent;
-    public event EventHandler<Position>? PositionUpdatedEvent;
-    public event EventHandler<Position>? PositionRejectedEvent;
-    public event EventHandler<Position>? PositionClosedEvent;
 }

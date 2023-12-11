@@ -1,5 +1,4 @@
 using RobotAppLibraryV2.Modeles;
-using Skender.Stock.Indicators;
 
 namespace RobotAppLibraryV2.Indicators;
 

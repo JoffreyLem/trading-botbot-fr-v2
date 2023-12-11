@@ -1,5 +1,9 @@
-﻿using RobotAppLibraryV2.Modeles;
+﻿using System.Runtime.CompilerServices;
+using RobotAppLibraryV2.CandleList;
+using RobotAppLibraryV2.Modeles;
 using Serilog;
+
+[assembly: InternalsVisibleTo("RobotAppLibraryV2.Tests")]
 
 namespace RobotAppLibraryV2.Strategy;
 
@@ -8,71 +12,58 @@ namespace RobotAppLibraryV2.Strategy;
 /// </summary>
 public abstract class StrategyImplementationBase
 {
-
-    public string Name => GetType().Name;
-    
-    internal Func<decimal, TypePosition, decimal> CalculateStopLossFunc;
-    internal Func<decimal, TypePosition, decimal> CalculateTakeProfitFunc;
+    internal Func<decimal, TypeOperation, decimal> CalculateStopLossFunc;
+    internal Func<decimal, TypeOperation, decimal> CalculateTakeProfitFunc;
 
     protected internal ILogger Logger;
-    protected internal List<Candle> History { get; set; }
+    internal Action<TypeOperation, decimal, decimal, long?, double?, double> OpenPositionAction { get; set; }
+
+    public string Name => GetType().Name;
+    protected internal ICandleList History { get; set; }
 
     protected internal bool CanRun { get; set; }
 
-    internal Action<TypePosition, decimal, decimal, long?, double?> OpenPositionAction { get; set; }
+
     protected internal Tick LastPrice { get; set; }
 
     protected internal Candle LastCandle { get; set; }
 
     protected internal Candle CurrentCandle { get; set; }
 
-    protected internal int DefaultStopLoss { get; set; }
-    protected internal int DefaultTp { get; set; }
+    protected internal int DefaultStopLoss { get; set; } = 50;
+    protected internal int DefaultTp { get; set; } = 50;
     protected internal bool RunOnTick { get; set; }
     protected internal bool UpdateOnTick { get; set; }
     protected internal bool CloseOnTick { get; set; }
 
-    protected abstract void Run();
+    protected internal abstract void Run();
 
-    internal void RunInternal()
+
+    protected void OpenPosition(TypeOperation typePosition, decimal sl = 0, decimal tp = 0,
+        long? expiration = 0, double? volume = null, double risk = 5)
     {
-        Run();
+        OpenPositionAction?.Invoke(typePosition, sl, tp, expiration, volume, risk);
     }
 
-    protected void OpenPosition(TypePosition typePosition, decimal sl = 0, decimal tp = 0,
-        long? expiration = 0, double? volume = null)
+    protected decimal CalculateStopLoss(decimal pips, TypeOperation typePosition)
     {
-        OpenPositionAction?.Invoke(typePosition, sl, tp, expiration, volume);
+        return CalculateStopLossFunc.Invoke(pips, typePosition);
     }
 
-    protected decimal CalculateStopLoss(decimal pips, TypePosition typePosition)
+    protected decimal CalculateTakeProfit(decimal pips, TypeOperation typePosition)
     {
-        return (decimal)CalculateStopLossFunc?.Invoke(pips, typePosition);
-    }
-
-    protected decimal CalculateTakeProfit(decimal pips, TypePosition typePosition)
-    {
-        return (decimal)CalculateTakeProfitFunc?.Invoke(pips, typePosition);
+        return CalculateTakeProfitFunc.Invoke(pips, typePosition);
     }
 
 
-    protected virtual bool ShouldUpdatePosition(Position position)
+    protected internal virtual bool ShouldUpdatePosition(Position position)
     {
         return false;
     }
 
-    internal bool ShouldUpdatePositionInternal(Position position)
-    {
-        return ShouldUpdatePosition(position);
-    }
 
-    protected virtual bool ShouldClosePosition(Position position)
+    protected internal virtual bool ShouldClosePosition(Position position)
     {
         return false;
-    }
-
-    internal bool ShouldClosePositionInternal(Position position)
-    {
-        return ShouldClosePosition(position);
     }
 }

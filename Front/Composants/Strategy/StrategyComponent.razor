@@ -1,19 +1,18 @@
 ﻿@inherits StrategyComponentBase
 
 
-    @if (IsInitialized)
-    {
-        <div class="container-fluid mt-4">
-            <div class="mb-3">
-                <SfButton @onclick="DeleteStrategy">Delete Strategy</SfButton>
-            </div>
-            <div class="row">
-                <StrategyDataComponent StrategyCloseRequested="@HandleChildEvent"/>
-            </div>
+@if (IsInitialized)
+{
+    <div class="container-fluid mt-4">
+        <div class="mb-3">
+            <SfButton @onclick="DeleteStrategy">Delete Strategy</SfButton>
         </div>
-    }
-    else
-    {
-        <StrategyInitFormComponent @ref="StrategyInitFormComponent" StrategyFormUpdateRequested="@HandleChildEvent"/>
-    }
-
+        <div class="row">
+            <StrategyDataComponent StrategyCloseRequested="@HandleChildEvent"/>
+        </div>
+    </div>
+}
+else
+{
+    <StrategyInitFormComponent @ref="StrategyInitFormComponent" StrategyFormUpdateRequested="@HandleChildEvent"/>
+}

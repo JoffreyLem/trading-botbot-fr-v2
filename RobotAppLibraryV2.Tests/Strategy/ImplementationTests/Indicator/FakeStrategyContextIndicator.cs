@@ -12,7 +12,7 @@ public class FakeStrategyContextIndicator : StrategyImplementationBase
 
     [IndicatorLongerTerm] public SarIndicator SarIndicator2 { get; set; } = new();
 
-    protected override void Run()
+    protected internal override void Run()
     {
     }
 }

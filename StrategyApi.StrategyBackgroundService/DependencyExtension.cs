@@ -2,9 +2,8 @@ using System.Threading.Channels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using StrategyApi.Mail;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
+using StrategyApi.StrategyBackgroundService.Command.Api;
+using StrategyApi.StrategyBackgroundService.Command.Strategy;
 using StrategyApi.StrategyBackgroundService.Hubs;
 using StrategyApi.StrategyBackgroundService.Mapper;
 using StrategyApi.StrategyBackgroundService.Services;
@@ -18,11 +17,11 @@ public static class DependencyExtension
         builder.Services.AddHostedService<StrategyBackgroundService>();
         builder.Services.AddSingleton<IApiConnectService, ApiConnectService>();
         builder.Services.AddSingleton<IStrategyHandlerService, StrategyHandlerService>();
-        var channelApi = Channel.CreateUnbounded<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)>();
+        var channelApi = Channel.CreateUnbounded<ServiceCommandeBaseApiAbstract>();
         builder.Services.AddSingleton(channelApi.Reader);
         builder.Services.AddSingleton(channelApi.Writer);
         var channelStrategy =
-            Channel.CreateUnbounded<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)>();
+            Channel.CreateUnbounded<ServiceCommandeBaseStrategyAbstract>();
         builder.Services.AddSingleton(channelStrategy.Reader);
         builder.Services.AddSingleton(channelStrategy.Writer);
         builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
@@ -33,13 +32,11 @@ public static class DependencyExtension
         );
 
         builder.Services.AddSignalR();
-        builder.Services.AddSingleton<IEventBus, EventBus>();
     }
 
     public static void AddDependency2(this WebApplication app)
     {
         app.MapHub<StrategyHub>(StrategyHub.HubName);
         app.MapHub<ApiHandlerHub>(ApiHandlerHub.ApiHubName);
-        
     }
 }

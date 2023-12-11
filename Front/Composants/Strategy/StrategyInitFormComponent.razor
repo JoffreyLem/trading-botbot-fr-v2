@@ -13,7 +13,9 @@
                     <SfDropDownList ID="strategyType" @bind-Value="@_strategyInitDto.StrategyType" Placeholder="Strategy" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@StrategyTypes" TValue="StrategyTypeEnum" TItem="string"/>
                 </div>
                 <div class="form-group">
-                    <SfAutoComplete EnableVirtualization="true"  ID="symbolType" @bind-Value="@_strategyInitDto.Symbol" Placeholder="Symbol" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@Symbols" TValue="string" TItem="string"/>
+                    <SfAutoComplete EnableVirtualization="true" ID="symbolType" @bind-Value="@_strategyInitDto.Symbol" Placeholder="Select symbol" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@Symbols" TValue="string" TItem="SymbolInfo">
+                        <AutoCompleteFieldSettings Value="@nameof(SymbolInfo.Symbol)"></AutoCompleteFieldSettings>
+                    </SfAutoComplete>
                 </div>
                 <div class="form-group">
                     <SfDropDownList ID="timeFrameList" @bind-Value="@_strategyInitDto.Timeframe" Placeholder="Timeframe" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@TimeFrames" TValue="Timeframe" TItem="string"/>
@@ -29,7 +31,7 @@
     </div>
     <div id="container">
         <SfSpinner @bind-Visible="@OnLoading"/>
-        </div>
+    </div>
 </div>
 
 

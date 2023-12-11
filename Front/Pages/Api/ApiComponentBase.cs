@@ -1,6 +1,7 @@
 ﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 using StrategyApi.StrategyBackgroundService.Services;
@@ -21,6 +22,10 @@ public class ApiComponentBase : ComponentBase, IDisposable
     protected ConnectDto ConnectDto { get; set; } = new();
     protected string? ApiSelected { get; set; } = "";
 
+    public void Dispose()
+    {
+        ((IDisposable)_dropDownList).Dispose();
+    }
 
 
     protected override async Task OnInitializedAsync()
@@ -77,7 +82,6 @@ public class ApiComponentBase : ComponentBase, IDisposable
                 IsConnected = false;
                 ApiSelected = null;
                 ApiHandlerListEnabled = true;
-         
             }
             else
             {
@@ -86,7 +90,6 @@ public class ApiComponentBase : ComponentBase, IDisposable
         }
         catch (Exception e)
         {
-
             ToastService.ShowToastError(e);
         }
         finally
@@ -106,7 +109,6 @@ public class ApiComponentBase : ComponentBase, IDisposable
             IsConnected = true;
             ApiHandlerListEnabled = false;
             ConnectDto = new ConnectDto();
-        
         }
         catch (Exception e)
         {
@@ -135,10 +137,5 @@ public class ApiComponentBase : ComponentBase, IDisposable
             ApiSelected = obj.PreviousItemData;
             ToastService.ShowToastError(e);
         }
-    }
-    
-    public void Dispose()
-    {
-        ((IDisposable)_dropDownList).Dispose();
     }
 }

@@ -1,17 +1,18 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Dto.Services;
 
 public class PositionDto : INotifyPropertyChanged
 {
+    private decimal? _profit;
     private decimal? _stopLoss;
     private decimal? _takeProfit;
-    private decimal? _profit;
 
     public string? Id { get; set; }
     public string? Symbol { get; set; }
-    public string? TypePositionData { get; set; }
+    public string? TypePosition { get; set; }
     public double? Spread { get; set; }
 
     public decimal? Profit
@@ -41,7 +42,9 @@ public class PositionDto : INotifyPropertyChanged
     public double? Volume { get; set; }
     public decimal? Pips { get; set; }
     public string? StatusPosition { get; set; }
-    public string Comment { get; set; } 
+    public string Comment { get; set; }
+
+    public PositionStateEnum PositionState { get; set; }
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

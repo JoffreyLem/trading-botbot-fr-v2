@@ -1,0 +1,93 @@
+using RobotAppLibraryV2.Modeles;
+
+namespace RobotAppLibraryV2.Api.Xtb.Assembler;
+
+public static class FromXtbToRobotAssembler
+{
+    public static Category GetCategory(string symbol)
+    {
+        switch (symbol)
+        {
+            case "FX":
+                return Category.Forex;
+            case "IND":
+                return Category.Indices;
+            default:
+                return Category.Unknow;
+        }
+    }
+
+    public static TypeOperation GetTypeOperation(long code)
+    {
+        switch (code)
+        {
+            case 0:
+                return TypeOperation.Buy;
+            case 1:
+                return TypeOperation.Sell;
+            case 2:
+                return TypeOperation.BuyLimit;
+            case 3:
+                return TypeOperation.SellLimit;
+            case 4:
+                return TypeOperation.BuyStop;
+            case 5:
+                return TypeOperation.SellStop;
+            case 6:
+                return TypeOperation.Balance;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(code), code, "Invalid operation code.");
+        }
+    }
+
+    public static StatusPosition ToTradeStatusFromTradeStatusStreaming(long statusCode)
+    {
+        switch (statusCode)
+        {
+            case 0:
+                return StatusPosition.Close;
+            case 1:
+                return StatusPosition.Pending;
+            case 3:
+                return StatusPosition.Accepted;
+            case 4:
+                return StatusPosition.Rejected;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(statusCode), statusCode, "Invalid status code");
+        }
+    }
+
+    public static StatusPosition ToTradeStatusFromTradeStreaming(long statusCode)
+    {
+        switch (statusCode)
+        {
+            case 0:
+                return StatusPosition.Open;
+            case 1:
+                return StatusPosition.Pending;
+            case 2:
+                return StatusPosition.Close;
+            case 3:
+                return StatusPosition.Updated;
+            case 4:
+                return StatusPosition.Close;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(statusCode), statusCode, "Invalid status code");
+        }
+    }
+
+    public static ReasonClosed? ComputeCommentReasonClosed(string? comment)
+    {
+        switch (comment)
+        {
+            case "[S/L]":
+                return ReasonClosed.Sl;
+            case "[T/P]":
+                return ReasonClosed.Tp;
+            case not null when comment.Contains("S/O"):
+                return ReasonClosed.Margin;
+            default:
+                return ReasonClosed.Closed;
+        }
+    }
+}

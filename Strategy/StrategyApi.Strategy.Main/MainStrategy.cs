@@ -7,7 +7,7 @@ using Skender.Stock.Indicators;
 
 namespace StrategyApi.Strategy.Main;
 
-[VersionStrategy("prod-1")]
+[VersionStrategy("prod-test-2")]
 public class MainStrategy : StrategyImplementationBase
 {
     public MainStrategy()
@@ -78,7 +78,7 @@ public class MainStrategy : StrategyImplementationBase
             if (superTrandSelected?.SuperTrend > (decimal?)sarSelected?.Sar)
                 sl = (double?)superTrandSelected.SuperTrend;
 
-            OpenPosition(TypePosition.Buy, (decimal)sl, (decimal)tp?.R3);
+            OpenPosition(TypeOperation.Buy, (decimal)sl, (decimal)tp?.R3);
         }
     }
 
@@ -90,7 +90,7 @@ public class MainStrategy : StrategyImplementationBase
             if (superTrandSelected?.SuperTrend < (decimal?)sarSelected?.Sar)
                 sl = (double?)superTrandSelected.SuperTrend;
 
-            OpenPosition(TypePosition.Sell, (decimal)sl, (decimal)tp?.S3);
+            OpenPosition(TypeOperation.Sell, (decimal)sl, (decimal)tp?.S3);
         }
     }
 
@@ -100,13 +100,13 @@ public class MainStrategy : StrategyImplementationBase
         var lastPivot = PivotPoint.LastOrDefault();
         var lastSar = SarIndicator.LastOrDefault();
 
-        if (position.TypePosition == TypePosition.Buy)
+        if (position.TypePosition == TypeOperation.Buy)
         {
             position.StopLoss = CalculateBuyStopLoss(lastPivot, lastSar);
             return true;
         }
 
-        if (position.TypePosition == TypePosition.Sell)
+        if (position.TypePosition == TypeOperation.Sell)
         {
             position.StopLoss = CalculateSellStopLoss(lastPivot, lastSar);
             return true;
@@ -143,10 +143,10 @@ public class MainStrategy : StrategyImplementationBase
         var sarToCheck = SarIndicator[^2];
         if (sarToCheck.IsReversal is true) return true;
 
-        if (position.TypePosition == TypePosition.Buy)
+        if (position.TypePosition == TypeOperation.Buy)
         {
         }
-        else if (position.TypePosition == TypePosition.Sell)
+        else if (position.TypePosition == TypeOperation.Sell)
         {
         }
 

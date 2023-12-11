@@ -1,5 +1,4 @@
-﻿@using System.Diagnostics
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @inject IJSRuntime JsRuntime
 
 <PageTitle>Robot</PageTitle>
@@ -10,15 +9,15 @@
 <div class="page">
     <main>
         <SfAppBar ColorMode="AppBarColor.Dark">
-            <SfButton Type="button" CssClass="e-inherit" IconCss="e-icons e-menu" ></SfButton>
+            <SfButton Type="button" CssClass="e-inherit" IconCss="e-icons e-menu"></SfButton>
             <span class="regular">Bot bot</span>
-         
+
             <AppBarSpacer/>
             <HealthCheckComponent/>
-               <AppBarSeparator/>
+            <AppBarSeparator/>
             <LoginDisplay/>
         </SfAppBar>
-        <SfSidebar Target=".maincontent" Width="200px" >
+        <SfSidebar Target=".maincontent" Width="200px">
             <ChildContent>
                 <nav id="sidebarMenu" class="sidebar">
                     <div class="nav-item px-3 border-bottom py-3 thick-border">
@@ -65,6 +64,5 @@
         }
     }
 
-    
 
 }

@@ -1,23 +1,23 @@
 ﻿@inherits CandleChartComponentBase
 
-@if (Candles is {Count: 0})
+@if (Candles is { Count: 0 })
 {
-    <div class="stockchartloader"></div> 
+    <div class="stockchartloader"></div>
 }
 else
 {
     <div class="@loadClass"></div>
     <div class="row @loadDiv">
-        <SfStockChart Title="Chart"  Width="100%" Height="100%" EnableSelector="false">
-             <StockChartPeriods>
-                 <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="1" Text='1m' Selected="true"></StockChartPeriod>
-                         <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="30" Text='30m'></StockChartPeriod>
-                         <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="1" Text='1h'></StockChartPeriod>
-                         <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="12" Text='12h' ></StockChartPeriod>
-                         <StockChartPeriod Text="1D"></StockChartPeriod>
-                </StockChartPeriods>
-            <StockChartEvents  RangeChange="@RangeChanged" OnLoaded="@ChartLoaded"></StockChartEvents>
-     
+        <SfStockChart Title="Chart" Width="100%" Height="100%" EnableSelector="false">
+            <StockChartPeriods>
+                <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="1" Text='1m' Selected="true"></StockChartPeriod>
+                <StockChartPeriod IntervalType=RangeIntervalType.Minutes Interval="30" Text='30m'></StockChartPeriod>
+                <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="1" Text='1h'></StockChartPeriod>
+                <StockChartPeriod IntervalType=RangeIntervalType.Hours Interval="12" Text='12h'></StockChartPeriod>
+                <StockChartPeriod Text="1D"></StockChartPeriod>
+            </StockChartPeriods>
+            <StockChartEvents RangeChange="@RangeChanged" OnLoaded="@ChartLoaded"></StockChartEvents>
+
             <StockChartPrimaryXAxis >
                 <StockChartAxisMajorGridLines Width="0"></StockChartAxisMajorGridLines>
                 <StockChartAxisCrosshairTooltip Enable="true"></StockChartAxisCrosshairTooltip>
@@ -25,24 +25,23 @@ else
             <StockChartPrimaryYAxis>
                 <StockChartAxisLineStyle Width="0"></StockChartAxisLineStyle>
                 <StockChartAxisMajorTickLines Width="0"></StockChartAxisMajorTickLines>
-                 <StockChartAxisCrosshairTooltip Enable="true"></StockChartAxisCrosshairTooltip>
+                <StockChartAxisCrosshairTooltip Enable="true"></StockChartAxisCrosshairTooltip>
             </StockChartPrimaryYAxis>
             <StockChartTooltipSettings Enable="true"></StockChartTooltipSettings>
             <StockChartCrosshairSettings Enable="true"></StockChartCrosshairSettings>
-                   <StockChartZoomSettings EnablePan="true" EnableMouseWheelZooming="true" EnableSelectionZooming="true"></StockChartZoomSettings>
+            <StockChartZoomSettings EnablePan="true" EnableMouseWheelZooming="true" EnableSelectionZooming="true"></StockChartZoomSettings>
             <StockChartSeriesCollection>
                 <StockChartSeries DataSource="@Candles" Type="ChartSeriesType.Candle" XName="Date" YName="Close" Open="Open" High="High" Low="Low" Close="Close" Volume="Volume">
                     <StockChartSeriesAnimation Enable="false"></StockChartSeriesAnimation>
 
                 </StockChartSeries>
             </StockChartSeriesCollection>
-           <StockChartChartArea>
-                   <StockChartChartAreaBorder Width="0"></StockChartChartAreaBorder>
-               </StockChartChartArea>
+            <StockChartChartArea>
+                <StockChartChartAreaBorder Width="0"></StockChartChartAreaBorder>
+            </StockChartChartArea>
         </SfStockChart>
-        
+
     </div>
-    
 }
 
 <style>

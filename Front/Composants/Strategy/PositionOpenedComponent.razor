@@ -2,11 +2,11 @@
 @inherits PositionOpenedComponentBase
 
 
-<SfGrid @ref="Grid" DataSource="@Positions"  AllowPaging="true" AllowResizing="true" EnableAdaptiveUI="true">
+<SfGrid @ref="Grid" DataSource="@Positions" AllowPaging="true" AllowResizing="true" EnableAdaptiveUI="true">
     <GridPageSettings PageSize="5"></GridPageSettings>
     <GridColumns>
         <GridColumn Field="@nameof(PositionDto.Symbol)" HeaderText="Symbol"></GridColumn>
-        <GridColumn Field="@nameof(PositionDto.TypePositionData)" HeaderText="Type"></GridColumn>
+        <GridColumn Field="@nameof(PositionDto.TypePosition)" HeaderText="Type"></GridColumn>
         <GridColumn Field="@nameof(PositionDto.Volume)" HeaderText="Volume"></GridColumn>
         <GridColumn Field="@nameof(PositionDto.Spread)" HeaderText="Spread"></GridColumn>
         <GridColumn Field="@nameof(PositionDto.DateOpen)" Type="ColumnType.Date" HeaderText="Date open"></GridColumn>

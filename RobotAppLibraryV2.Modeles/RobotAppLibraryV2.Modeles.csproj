@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Destructurama.Attributed" Version="3.1.0"/>
+        <PackageReference Include="Skender.Stock.Indicators" Version="2.4.11"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Destructurama.Attributed">
+            <HintPath>..\..\..\.nuget\packages\destructurama.attributed\3.1.0\lib\netstandard2.0\Destructurama.Attributed.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+</Project>
