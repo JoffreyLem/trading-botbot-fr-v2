@@ -1,6 +1,6 @@
 namespace StrategyApi.StrategyBackgroundService.Dto.Services;
 
-public class TickDto
+public struct TickDto
 {
     public decimal? Ask { get; set; }
     public decimal? AskVolume { get; set; }

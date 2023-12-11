@@ -10,13 +10,13 @@ using Timer = System.Timers.Timer;
 
 namespace RobotAppLibraryV2.CandleList;
 
-public class CandleList : List<Candle>, IDisposable
+public class CandleList : List<Candle>, ICandleList, IDisposable
 {
     private readonly IApiHandler _apiHandler;
     private readonly ILogger _logger;
 
-    public readonly string Symbol;
-    public readonly Timeframe Timeframe;
+    private readonly string symbol;
+    private readonly Timeframe timeframe;
     private Timer? _timer;
     private TradeHourRecord _tradeHourRecord = new();
 
@@ -24,22 +24,21 @@ public class CandleList : List<Candle>, IDisposable
     public CandleList(IApiHandler apiHandler, ILogger logger, Timeframe timeframe, string symbol) : base(2100)
     {
         _apiHandler = apiHandler;
-        Timeframe = timeframe;
-        Symbol = symbol;
+        this.timeframe = timeframe;
+        this.symbol = symbol;
         _logger = logger.ForContext<CandleList>();
         Init();
     }
 
-    private DateTime NextDateToRegister => this.Last().Date.AddMinutes(Timeframe.GetMinuteFromTimeframe());
+    private DateTime NextDateToRegister => this.Last().Date.AddMinutes(timeframe.GetMinuteFromTimeframe());
 
-    public bool OnCorrecting { get; private set; }
-    public decimal? Spread => LastPrice.GetValueOrDefault().Spread;
-    public Tick? LastPrice => Ticks.LastOrDefault();
+    private bool OnCorrecting { get; set; }
 
-    public TradeHourRecord.HoursRecordData? CurrentHoursRecord =>
+    private TradeHourRecord.HoursRecordData? CurrentHoursRecord =>
         _tradeHourRecord.HoursRecords.FirstOrDefault(x => x.Day == DateTime.Now.DayOfWeek);
 
-    public List<Tick> Ticks { get; } = new();
+    private List<Tick> Ticks { get; } = new();
+    public Tick? LastPrice => Ticks.LastOrDefault();
 
     public void Dispose()
     {
@@ -50,15 +49,25 @@ public class CandleList : List<Candle>, IDisposable
     public event Action<Tick>? OnTickEvent;
     public event Action<Candle>? OnCandleEvent;
 
+    public IEnumerable<Candle> Aggregate(Timeframe timeframeData)
+    {
+        return this.Aggregate(timeframeData.ToPeriodSize()).Select(x => new Candle()
+            .SetOpen(x.Open)
+            .SetHigh(x.High)
+            .SetLow(x.Low)
+            .SetClose(x.Close)
+            .SetDate(x.Date));
+    }
+
     private void Init()
     {
         try
         {
             // Timeframe > Daily non gérer pour l'instant.
-            if (Timeframe > (Timeframe)6) throw new ArgumentException($"Timeframe {Timeframe} non gérer");
+            if (timeframe > (Timeframe)6) throw new ArgumentException($"Timeframe {timeframe} non gérer");
 
             _apiHandler.TickEvent += ApiHandlerOnTickEvent;
-            var data = _apiHandler.GetChartAsync(Symbol, Timeframe).Result;
+            var data = _apiHandler.GetChartAsync(symbol, timeframe).Result;
             if (data is { Count: > 0 })
             {
                 foreach (var candle in data.TakeLast(2000).ToList()) Add(candle);
@@ -66,12 +75,12 @@ public class CandleList : List<Candle>, IDisposable
                 this.Validate();
             }
 
-            _tradeHourRecord = _apiHandler.GetTradingHoursAsync(Symbol).Result;
+            _tradeHourRecord = _apiHandler.GetTradingHoursAsync(symbol).Result;
             HandlingStartTradeHours();
 
             // TODO : Voir comment faire des TU sur le timer.
             SetTimerJobTradingHour();
-            _logger.Information("Candle list {Timeframe} initialized {@Candle}", Timeframe, this.Last());
+            _logger.Information("Candle list {Timeframe} initialized {@Candle}", timeframe, this.Last());
         }
         catch (Exception e)
         {
@@ -81,14 +90,14 @@ public class CandleList : List<Candle>, IDisposable
 
     private async void ApiHandlerOnTickEvent(object? sender, Tick tick)
     {
-        if (tick.Symbol == Symbol)
+        if (tick.Symbol == symbol)
         {
             var lastCandle = this.Last();
 
             Ticks.Add(tick);
             if (!OnCorrecting)
             {
-                var mintoAdd = Timeframe.GetMinuteFromTimeframe();
+                var mintoAdd = timeframe.GetMinuteFromTimeframe();
                 var nextDate = lastCandle.Date.AddMinutes(mintoAdd);
                 if (tick.Date < nextDate)
                 {
@@ -145,12 +154,12 @@ public class CandleList : List<Candle>, IDisposable
 
     private async Task CorrectHistory(DateTime start)
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             _logger.Warning("Correct history, start = {Start} , last = {Last}", start,
                 DateTime.Now);
 
-            var data = await _apiHandler.GetChartByDateAsync(Symbol, Timeframe, start, DateTime.Now);
+            var data = await _apiHandler.GetChartByDateAsync(symbol, timeframe, start, DateTime.Now);
 
             if (data.Count > 0)
             {
@@ -196,9 +205,9 @@ public class CandleList : List<Candle>, IDisposable
 
     private void HandlingStartTradeHours()
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
-            _logger.Information("Adapting the start for timeframe {Timeframe} at {@Datetime}", Timeframe, DateTime.Now);
+            _logger.Information("Adapting the start for timeframe {Timeframe} at {@Datetime}", timeframe, DateTime.Now);
 
             if (CurrentHoursRecord is not null)
             {
@@ -238,7 +247,7 @@ public class CandleList : List<Candle>, IDisposable
 
     private DateTime GetNewNextDayDateRegisterFrom()
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             _logger.Information("Get next day date with trading hour from");
             var localHourRecord = GetNextValidHourRecord();
@@ -249,7 +258,7 @@ public class CandleList : List<Candle>, IDisposable
 
     private DateTime GetNewNextDayDateRegisterTo()
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             _logger.Information("Get next day date with trading hour to");
             var localHourRecord = GetNextValidHourRecord();
@@ -260,7 +269,7 @@ public class CandleList : List<Candle>, IDisposable
 
     private DateTime GetTodayDateRegisterFrom()
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             _logger.Information("Get today date with trading hour from");
             var localHourRecord = CurrentHoursRecord;
@@ -270,7 +279,7 @@ public class CandleList : List<Candle>, IDisposable
 
     private DateTime GetTodayDateRegisterTo()
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             _logger.Information("Get today date with trading hour to");
             var localHourRecord = CurrentHoursRecord;
@@ -289,7 +298,7 @@ public class CandleList : List<Candle>, IDisposable
 
     private TradeHourRecord.HoursRecordData GetNextValidHourRecord()
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             TradeHourRecord.HoursRecordData? localHourRecord = null;
             var newDateDay = DateTime.Now.Date.AddDays(1);
@@ -308,16 +317,16 @@ public class CandleList : List<Candle>, IDisposable
 
     private DateTime GetNewDateFromOrTo(DateTime dateTime, TimeSpan recordTime)
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             var dateToValidate = dateTime;
             var dateToCompare = dateToValidate.Date.Add(recordTime);
 
             while (dateToValidate < dateToCompare)
-                dateToValidate = dateToValidate.AddMinutes(Timeframe.GetMinuteFromTimeframe());
+                dateToValidate = dateToValidate.AddMinutes(timeframe.GetMinuteFromTimeframe());
 
             if (dateToValidate > dateToCompare)
-                dateToValidate = dateToValidate.AddMinutes(-Timeframe.GetMinuteFromTimeframe());
+                dateToValidate = dateToValidate.AddMinutes(-timeframe.GetMinuteFromTimeframe());
 
             _logger.Information("The new date to add is {DateToValidate}", dateToValidate);
 
@@ -327,7 +336,7 @@ public class CandleList : List<Candle>, IDisposable
 
     private void SetTimerJobTradingHour()
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             _logger.Information("Setting the timer for next reschedule");
             DateTime runAt;
@@ -354,7 +363,7 @@ public class CandleList : List<Candle>, IDisposable
 
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             _timer?.Stop();
             _logger.Information("Run handler trading hour by timer");
@@ -367,7 +376,7 @@ public class CandleList : List<Candle>, IDisposable
 
     private void RegisterCandleForNewDate(DateTime date)
     {
-        using (LogContext.PushProperty("Timeframe", Timeframe))
+        using (LogContext.PushProperty("Timeframe", timeframe))
         {
             _logger.Information("Register new candle for next date : {@NewDate}", date);
             var newDate = date;

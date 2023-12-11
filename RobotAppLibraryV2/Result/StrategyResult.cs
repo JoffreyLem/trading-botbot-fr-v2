@@ -1,23 +1,35 @@
-﻿using RobotAppLibraryV2.Modeles;
+﻿using RobotAppLibraryV2.ApiHandler.Interfaces;
+using RobotAppLibraryV2.Modeles;
 
 namespace RobotAppLibraryV2.Result;
 
-public class StrategyResult
+public class StrategyResult : IStrategyResult
 {
+    private readonly IApiHandler _apiHandler;
     private readonly List<Position> _positionInternal = new();
+    private readonly string positionReference;
 
-    public StrategyResult()
+    private AccountBalance accountBalance = new();
+
+    public StrategyResult(IApiHandler apiHandler, string positionReference)
     {
+        _apiHandler = apiHandler;
+        this.positionReference = positionReference;
+        accountBalance = _apiHandler.GetBalanceAsync().Result;
+        var listPositions = _apiHandler.GetAllPositionsByCommentAsync(positionReference).Result;
+        UpdateGlobalData(listPositions);
+        _apiHandler.PositionClosedEvent += ApiHandlerOnPositionClosedEvent;
+        _apiHandler.NewBalanceEvent += (sender, balance) => accountBalance = balance;
     }
 
-    public StrategyResult(List<Position>? positions)
-    {
-        if (positions != null)
-        {
-            _positionInternal.AddRange(positions);
-            CalculateResults();
-        }
-    }
+
+    public double Risque { get; set; } = 2;
+
+    public int LooseStreak { get; set; } = 10;
+    public double ToleratedDrawnDown { get; set; } = 10;
+    public bool SecureControlPosition { get; set; }
+
+    public event EventHandler<EventTreshold>? ResultTresholdEvent;
 
     public IReadOnlyList<Position> Positions => _positionInternal.AsReadOnly();
 
@@ -84,6 +96,26 @@ public class StrategyResult
         }
     }
 
+    public void Dispose()
+    {
+    }
+
+    private void ApiHandlerOnPositionClosedEvent(object? sender, Position e)
+    {
+        if (e.StrategyId == positionReference)
+        {
+            UpdateGlobalData(e);
+            if (SecureControlPosition) TresholdCheck();
+        }
+    }
+
+    private void TresholdCheck()
+    {
+        CheckDrawnDownTreshold();
+        CheckLooseStreakTreshold();
+        CheckProfitFactorTreshold();
+    }
+
     private void CalculateDrawdowns()
     {
         var peakValue = _positionInternal[0].Profit;
@@ -98,5 +130,28 @@ public class StrategyResult
             // TODO : Partie à vérifier
             if (drawdown > drawdownMax) Results.DrawndownMax = drawdown;
         }
+    }
+
+    private void CheckDrawnDownTreshold()
+    {
+        var drawndown = Results.Drawndown;
+        var drawDownTheorique = accountBalance.Balance * (ToleratedDrawnDown / 100);
+
+        if (drawndown > 0 && drawndown >= (decimal)drawDownTheorique)
+            ResultTresholdEvent?.Invoke(this, EventTreshold.Drowdown);
+    }
+
+    private void CheckLooseStreakTreshold()
+    {
+        var selected = Positions.TakeLast(LooseStreak).ToList();
+
+        if (selected.Count == LooseStreak && selected.TrueForAll(x => x.Profit < 0))
+            ResultTresholdEvent?.Invoke(this, EventTreshold.LooseStreak);
+    }
+
+    private void CheckProfitFactorTreshold()
+    {
+        var profitfactor = Results.ProfitFactor;
+        if (profitfactor is > 0 and <= 1) ResultTresholdEvent?.Invoke(this, EventTreshold.Profitfactor);
     }
 }

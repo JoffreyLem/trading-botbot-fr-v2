@@ -19,7 +19,7 @@ public class StrategyInfoDto
     public bool SecureControlPosition { get; set; }
     public string? Treshold { get; set; }
 
-    public TickDto LastTick { get; set; } = new TickDto();
+    public TickDto LastTick { get; set; } = new();
 
-    public CandleDto LastCandle { get; set; } = new CandleDto();
+    public CandleDto LastCandle { get; set; } = new();
 }

@@ -1,22 +1,40 @@
 @using StrategyApi.StrategyBackgroundService.Dto.Services
 @inject IJSRuntime JSRuntime
+
 @code {
 
-    [Parameter]
-    public CandleDto Candle { get; set; } = new CandleDto();
+    [Parameter] public CandleDto Candle { get; set; } = new();
 
 }
 
 <div class="candle-card">
-    <div><strong>Last candle</strong></div>
-    <div><strong>Date:</strong> @Candle.Date</div>
-    <div><strong>Open:</strong> @Candle.Open</div>
-    <div><strong>High:</strong> @Candle.High</div>
-    <div><strong>Low:</strong> @Candle.Low</div>
-    <div><strong>Close:</strong> @Candle.Close</div>
-    <div><strong>Volume:</strong> @Candle.Volume</div>
-    <div><strong>Bid Volume:</strong> @Candle.BidVolume</div>
-    <div><strong>Ask Volume:</strong> @Candle.AskVolume</div>
+    <div>
+        <strong>Last candle</strong>
+    </div>
+    <div>
+        <strong>Date:</strong> @Candle.Date
+    </div>
+    <div>
+        <strong>Open:</strong> @Candle.Open
+    </div>
+    <div>
+        <strong>High:</strong> @Candle.High
+    </div>
+    <div>
+        <strong>Low:</strong> @Candle.Low
+    </div>
+    <div>
+        <strong>Close:</strong> @Candle.Close
+    </div>
+    <div>
+        <strong>Volume:</strong> @Candle.Volume
+    </div>
+    <div>
+        <strong>Bid Volume:</strong> @Candle.BidVolume
+    </div>
+    <div>
+        <strong>Ask Volume:</strong> @Candle.AskVolume
+    </div>
 </div>
 
 <style>

@@ -1,32 +1,40 @@
-﻿using AutoMapper;
-using Front.Services;
+﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
+using StrategyApi.StrategyBackgroundService;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
-using StrategyApi.StrategyBackgroundService.Hubs;
+using StrategyApi.StrategyBackgroundService.Events;
 using StrategyApi.StrategyBackgroundService.Services;
+using Syncfusion.Blazor.Buttons;
 
 namespace Front.Composants.Strategy;
 
-public class StrategyDataBaseComponent : ComponentBase , IDisposable
+public class StrategyDataBaseComponent : ComponentBase, IDisposable
 {
     protected bool OnLoading;
-    
+
     protected StrategyInfoDto StrategyInfo = new();
     protected ResultComponent ResultComponent { get; set; }
 
-    protected CandleDto LastCandle { get; set; } = new CandleDto();
+    protected CandleDto LastCandle { get; set; } = new();
 
-    protected TickDto LastTick { get; set; } = new TickDto();
-    
+    protected TickDto LastTick { get; set; }
+
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
     [Inject] private ShowToastService ToastService { get; set; }
-    [Inject] private IEventBus _eventBus { get; set; }
-    
+
+
     [Parameter] public EventCallback StrategyCloseRequested { get; set; }
 
     protected int SelectedTab { get; set; } = 0;
-    
+
+    public void Dispose()
+    {
+        CommandHandler.StategyEvent += CommandHandlerOnStategyEvent;
+        CommandHandler.CandleEvent += CommandHandlerOnCandleEvent;
+        CommandHandler.TickEvent += CommandHandlerOnTickEvent;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -34,9 +42,9 @@ public class StrategyDataBaseComponent : ComponentBase , IDisposable
             StrategyInfo = await _strategyService.GetStrategyInfo();
             LastTick = StrategyInfo.LastTick;
             LastCandle = StrategyInfo.LastCandle;
-            _eventBus.Subscribe<EventType,string>(StrategyHubOnOnEventReceived);
-            _eventBus.Subscribe<CandleDto>(StrategyHubOnOnCandleReceived);
-            _eventBus.Subscribe<TickDto>(StrategyHubOnOnTickReceived);
+            CommandHandler.StategyEvent += CommandHandlerOnStategyEvent;
+            CommandHandler.CandleEvent += CommandHandlerOnCandleEvent;
+            CommandHandler.TickEvent += CommandHandlerOnTickEvent;
         }
         catch (Exception e)
         {
@@ -44,22 +52,36 @@ public class StrategyDataBaseComponent : ComponentBase , IDisposable
         }
     }
 
-    private void StrategyHubOnOnTickReceived(TickDto obj)
+    private void CommandHandlerOnStategyEvent(object? sender, StrategyEventEvent e)
     {
-        InvokeAsync(() =>
+        InvokeAsync(async () =>
         {
-                LastTick = obj;
-        });
+            ToastService.ShowToast(e.EventType, e.Message);
+            if (e.EventType is EventType.Fatal or EventType.Close)
+                await StrategyCloseRequested.InvokeAsync();
+            else if (e.EventType == EventType.Update) StrategyInfo = await _strategyService.GetStrategyInfo();
 
+            StateHasChanged();
+        });
     }
 
-    private void StrategyHubOnOnCandleReceived(CandleDto obj)
+
+    private void CommandHandlerOnTickEvent(object? sender, TickDto e)
     {
         InvokeAsync(() =>
         {
-            LastCandle = obj;
+            LastTick = e;
+            StateHasChanged();
         });
+    }
 
+    private void CommandHandlerOnCandleEvent(object? sender, CandleDto e)
+    {
+        InvokeAsync(() =>
+        {
+            LastCandle = e;
+            StateHasChanged();
+        });
     }
 
 
@@ -68,16 +90,13 @@ public class StrategyDataBaseComponent : ComponentBase , IDisposable
         InvokeAsync(async () =>
         {
             ToastService.ShowToast(eventType, message);
-            if (eventType is EventType.Fatal or EventType.Close)
-            {
-                await StrategyCloseRequested.InvokeAsync();
-            }
+            if (eventType is EventType.Fatal or EventType.Close) await StrategyCloseRequested.InvokeAsync();
 
             StateHasChanged();
         });
     }
-    
-    protected async void OnCanRunChange(Syncfusion.Blazor.Buttons.ChangeEventArgs<bool?> args)
+
+    protected async void OnCanRunChange(ChangeEventArgs<bool?> args)
     {
         try
         {
@@ -94,31 +113,5 @@ public class StrategyDataBaseComponent : ComponentBase , IDisposable
             OnLoading = false;
             StateHasChanged();
         }
-    }
-
-    protected async void OnSecureControlePositionChange(Syncfusion.Blazor.Buttons.ChangeEventArgs<bool> args)
-    {
-        try
-        {
-            OnLoading = true;
-            await _strategyService.SetSecureControlPosition(args.Checked);
-            ToastService.ShowToastSuccess("Secure control position updated");
-        }
-        catch (Exception e)
-        {
-            ToastService.ShowToastError(e);
-        }
-        finally
-        {
-            OnLoading = false;
-            StateHasChanged();
-        }
-    }
-
-    public void Dispose()
-    {
-        _eventBus.Unsubscribe<EventType,string>(StrategyHubOnOnEventReceived);
-        _eventBus.Unsubscribe<CandleDto>(StrategyHubOnOnCandleReceived);
-        _eventBus.Unsubscribe<TickDto>(StrategyHubOnOnTickReceived);
     }
 }

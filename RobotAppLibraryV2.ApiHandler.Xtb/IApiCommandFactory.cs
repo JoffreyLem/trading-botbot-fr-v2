@@ -7,7 +7,7 @@ namespace RobotAppLibraryV2.ApiHandler.Xtb;
 
 public interface IApiCommandFactory
 {
-    public LoginResponse ExecuteLoginCommand(ISyncApiConnector connector, Credentials credentials,
+    public LoginResponse ExecuteLoginCommand(ISyncApiConnector connector, CredentialsXtb credentials,
         bool prettyPrint = false);
 
     public PingResponse ExecutePingCommand(ISyncApiConnector connector, bool prettyPrint = false);

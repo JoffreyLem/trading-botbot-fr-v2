@@ -1,18 +1,20 @@
 using System.Threading.Channels;
+using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
+using RobotAppLibraryV2.Modeles;
 using Serilog;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
+using StrategyApi.StrategyBackgroundService.Command.Api;
+using StrategyApi.StrategyBackgroundService.Command.Api.Request;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 
 public class ApiConnectService : IApiConnectService
 {
+    private readonly ChannelWriter<ServiceCommandeBaseApiAbstract> _channelApiWriter;
     private readonly ILogger _logger;
-    private readonly ChannelWriter<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)> _channelApiWriter;
 
     public ApiConnectService(ILogger logger,
-        ChannelWriter<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)> channelWriter)
+        ChannelWriter<ServiceCommandeBaseApiAbstract> channelWriter)
     {
         _channelApiWriter = channelWriter;
         _logger = logger.ForContext<ApiConnectService>();
@@ -21,80 +23,63 @@ public class ApiConnectService : IApiConnectService
 
     public async Task Connect(string user, string pwd)
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
-
-        var apiCommandDto = new ApiConnectCommandDto
+        var connecCommand = new ApiConnectCommand
         {
-            ApiCommandEnum = ApiCommand.Connect,
-            User = user,
-            Password = pwd
+            Credentials = new Credentials
+            {
+                User = user,
+                Password = pwd
+            }
         };
 
-        await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
 
-        await tcs.Task;
+        await _channelApiWriter.WriteAsync(connecCommand);
+
+        await connecCommand.ResponseSource.Task;
     }
 
     public async Task Disconnect()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var disconenctCommand = new DisconnectCommand();
 
-        var apiCommandDto = new ApiCommandBaseDto
-        {
-            ApiCommandEnum = ApiCommand.Disconnect
-        };
+        await _channelApiWriter.WriteAsync(disconenctCommand);
 
-        await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
-
-        await tcs.Task;
+        await disconenctCommand.ResponseSource.Task;
     }
 
     public async Task<ConnexionStateEnum> IsConnected()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var isConnectedCommand = new IsConnectedCommand();
 
-        var apiCommandDto = new ApiCommandBaseDto
-        {
-            ApiCommandEnum = ApiCommand.IsConnected
-        };
+        await _channelApiWriter.WriteAsync(isConnectedCommand);
 
-        await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
+        var result = await isConnectedCommand.ResponseSource.Task;
 
-        var result = await tcs.Task as CommandExecutedTypedResult<ConnexionStateEnum>;
-
-        return result.value;
+        return result.ConnexionStateEnum;
     }
 
 
     public async Task InitHandler(ApiHandlerEnum @enum)
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
-
-        var apiCommandDto = new InitHandlerCommandDto
+        var initHandlerCommand = new InitHandlerCommand
         {
-            ApiCommandEnum = ApiCommand.InitHandler,
             ApiHandlerEnum = @enum
         };
 
-        await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
+        await _channelApiWriter.WriteAsync(initHandlerCommand);
 
-        await tcs.Task;
+        await initHandlerCommand.ResponseSource.Task;
     }
 
     public async Task<string?> GetTypeHandler()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var getTypeHandlerCommand = new GetTypeHandlerCommand();
 
-        var apiCommandDto = new ApiCommandBaseDto
-        {
-            ApiCommandEnum = ApiCommand.GetTypeHandler
-        };
+        await _channelApiWriter.WriteAsync(getTypeHandlerCommand);
 
-        await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
+        var result = await getTypeHandlerCommand.ResponseSource.Task;
 
-        var result = await tcs.Task as CommandExecutedTypedResult<string?>;
-
-        return result.value;
+        return result.Handler;
     }
 
     public Task<List<string>> GetListHandler()
@@ -102,19 +87,14 @@ public class ApiConnectService : IApiConnectService
         return Task.FromResult(Enum.GetNames(typeof(ApiHandlerEnum)).ToList());
     }
 
-    public async Task<List<string>?> GetAllSymbol()
+    public async Task<List<SymbolInfo>> GetAllSymbol()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var getAllSymbolCommand = new GetAllSymbolCommand();
 
-        var apiCommandDto = new ApiCommandBaseDto
-        {
-            ApiCommandEnum = ApiCommand.GetAllSymbols
-        };
+        await _channelApiWriter.WriteAsync(getAllSymbolCommand);
 
-        await _channelApiWriter.WriteAsync((apiCommandDto, tcs));
+        var result = await getAllSymbolCommand.ResponseSource.Task;
 
-        var result = await tcs.Task as CommandExecutedTypedResult<List<string>>;
-
-        return result.value;
+        return result.SymbolInfos;
     }
 }

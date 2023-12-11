@@ -1,3 +1,5 @@
+using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
+using RobotAppLibraryV2.Modeles;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
@@ -16,5 +18,5 @@ public interface IApiConnectService
 
     Task<List<string>> GetListHandler();
 
-    Task<List<string>?> GetAllSymbol();
+    Task<List<SymbolInfo>> GetAllSymbol();
 }

@@ -24,6 +24,5 @@ public class IndexBase : ComponentBase
         var isConnected = await ApiConnectService.IsConnected();
 
         IsConnected = isConnected == ConnexionStateEnum.Connected;
-
     }
 }

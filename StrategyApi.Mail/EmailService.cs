@@ -37,7 +37,7 @@ public class EmailService : IEmailService
             {
                 Subject = subject,
                 Body = body,
-                Priority = MailPriority.High,
+                Priority = MailPriority.High
             };
             _logger.Information("Send mail : {@Mail}", message);
             _smtpClient.Send(message);

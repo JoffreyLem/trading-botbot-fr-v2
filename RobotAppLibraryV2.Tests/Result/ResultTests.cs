@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using Moq;
+using RobotAppLibraryV2.ApiHandler.Interfaces;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Result;
 
@@ -6,13 +8,17 @@ namespace RobotAppLibraryV2.Tests.Result;
 
 public class ResultTests
 {
+    private readonly Mock<IApiHandler> apiMock = new();
+
     [Fact]
     public void TestCalculateResults_WithOnePosition_ShouldCalculateCorrectResults()
     {
         // Arrange and act
         var position = new Position { Profit = 100, DateOpen = DateTime.Now };
-        var strategyResult = new StrategyResult(new List<Position> { position });
 
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(new List<Position> { position });
+        var strategyResult = new StrategyResult(apiMock.Object, "");
         // Assert
         strategyResult.Results.Profit.Should().Be(100);
         strategyResult.Results.ProfitPositif.Should().Be(100);
@@ -33,6 +39,67 @@ public class ResultTests
     }
 
     [Fact]
+    public void TestCalculateResults_PositionClosed_Callback()
+    {
+        // Arrange and act
+        var position = new Position { Profit = 100, DateOpen = DateTime.Now };
+        var position2 = new Position { Profit = 100, DateOpen = DateTime.Now, StrategyId = "test" };
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(new List<Position> { position });
+        var strategyResult = new StrategyResult(apiMock.Object, "test");
+        apiMock.Raise(x => x.PositionClosedEvent += null, this, position2);
+
+        // Assert
+        strategyResult.Results.Profit.Should().Be(200);
+        strategyResult.Results.ProfitPositif.Should().Be(200);
+        strategyResult.Results.ProfitNegatif.Should().Be(0);
+        strategyResult.Results.TotalPositions.Should().Be(2);
+        strategyResult.Results.TotalPositionPositive.Should().Be(2);
+        strategyResult.Results.TotalPositionNegative.Should().Be(0);
+        strategyResult.Results.MoyenneProfit.Should().Be(100);
+        strategyResult.Results.MoyennePositive.Should().Be(100);
+        strategyResult.Results.MoyenneNegative.Should().Be(0);
+        strategyResult.Results.RatioMoyennePositifNegatif.Should().Be(0);
+        strategyResult.Results.GainMax.Should().Be(100);
+        strategyResult.Results.PerteMax.Should().Be(0);
+        strategyResult.Results.TauxReussite.Should().Be(100);
+        strategyResult.Results.ProfitFactor.Should().Be(0);
+        strategyResult.Results.DrawndownMax.Should().Be(0);
+        strategyResult.Results.Drawndown.Should().Be(0);
+    }
+
+    [Fact]
+    public void TestCalculateResults_PositionClosed_Callback_NoRun()
+    {
+        // Arrange and act
+        var position = new Position { Profit = 100, DateOpen = DateTime.Now };
+        var position2 = new Position { Profit = 100, DateOpen = DateTime.Now, StrategyId = "truc" };
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(new List<Position> { position });
+        var strategyResult = new StrategyResult(apiMock.Object, "test");
+        apiMock.Raise(x => x.PositionClosedEvent += null, this, position2);
+
+        // Assert
+        strategyResult.Results.Profit.Should().Be(100);
+        strategyResult.Results.ProfitPositif.Should().Be(100);
+        strategyResult.Results.ProfitNegatif.Should().Be(0);
+        strategyResult.Results.TotalPositions.Should().Be(1);
+        strategyResult.Results.TotalPositionPositive.Should().Be(1);
+        strategyResult.Results.TotalPositionNegative.Should().Be(0);
+        strategyResult.Results.MoyenneProfit.Should().Be(100);
+        strategyResult.Results.MoyennePositive.Should().Be(100);
+        strategyResult.Results.MoyenneNegative.Should().Be(0);
+        strategyResult.Results.RatioMoyennePositifNegatif.Should().Be(0);
+        strategyResult.Results.GainMax.Should().Be(100);
+        strategyResult.Results.PerteMax.Should().Be(0);
+        strategyResult.Results.TauxReussite.Should().Be(100);
+        strategyResult.Results.ProfitFactor.Should().Be(0);
+        strategyResult.Results.DrawndownMax.Should().Be(0);
+        strategyResult.Results.Drawndown.Should().Be(0);
+    }
+
+
+    [Fact]
     public void TestCalculateResults_WithTwoPositions_OnePositiveAndOneNegative_ShouldCalculateCorrectResults()
     {
         // Arrange and Act
@@ -42,7 +109,9 @@ public class ResultTests
             new() { Profit = -50 }
         };
 
-        var strategyResult = new StrategyResult(positions);
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(positions);
+        var strategyResult = new StrategyResult(apiMock.Object, "");
 
         // Assert
         strategyResult.Results.Profit.Should().Be(50);
@@ -75,7 +144,10 @@ public class ResultTests
             new() { Profit = 15m },
             new() { Profit = -10m }
         };
-        var strategyResult = new StrategyResult(positions);
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(positions);
+
+        var strategyResult = new StrategyResult(apiMock.Object, "");
 
 
         // Act
@@ -111,8 +183,9 @@ public class ResultTests
             new() { Profit = 25, DateClose = new DateTime(2023, 1, 3) },
             new() { Profit = 10, DateClose = new DateTime(2023, 1, 4) }
         };
-        var strategyResult = new StrategyResult(positions);
-
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(positions);
+        var strategyResult = new StrategyResult(apiMock.Object, "");
         // Act
         var result = strategyResult.CalculateResults();
 
@@ -146,8 +219,9 @@ public class ResultTests
             new() { Profit = 25, DateClose = new DateTime(2023, 1, 3) },
             new() { Profit = 10, DateClose = new DateTime(2023, 1, 4) }
         };
-        var strategyResult = new StrategyResult(positions);
-
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(positions);
+        var strategyResult = new StrategyResult(apiMock.Object, "");
         // Act
         var position = new Position { Profit = 10, DateClose = new DateTime(2023, 1, 5) };
         strategyResult.UpdateGlobalData(position);
@@ -170,5 +244,121 @@ public class ResultTests
         result.ProfitFactor.Should().Be(2.9m);
         strategyResult.Results.DrawndownMax.Should().Be(0);
         strategyResult.Results.Drawndown.Should().Be(90);
+    }
+
+    [Fact]
+    public void TestCalculateResults_LooseStreak()
+    {
+        // Arrange and Act
+        var positions = new List<Position>
+        {
+            new() { Profit = -100 },
+            new() { Profit = -50 },
+            new() { Profit = -50 },
+            new() { Profit = -50 },
+            new() { Profit = -50 }
+        };
+
+        var caller = false;
+
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(positions);
+
+        apiMock.Setup(x => x.GetBalanceAsync())
+            .ReturnsAsync(new AccountBalance
+            {
+                Balance = 1000
+            });
+
+        var strategyResult = new StrategyResult(apiMock.Object, "test");
+        strategyResult.LooseStreak = 5;
+        strategyResult.SecureControlPosition = true;
+
+        // Assert
+        strategyResult.ResultTresholdEvent += (sender, treshold) =>
+        {
+            caller = true;
+            treshold.Should().Be(EventTreshold.LooseStreak);
+        };
+
+        apiMock.Raise(x => x.PositionClosedEvent += null, this, new Position { Profit = -10, StrategyId = "test" });
+
+        caller.Should().Be(true);
+    }
+
+    [Fact]
+    public void TestCalculateResults_ProfitFactor()
+    {
+        // Arrange and Act
+        var positions = new List<Position>
+        {
+            new() { Profit = 10 },
+            new() { Profit = -100 }
+        };
+
+        var caller = false;
+
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(positions);
+
+        apiMock.Setup(x => x.GetBalanceAsync())
+            .ReturnsAsync(new AccountBalance
+            {
+                Balance = 1000
+            });
+
+        var strategyResult = new StrategyResult(apiMock.Object, "test");
+        strategyResult.LooseStreak = 5;
+        strategyResult.SecureControlPosition = true;
+        strategyResult.ToleratedDrawnDown = 50;
+
+        // Assert
+        strategyResult.ResultTresholdEvent += (sender, treshold) =>
+        {
+            caller = true;
+            treshold.Should().Be(EventTreshold.Profitfactor);
+        };
+
+        apiMock.Raise(x => x.PositionClosedEvent += null, this, new Position { Profit = -10, StrategyId = "test" });
+
+        caller.Should().Be(true);
+    }
+
+    [Fact]
+    public void TestCalculateResults_Drawdown()
+    {
+        // Arrange and Act
+        var positions = new List<Position>
+        {
+            new() { Profit = -50 },
+            new() { Profit = 100 }
+        };
+
+        var caller = false;
+
+        apiMock.Setup(x => x.GetAllPositionsByCommentAsync(It.IsAny<string>()))
+            .ReturnsAsync(positions);
+
+        apiMock.Setup(x => x.GetBalanceAsync())
+            .ReturnsAsync(new AccountBalance
+            {
+                Balance = 1000
+            });
+
+        var strategyResult = new StrategyResult(apiMock.Object, "test");
+        strategyResult.LooseStreak = 5;
+        strategyResult.SecureControlPosition = true;
+        strategyResult.ToleratedDrawnDown = 10;
+
+        // Assert
+        strategyResult.ResultTresholdEvent += (sender, treshold) =>
+        {
+            caller = true;
+            treshold.Should().Be(EventTreshold.Drowdown);
+        };
+
+        apiMock.Raise(x => x.PositionClosedEvent += null, this, new Position { Profit = -10, StrategyId = "test" });
+
+        caller.Should().Be(true);
     }
 }

@@ -36,13 +36,13 @@ public class APICommandFactory : IApiCommandFactory
         return CreateLoginCommand(userId.Value.ToString(), password, prettyPrint);
     }
 
-    public LoginCommand CreateLoginCommand(Credentials credentials, bool prettyPrint = false)
+    public LoginCommand CreateLoginCommand(CredentialsXtb credentials, bool prettyPrint = false)
     {
         var jsonObj = CreateLoginJsonObject(credentials);
         return new LoginCommand(jsonObj, prettyPrint);
     }
 
-    private JSONObject CreateLoginJsonObject(Credentials credentials)
+    private JSONObject CreateLoginJsonObject(CredentialsXtb credentials)
     {
         var response = new JSONObject();
         if (credentials != null)
@@ -338,11 +338,11 @@ public class APICommandFactory : IApiCommandFactory
     public LoginResponse ExecuteLoginCommand(ISyncApiConnector connector, string userId, string password,
         bool prettyPrint = false)
     {
-        var credentials = new Credentials(userId, password);
+        var credentials = new CredentialsXtb(userId, password);
         return ExecuteLoginCommand(connector, credentials, prettyPrint);
     }
 
-    public LoginResponse ExecuteLoginCommand(ISyncApiConnector connector, Credentials credentials,
+    public LoginResponse ExecuteLoginCommand(ISyncApiConnector connector, CredentialsXtb credentials,
         bool prettyPrint = false)
     {
         var loginCommand = CreateLoginCommand(credentials, prettyPrint);

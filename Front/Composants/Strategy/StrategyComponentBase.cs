@@ -1,24 +1,29 @@
-﻿using Front.Modeles;
-using Front.Services;
+﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
 using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Composants.Strategy;
 
-public class StrategyComponentBase : ComponentBase , IDisposable
+public class StrategyComponentBase : ComponentBase, IDisposable
 {
     protected bool IsInitialized;
 
     protected StrategyInitFormComponent? StrategyInitFormComponent { get; set; }
-    
+
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
 
     [Inject] private ShowToastService ToastService { get; set; }
-    
+
     [Inject] private NavigationManager NavigationManager { get; set; }
 
-    protected bool OnLoading { get; set; } = false;
-    
+    protected bool OnLoading { get; set; }
+
+
+    public void Dispose()
+    {
+        StrategyInitFormComponent?.Dispose();
+    }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -35,9 +40,8 @@ public class StrategyComponentBase : ComponentBase , IDisposable
         {
             ToastService.ShowToastError("Error on initialization");
         }
-       
     }
-    
+
     protected async Task DeleteStrategy()
     {
         try
@@ -61,12 +65,5 @@ public class StrategyComponentBase : ComponentBase , IDisposable
     protected async Task HandleChildEvent()
     {
         await InitializeStrategy();
-   
-    }
-
-
-    public void Dispose()
-    {
-        StrategyInitFormComponent?.Dispose();
     }
 }

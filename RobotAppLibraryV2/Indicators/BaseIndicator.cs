@@ -7,36 +7,45 @@ namespace RobotAppLibraryV2.Indicators;
 public abstract class BaseIndicator<T> : IIndicator, IDisposable where T : ResultBase
 {
     private T[] _data = ArrayPool<T>.Shared.Rent(2100);
-    private int _count = 0;
 
     public int LoopBackPeriod { get; set; } = 1;
-    public Tick LastTick { get; set; } = new();
 
     public T this[int index]
     {
         get
         {
-            if (index < 0 || index >= _count)
+            if (index < 0 || index >= Count)
                 throw new IndexOutOfRangeException();
             return _data[index];
         }
         set
         {
-            if (index < 0 || index >= _count)
+            if (index < 0 || index >= Count)
                 throw new IndexOutOfRangeException();
             _data[index] = value;
         }
     }
 
-    public int Count => _count;
+    public int Count { get; private set; }
+
+
+    public void Dispose()
+    {
+        if (_data != null)
+        {
+            ArrayPool<T>.Shared.Return(_data);
+            _data = null;
+        }
+    }
+
+    public Tick LastTick { get; set; } = new();
 
     public void UpdateIndicator(IEnumerable<Candle> data)
     {
-       
-        if (_count > 0)
+        if (Count > 0)
         {
-            Array.Clear(_data, 0, _count);
-            _count = 0;
+            Array.Clear(_data, 0, Count);
+            Count = 0;
         }
 
 
@@ -45,7 +54,7 @@ public abstract class BaseIndicator<T> : IIndicator, IDisposable where T : Resul
 
 
         Array.Copy(dataToAdd, _data, dataToAdd.Length);
-        _count = dataToAdd.Length;
+        Count = dataToAdd.Length;
     }
 
     private void EnsureCapacity(int newLength)
@@ -56,29 +65,19 @@ public abstract class BaseIndicator<T> : IIndicator, IDisposable where T : Resul
             _data = ArrayPool<T>.Shared.Rent(newLength);
         }
     }
-    
+
     public T Last()
     {
-        if (_count == 0)
+        if (Count == 0)
             throw new InvalidOperationException("The list is empty.");
 
-        return _data[_count - 1];
+        return _data[Count - 1];
     }
-    
+
     public T LastOrDefault()
     {
-        return _count == 0 ? default(T) : _data[_count - 1];
+        return Count == 0 ? default : _data[Count - 1];
     }
 
     protected abstract IEnumerable<T> Update(IEnumerable<Candle> data);
-
- 
-    public void Dispose()
-    {
-        if (_data != null)
-        {
-            ArrayPool<T>.Shared.Return(_data);
-            _data = null;
-        }
-    }
 }

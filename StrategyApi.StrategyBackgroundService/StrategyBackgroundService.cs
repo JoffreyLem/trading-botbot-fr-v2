@@ -1,39 +1,32 @@
 using System.Threading.Channels;
 using AutoMapper;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
-using RobotAppLibraryV2.Interfaces;
 using Serilog;
 using StrategyApi.Mail;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Api;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
-using StrategyApi.StrategyBackgroundService.Hubs;
-using StrategyApi.StrategyBackgroundService.Services;
+using StrategyApi.StrategyBackgroundService.Command.Api;
+using StrategyApi.StrategyBackgroundService.Command.Strategy;
 
 namespace StrategyApi.StrategyBackgroundService;
 
 public class StrategyBackgroundService : BackgroundService
 {
     private readonly CommandHandler _apiHandlerGestion;
-    private readonly ChannelReader<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)> _channelApiReader;
+    private readonly ChannelReader<ServiceCommandeBaseApiAbstract> _channelApiReader;
 
-    private readonly ChannelReader<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)>
-        _channelStrategyReader;
+    private readonly ChannelReader<ServiceCommandeBaseStrategyAbstract> _channelStrategyReader;
 
     private readonly ILogger _logger;
 
     public StrategyBackgroundService(ILogger logger,
-        ChannelReader<(ApiCommandBaseDto, TaskCompletionSource<CommandResultBase>)> channelApiReader,
-        ChannelReader<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)> channelStrategyReader,
-        IHubContext<ApiHandlerHub, IApiHandlerHub> apiHandlerHub, IMapper mapper,
-        IHubContext<StrategyHub, IStrategyHub> strategyHub,
-        IEmailService emailService,IEventBus eventBus)
+        ChannelReader<ServiceCommandeBaseApiAbstract> channelApiReader,
+        ChannelReader<ServiceCommandeBaseStrategyAbstract> channelStrategyReader,
+        IMapper mapper,
+        IEmailService emailService)
     {
         _logger = logger;
         _channelApiReader = channelApiReader;
         _channelStrategyReader = channelStrategyReader;
-        _apiHandlerGestion = new CommandHandler(logger, apiHandlerHub, mapper, strategyHub, emailService,eventBus);
+        _apiHandlerGestion = new CommandHandler(logger, mapper, emailService);
     }
 
 
@@ -47,27 +40,29 @@ public class StrategyBackgroundService : BackgroundService
 
     private async Task ProcessApiChannel(CancellationToken stoppingToken)
     {
-        await foreach (var (command, tcs) in _channelApiReader.ReadAllAsync(stoppingToken))
+        await foreach (var command in _channelApiReader.ReadAllAsync(stoppingToken))
             try
             {
-                await _apiHandlerGestion.HandleApiCommand(command, tcs);
+                await _apiHandlerGestion.HandleApiCommand(command);
             }
             catch (System.Exception ex)
             {
-                tcs.SetException(ex);
+                _logger.Error(ex, "Error on {command} execution", command);
+                command.SetException(ex);
             }
     }
 
     private async Task ProcessStrategyChannel(CancellationToken stoppingToken)
     {
-        await foreach (var (command, tcs) in _channelStrategyReader.ReadAllAsync(stoppingToken))
+        await foreach (var command in _channelStrategyReader.ReadAllAsync(stoppingToken))
             try
             {
-                await _apiHandlerGestion.HandleStrategyCommand(command, tcs);
+                await _apiHandlerGestion.HandleStrategyCommand(command);
             }
             catch (System.Exception ex)
             {
-                tcs.SetException(ex);
+                _logger.Error(ex, "Error on {command} execution", command);
+                command.SetException(ex);
             }
     }
 

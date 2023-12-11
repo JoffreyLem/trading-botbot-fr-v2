@@ -1,8 +1,8 @@
 using System.Threading.Channels;
 using RobotAppLibraryV2.Modeles;
 using Serilog;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Result;
-using StrategyApi.StrategyBackgroundService.Dto.Command.Strategy;
+using StrategyApi.StrategyBackgroundService.Command.Strategy;
+using StrategyApi.StrategyBackgroundService.Command.Strategy.Request;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
 
@@ -10,13 +10,12 @@ namespace StrategyApi.StrategyBackgroundService.Services;
 
 public class StrategyHandlerService : IStrategyHandlerService
 {
+    private readonly ChannelWriter<ServiceCommandeBaseStrategyAbstract> _channelStrategyWriter;
+
     private readonly ILogger _logger;
 
-    private readonly ChannelWriter<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)>
-        _channelStrategyWriter;
-
     public StrategyHandlerService(ILogger logger,
-        ChannelWriter<(StrategyCommandBaseDto, TaskCompletionSource<CommandResultBase>)> channelStrategyWriter)
+        ChannelWriter<ServiceCommandeBaseStrategyAbstract> channelStrategyWriter)
     {
         _channelStrategyWriter = channelStrategyWriter;
 
@@ -26,52 +25,43 @@ public class StrategyHandlerService : IStrategyHandlerService
     public async Task InitStrategy(StrategyTypeEnum strategyType, string symbol, Timeframe timeframe,
         Timeframe? timeframe2)
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
-
-        var apiCommandDto = new InitStrategyCommandDto
+        var initStrategyCommand = new InitStrategyCommand
         {
-            StrategyCommand = StrategyCommand.InitStrategy,
             StrategyType = strategyType,
             Symbol = symbol,
             Timeframe = timeframe,
             timeframe2 = timeframe2
         };
 
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
 
-        await tcs.Task;
+        await _channelStrategyWriter.WriteAsync(initStrategyCommand);
+
+        await initStrategyCommand.ResponseSource.Task;
     }
 
     public async Task<IsInitializedDto> IsInitialized()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var isInitializedCommand = new IsInitializerCommand();
 
-        var apiCommandDto = new StrategyCommandBaseDto
+        await _channelStrategyWriter.WriteAsync(isInitializedCommand);
+
+        var result = await isInitializedCommand.ResponseSource.Task;
+
+        return new IsInitializedDto
         {
-            StrategyCommand = StrategyCommand.IsInitialized
+            Initialized = result.IsInitialized
         };
-
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
-
-        var result = await tcs.Task as CommandExecutedTypedResult<IsInitializedDto>;
-
-        return result.value;
     }
 
     public async Task<StrategyInfoDto> GetStrategyInfo()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var getStrategyInfoCommand = new GetStrategyInfoCommand();
 
-        var apiCommandDto = new StrategyCommandBaseDto
-        {
-            StrategyCommand = StrategyCommand.GetStrategyInfo
-        };
+        await _channelStrategyWriter.WriteAsync(getStrategyInfoCommand);
 
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
+        var result = await getStrategyInfoCommand.ResponseSource.Task;
 
-        var result = await tcs.Task as CommandExecutedTypedResult<StrategyInfoDto>;
-
-        return result.value;
+        return result.StrategyInfoDto;
     }
 
     public Task<List<string>> GetListStrategy()
@@ -86,111 +76,70 @@ public class StrategyHandlerService : IStrategyHandlerService
 
     public async Task CloseStrategy()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var closeStrategyCommand = new CloseStrategyCommand();
 
-        var apiCommandDto = new StrategyCommandBaseDto
-        {
-            StrategyCommand = StrategyCommand.CloseStrategy
-        };
+        await _channelStrategyWriter.WriteAsync(closeStrategyCommand);
 
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
-
-        await tcs.Task;
+        await closeStrategyCommand.ResponseSource.Task;
     }
 
 
-    public async Task<ListPositionsDto> GetStrategyPosition()
+    public async Task<ListPositionsDto> GetStrategyPositionClosed()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var getStrategyPositionClosed = new GetStrategyPositionClosedCommand();
 
-        var apiCommandDto = new StrategyCommandBaseDto
-        {
-            StrategyCommand = StrategyCommand.GetStrategyPosition
-        };
+        await _channelStrategyWriter.WriteAsync(getStrategyPositionClosed);
 
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
+        var result = await getStrategyPositionClosed.ResponseSource.Task;
 
-        var result = await tcs.Task as CommandExecutedTypedResult<ListPositionsDto>;
-
-        return result.value;
+        return result.PositionDtos;
     }
 
     public async Task<ResultDto> GetResult()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var resultCommand = new GetStrategyResultRequestCommand();
 
-        var apiCommandDto = new StrategyCommandBaseDto
-        {
-            StrategyCommand = StrategyCommand.GetResults
-        };
+        await _channelStrategyWriter.WriteAsync(resultCommand);
 
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
+        var result = await resultCommand.ResponseSource.Task;
 
-        var result = await tcs.Task as CommandExecutedTypedResult<ResultDto>;
-
-        return result.value;
+        return result.ResultDto;
     }
 
     public async Task SetCanRun(bool value)
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
-
-        var apiCommandDto = new StrategyBoolCommand
+        var setCanRunCommand = new SetCanRunCommand
         {
-            StrategyCommand = StrategyCommand.SetCanRun,
             Bool = value
         };
 
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
 
-        await tcs.Task;
+        await _channelStrategyWriter.WriteAsync(setCanRunCommand);
+
+        await setCanRunCommand.ResponseSource.Task;
     }
 
-
-    public async Task SetSecureControlPosition(bool value)
-    {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
-
-        var apiCommandDto = new StrategyBoolCommand
-        {
-            StrategyCommand = StrategyCommand.SetSecureControlPosition,
-            Bool = value
-        };
-
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
-
-        await tcs.Task;
-    }
 
     public async Task<ListPositionsDto> GetOpenedPositions()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var command = new GetOpenedPositionRequestCommand();
 
-        var apiCommandDto = new StrategyCommandBaseDto
-        {
-            StrategyCommand = StrategyCommand.GetOpenedPosition
-        };
 
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
+        await _channelStrategyWriter.WriteAsync(command);
 
-        var result = await tcs.Task as CommandExecutedTypedResult<ListPositionsDto>;
+        var result = await command.ResponseSource.Task;
 
-        return result.value;
+        return result.ListPositionsDto;
     }
 
     public async Task<List<CandleDto>> GetChart()
     {
-        var tcs = new TaskCompletionSource<CommandResultBase>();
+        var getChartCommand = new GetChartCommandRequest();
 
-        var apiCommandDto = new StrategyCommandBaseDto
-        {
-            StrategyCommand = StrategyCommand.GetChart
-        };
+        await _channelStrategyWriter.WriteAsync(getChartCommand);
 
-        await _channelStrategyWriter.WriteAsync((apiCommandDto, tcs));
+        var result = await getChartCommand.ResponseSource.Task;
 
-        var result = await tcs.Task as CommandExecutedTypedResult<List<CandleDto>>;
-
-        return result.value;
+        return result.CandleDtos;
     }
 }

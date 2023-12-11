@@ -10,7 +10,6 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using StrategyApi.StrategyBackgroundService;
 
-
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 builder.Configuration.AddEnvironmentVariables();
@@ -23,7 +22,7 @@ builder.Services.AddControllersWithViews(options =>
             .RequireAuthenticatedUser()
             .Build();
         options.Filters.Add(new AuthorizeFilter(policy));
-    } )
+    })
     .AddMicrosoftIdentityUI();
 builder.Services.AddAuthorization(options =>
 {
@@ -44,16 +43,14 @@ builder.Services.AddHealthChecks();
 builder.WebHost.ConfigureAppConfiguration((ctx, cb) =>
     {
         if (!ctx.HostingEnvironment.IsDevelopment())
-        {
             StaticWebAssetsLoader.UseStaticWebAssets(
                 ctx.HostingEnvironment,
                 ctx.Configuration);
-        }
     }
 );
 
 var app = builder.Build();
- 
+
 var forwardedHeaderOptions = new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
@@ -65,7 +62,7 @@ app.UseForwardedHeaders(forwardedHeaderOptions);
 
 if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
- //   app.UseHsts();
+    app.UseHsts();
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -83,8 +80,6 @@ app.MapControllers();
 app.MapBlazorHub();
 
 app.MapFallbackToPage("/_Host");
-
-
 
 
 app.Run();

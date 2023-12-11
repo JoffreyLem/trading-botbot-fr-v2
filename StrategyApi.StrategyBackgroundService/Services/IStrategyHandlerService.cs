@@ -16,15 +16,13 @@ public interface IStrategyHandlerService
 
     Task<StrategyInfoDto> GetStrategyInfo();
 
-    Task<ListPositionsDto> GetStrategyPosition();
+    Task<ListPositionsDto> GetStrategyPositionClosed();
 
     Task<ResultDto> GetResult();
 
     Task SetCanRun(bool value);
 
-    Task SetSecureControlPosition(bool value);
-
     Task<ListPositionsDto> GetOpenedPositions();
-    
+
     Task<List<CandleDto>> GetChart();
 }

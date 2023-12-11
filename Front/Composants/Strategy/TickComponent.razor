@@ -1,20 +1,34 @@
 @using StrategyApi.StrategyBackgroundService.Dto.Services
 @inject IJSRuntime JSRuntime
+
 @code {
 
-    [Parameter]
-    public TickDto Tick { get; set; } = new TickDto();
+    [Parameter] public TickDto Tick { get; set; } = new();
 
 }
 
 <div class="tick-card">
-    <div><strong>Last tick</strong></div>
-    <div><strong>Date:</strong> @Tick.Date</div>
-    <div><strong>Ask:</strong> @Tick.Ask</div>
-    <div><strong>Ask Volume:</strong> @Tick.AskVolume</div>
-    <div><strong>Bid:</strong> @Tick.Bid</div>
-    <div><strong>Bid Volume:</strong> @Tick.BidVolume</div>
-    <div><strong>Spread:</strong> @Tick.Spread</div>
+    <div>
+        <strong>Last tick</strong>
+    </div>
+    <div>
+        <strong>Date:</strong> @Tick.Date
+    </div>
+    <div>
+        <strong>Ask:</strong> @Tick.Ask
+    </div>
+    <div>
+        <strong>Ask Volume:</strong> @Tick.AskVolume
+    </div>
+    <div>
+        <strong>Bid:</strong> @Tick.Bid
+    </div>
+    <div>
+        <strong>Bid Volume:</strong> @Tick.BidVolume
+    </div>
+    <div>
+        <strong>Spread:</strong> @Tick.Spread
+    </div>
 </div>
 
 <style>

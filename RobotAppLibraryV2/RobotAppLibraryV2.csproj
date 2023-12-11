@@ -8,12 +8,18 @@
 
     <ItemGroup>
         <PackageReference Include="Serilog" Version="3.0.1"/>
-        <PackageReference Include="Skender.Stock.Indicators" Version="2.4.10"/>
+        <PackageReference Include="Skender.Stock.Indicators" Version="2.4.11"/>
     </ItemGroup>
 
     <ItemGroup>
 
-        <ProjectReference Include="..\RobotAppLibraryV2.ApiHandler.Xtb\RobotAppLibraryV2.ApiHandler.Xtb.csproj"/>
+        <ProjectReference Include="..\RobotAppLibraryV2.Api.Xtb\RobotAppLibraryV2.Api.Xtb.csproj"/>
+
+        <ProjectReference Include="..\RobotAppLibraryV2.ApiConnector\RobotAppLibraryV2.ApiConnector.csproj"/>
+
+        <ProjectReference Include="..\RobotAppLibraryV2.Modeles\RobotAppLibraryV2.Modeles.csproj"/>
+
+        <ProjectReference Include="..\RobotAppLibraryV2.Utils\RobotAppLibraryV2.Utils.csproj"/>
 
     </ItemGroup>
 
@@ -21,6 +27,11 @@
         <Reference Include="Skender.Stock.Indicators">
             <HintPath>..\..\..\.nuget\packages\skender.stock.indicators\2.4.10\lib\net7.0\Skender.Stock.Indicators.dll</HintPath>
         </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="ApiHandler\Backtest\BacktestApiHandler.cs"/>
+        <Compile Remove="ApiHandler\Handlers\XtbApi.cs"/>
     </ItemGroup>
 
 </Project>

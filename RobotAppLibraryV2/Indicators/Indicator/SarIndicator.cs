@@ -22,11 +22,11 @@ public class SarIndicator : BaseIndicator<ParabolicSarResult>
 
     public bool IsBuy()
     {
-        return this.Last().Sar < (double?)LastTick.Bid;
+        return Last().Sar < (double?)LastTick.Bid;
     }
 
     public bool IsSell()
     {
-        return this.Last().Sar > (double?)LastTick.Bid;
+        return Last().Sar > (double?)LastTick.Bid;
     }
 }

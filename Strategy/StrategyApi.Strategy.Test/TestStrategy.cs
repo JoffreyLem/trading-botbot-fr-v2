@@ -12,18 +12,17 @@ public class TestStrategy : StrategyImplementationBase
     {
         RunOnTick = true;
         CloseOnTick = true;
-        CanRun = false;
+        CanRun = true;
     }
 
     public SarIndicator SarIndicator { get; set; } = new();
 
     protected override void Run()
     {
-        var type = SarIndicator.IsBuy() ? TypePosition.Buy : TypePosition.Sell;
+        var type = SarIndicator.IsBuy() ? TypeOperation.Buy : TypeOperation.Sell;
         var sl = (decimal)SarIndicator.Last().Sar;
 
         OpenPosition(type, CalculateStopLoss(100, type), CalculateTakeProfit(80, type));
-        CanRun = false;
     }
 
 

@@ -5,10 +5,9 @@ using Serilog;
 
 namespace RobotAppLibraryV2.MoneyManagement;
 
-// TODO : TU Direct ici
-public class LotValueCalculator : IDisposable
+public class LotValueCalculator : ILotValueCalculator, IDisposable
 {
-    private const int StandardLotSize = 100000;
+    private const int STANDARD_LOT_SIZE = 100000;
 
     private readonly IApiHandler _apiHandler;
 
@@ -18,22 +17,22 @@ public class LotValueCalculator : IDisposable
 
     private Tick _tickPriceMain = new();
 
-    public LotValueCalculator(IApiHandler apiHandler, ILogger? logger, string symbol, bool subscribePrice = true)
+    public LotValueCalculator(IApiHandler apiHandler, ILogger? logger, string symbol)
     {
         _apiHandler = apiHandler;
         _logger = logger;
-        Init(subscribePrice, symbol);
+        Init(symbol);
     }
 
-    public string BaseSymbolAccount { get; set; } = "EUR";
-    public SymbolInfo SymbolInfo { get; private set; } = null!;
-    public double LotValueStandard { get; private set; }
+    private string BaseSymbolAccount { get; } = "EUR";
+    private SymbolInfo SymbolInfo { get; set; } = null!;
+    public double PipValueStandard { get; private set; }
+    public double PipValueMiniLot => PipValueStandard / 10;
+    public double PipValueMicroLot => PipValueStandard / 100;
+    public double PipValueNanoLot => PipValueStandard / 1000;
+    public double MarginPerLot { get; private set; }
 
-    public double MiniLot => LotValueStandard / 10;
-    public double MicroLot => LotValueStandard / 100;
-    public double NanoLot => LotValueStandard / 1000;
-
-    public Tick? _tickPriceSecondary { get; private set; }
+    public Tick? TickPriceSecondary { get; private set; }
 
     public void Dispose()
     {
@@ -41,7 +40,7 @@ public class LotValueCalculator : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private void Init(bool subscribePrice, string symbol)
+    private void Init(string symbol)
     {
         SymbolInfo = _apiHandler.GetSymbolInformationAsync(symbol).Result;
         _tickPriceMain = _apiHandler
@@ -49,22 +48,21 @@ public class LotValueCalculator : IDisposable
             .Result;
 
         if (SymbolInfo.Category == Category.Forex && !SymbolInfo.Symbol.Contains(BaseSymbolAccount))
-            SubscribeSecondaryPrice(subscribePrice);
-        else if (SymbolInfo.Category == Category.Indices && SymbolInfo.Currency2 != BaseSymbolAccount)
-            SubscribeSecondaryPrice(subscribePrice);
+            SubscribeSecondaryPrice();
+        else if (SymbolInfo.Category == Category.Indices && SymbolInfo.CurrencyProfit != BaseSymbolAccount)
+            SubscribeSecondaryPrice();
 
         SymbolSwitch();
-
-        if (subscribePrice) _apiHandler.TickEvent += ApiHandlerOnTickEvent;
+        _apiHandler.TickEvent += ApiHandlerOnTickEvent;
     }
 
-    private void SubscribeSecondaryPrice(bool subscribePrice)
+    private void SubscribeSecondaryPrice()
     {
         var symbol1 = BaseSymbolAccount;
-        var symbol2 = SymbolInfo.Currency2;
+        var symbol2 = SymbolInfo.CurrencyProfit;
         _secondarySymbolAccount = GetMachingSymbolWithCurrency(symbol1, symbol2);
-        _tickPriceSecondary = _apiHandler.GetTickPriceAsync(_secondarySymbolAccount).Result;
-        if (subscribePrice) _apiHandler.SubscribePrice(_secondarySymbolAccount);
+        TickPriceSecondary = _apiHandler.GetTickPriceAsync(_secondarySymbolAccount).Result;
+        _apiHandler.SubscribePrice(_secondarySymbolAccount);
     }
 
     private void SymbolSwitch()
@@ -92,43 +90,53 @@ public class LotValueCalculator : IDisposable
 
         if (e.Symbol == _secondarySymbolAccount)
         {
-            _tickPriceSecondary = e;
+            TickPriceSecondary = e;
             SymbolSwitch();
         }
     }
 
     private void HandleForex()
     {
-        var pipValue = SymbolInfo.TickSize2 * StandardLotSize;
+        var tickSize = SymbolInfo.Symbol.Contains("JPY") ? 0.01m : 0.0001m;
+        var pipValue = tickSize * STANDARD_LOT_SIZE;
 
-        if (SymbolInfo.Currency2 == BaseSymbolAccount)
+        if (SymbolInfo.CurrencyProfit == BaseSymbolAccount)
         {
-            LotValueStandard = pipValue;
+            PipValueStandard = (double)pipValue;
         }
         else
         {
-            if (SymbolInfo.Currency1 == BaseSymbolAccount)
-                LotValueStandard = pipValue / (double)_tickPriceMain.Bid.GetValueOrDefault();
+            if (SymbolInfo.Currency == BaseSymbolAccount)
+                PipValueStandard = (double)(pipValue / _tickPriceMain.Bid.GetValueOrDefault());
             else
-                LotValueStandard = pipValue / (double)_tickPriceSecondary.GetValueOrDefault().Bid.GetValueOrDefault();
+                PipValueStandard = (double)(pipValue / TickPriceSecondary.GetValueOrDefault().Bid.GetValueOrDefault());
         }
 
-        _logger?.Information("New lot value forex : {Lot}", LotValueStandard);
+        _logger?.Debug("New lot value forex : {Lot}", PipValueStandard);
+
+        var leverageRatio = SymbolInfo.Leverage != 0 ? 100 / SymbolInfo.Leverage : 0;
+
+        if (leverageRatio > 0)
+            MarginPerLot = PipValueStandard * STANDARD_LOT_SIZE / leverageRatio / leverageRatio;
+        else
+            MarginPerLot = PipValueStandard * STANDARD_LOT_SIZE;
+
+        _logger?.Debug("Required margin per standard lot: {MarginPerLot}", MarginPerLot);
     }
 
 
     private void HandleIndices()
     {
-        if (SymbolInfo.Currency2 == BaseSymbolAccount)
-        {
-            LotValueStandard = SymbolInfo.ContractSize.GetValueOrDefault();
-        }
+        if (SymbolInfo.CurrencyProfit == BaseSymbolAccount)
+            PipValueStandard = SymbolInfo.ContractSize.GetValueOrDefault();
         else
-        {
-            LotValueStandard = (double)(SymbolInfo.ContractSize.GetValueOrDefault() /
-                                        _tickPriceSecondary.GetValueOrDefault().Bid.GetValueOrDefault());
-            _logger?.Information("New lot value indices : {Lot}", LotValueStandard);
-        }
+            PipValueStandard = (double)(SymbolInfo.ContractSize.GetValueOrDefault() /
+                                        TickPriceSecondary.GetValueOrDefault().Bid.GetValueOrDefault());
+
+        _logger?.Debug("New lot value indices : {Lot}", PipValueStandard);
+        var leverageRatio = 100 / SymbolInfo.Leverage;
+        MarginPerLot = PipValueStandard * (double)_tickPriceMain.Bid.GetValueOrDefault() / leverageRatio;
+        _logger?.Debug($"Marge requise par lot : {MarginPerLot}");
     }
 
 
@@ -138,8 +146,8 @@ public class LotValueCalculator : IDisposable
         {
             var allSymbol = _apiHandler.GetAllSymbolsAsync().Result;
             var selected =
-                allSymbol.ToList().Find(x => x.StartsWith(symbol1) && x.EndsWith(symbol2));
-            return selected ?? throw new Exception($"No matchin symbol for {symbol1} : {symbol2}");
+                allSymbol.ToList().Find(x => x.Symbol.StartsWith(symbol1) && x.Symbol.EndsWith(symbol2));
+            return selected.Symbol ?? throw new Exception($"No matchin symbol for {symbol1} : {symbol2}");
         }
         catch (Exception e)
         {
@@ -152,6 +160,7 @@ public class LotValueCalculator : IDisposable
     protected virtual void Dispose(bool disposing)
     {
         _apiHandler.TickEvent += null;
-        if (_secondarySymbolAccount is not null && _apiHandler.IsConnected()) _apiHandler.UnsubscribePrice(_secondarySymbolAccount);
+        if (_secondarySymbolAccount is not null && _apiHandler.IsConnected())
+            _apiHandler.UnsubscribePrice(_secondarySymbolAccount);
     }
 }

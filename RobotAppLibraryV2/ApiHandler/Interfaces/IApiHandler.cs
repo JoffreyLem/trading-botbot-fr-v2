@@ -4,8 +4,8 @@ namespace RobotAppLibraryV2.ApiHandler.Interfaces;
 
 public interface IApiHandler
 {
-    public byte[] SymbolsCompressed { get; set; }
-    public AccountBalance AccountBalance { get; set; }
+    public List<SymbolInfo> AllSymbols { get; set; }
+    public AccountBalance? AccountBalance { get; set; }
     public event EventHandler Connected;
     public event EventHandler Disconnected;
     public event EventHandler<Tick> TickEvent;
@@ -15,16 +15,15 @@ public interface IApiHandler
     public event EventHandler<Position> PositionClosedEvent;
     public event EventHandler<AccountBalance> NewBalanceEvent;
     public event EventHandler<News> NewsEvent;
-    public Task ConnectAsync(string user, string pwd);
+    public Task ConnectAsync(Credentials credentials);
     public Task DisconnectAsync();
     public bool IsConnected();
     public Task PingAsync();
-    public Task<AccountBalance> GetBalanceAsync();
-    public Task<List<Position>> GetAllPositionsAsync();
-    public Task<List<Calendar>> GetCalendarAsync();
-    public Task<List<string>?> GetAllSymbolsAsync();
-    public Task<List<Position>> GetCurrentTradesAsync();
-    public Task<List<Position>> GetAllPositionsByCommentAsync(string comment);
+    public Task<AccountBalance?> GetBalanceAsync();
+    public Task<List<CalendarData>> GetCalendarAsync();
+    public Task<List<SymbolInfo>> GetAllSymbolsAsync();
+    public Task<Position?> GetCurrentTradeAsync(string strategyPositionId);
+    public Task<List<Position?>> GetAllPositionsByCommentAsync(string strategyPositionId);
     public Task<SymbolInfo> GetSymbolInformationAsync(string symbol);
     public Task<TradeHourRecord> GetTradingHoursAsync(string symbol);
     public Task<List<Candle>> GetChartAsync(string symbol, Timeframe timeframe);
@@ -33,11 +32,13 @@ public interface IApiHandler
         DateTime end);
 
     public Task<Tick> GetTickPriceAsync(string symbol);
-    public Task<Position> OpenPositionAsync(Position position);
+    public Task<Position> OpenPositionAsync(Position position, decimal price);
     public Task UpdatePositionAsync(decimal price, Position position);
     public Task ClosePositionAsync(decimal price, Position position);
     public Task<bool> CheckIfSymbolExistAsync(string symbol);
     public void SubscribePrice(string symbol);
 
     public void UnsubscribePrice(string symbol);
+
+    void RestoreSession(Position position);
 }

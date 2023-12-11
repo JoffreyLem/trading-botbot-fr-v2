@@ -1,15 +1,9 @@
 ﻿using Destructurama;
-using Elasticsearch.Net;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Exceptions;
-using Serilog.Formatting.Elasticsearch;
-using Serilog.Sinks.Elasticsearch;
+using StrategyApi.StrategyBackgroundService;
 using Syncfusion.Blazor;
 using Syncfusion.Licensing;
 
@@ -37,9 +31,8 @@ public static class ProgramConfigurationHelper
             .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
             .MinimumLevel.Override("System", LogEventLevel.Error)
             .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-            .WriteTo.Console(
-                outputTemplate: "[{Timestamp:HH:mm:ss}] [{SourceContext}] [{Level}] {Message}{NewLine}{Exception}");
-   
+            .WriteTo.Console();
+
 
         var logger = loggerConfig.CreateLogger();
         SelfLog.Enable(Console.Error);

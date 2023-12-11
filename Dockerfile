@@ -7,7 +7,7 @@ COPY ["Front/Front.csproj", "Front/"]
 RUN dotnet restore "Front/Front.csproj"
 COPY . .
 WORKDIR "/src/Front"
-RUN dotnet build "Front.csproj" -c Release -o /app/build --nologo -v q --property WarningLevel=0 /clp:ErrorsOnly
+RUN dotnet build "Front.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "Front.csproj" -c Release -o /app/publish /p:UseAppHost=false
