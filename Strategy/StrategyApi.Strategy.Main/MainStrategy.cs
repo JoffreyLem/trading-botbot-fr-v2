@@ -16,6 +16,8 @@ public class MainStrategy : StrategyImplementationBase
         RunOnTick = false;
         UpdateOnTick = false;
         CloseOnTick = false;
+        CanRun = true;
+
     }
 
     public PivotPoint PivotPoint { get; set; } = new(PeriodSize.Day);
