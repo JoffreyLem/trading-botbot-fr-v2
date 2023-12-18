@@ -5,6 +5,7 @@ using RobotAppLibraryV2.ApiConnector.Exceptions;
 using RobotAppLibraryV2.ApiConnector.Interfaces;
 using RobotAppLibraryV2.ApiHandler.Xtb.errors;
 using RobotAppLibraryV2.Modeles;
+using RobotAppLibraryV2.Utils;
 
 namespace RobotAppLibraryV2.Api.Xtb;
 
@@ -259,8 +260,10 @@ public class XtbAdapter : IReponseAdapter
             tradeHourRecord.HoursRecords.Add(new TradeHourRecord.HoursRecordData
             {
                 Day = (DayOfWeek)tradingElement.GetProperty("day").GetInt32(),
-                From = TimeSpan.FromMilliseconds(tradingElement.GetProperty("fromT").GetInt64()),
-                To = TimeSpan.FromMilliseconds(tradingElement.GetProperty("toT").GetInt64())
+                From = TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(tradingElement
+                    .GetProperty("fromT").GetInt64()),
+                To = TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(tradingElement.GetProperty("toT")
+                    .GetInt64())
             });
         return tradeHourRecord;
     }
@@ -343,13 +346,12 @@ public class XtbAdapter : IReponseAdapter
                 ? profit.GetDecimal()
                 : 0;
             position.OpenPrice = recordElement.GetProperty("open_price").GetDecimal();
-            position.DateOpen = DateTimeOffset
-                .FromUnixTimeMilliseconds(recordElement.GetProperty("open_time").GetInt64())
-                .DateTime;
+            position.DateOpen =
+                TimeZoneConverter.ConvertMillisecondsToUtc(recordElement.GetProperty("open_time").GetInt64());
             position.ClosePrice = recordElement.GetProperty("close_price").GetDecimal();
             position.DateClose = recordElement.TryGetProperty("close_time", out var closeDate) &&
                                  closeDate.ValueKind != JsonValueKind.Null
-                ? DateTimeOffset.FromUnixTimeMilliseconds(closeDate.GetInt64()).DateTime
+                ? TimeZoneConverter.ConvertMillisecondsToUtc(closeDate.GetInt64())
                 : new DateTime();
 
             position.ReasonClosed =
@@ -465,12 +467,12 @@ public class XtbAdapter : IReponseAdapter
             ? profit.GetDecimal()
             : 0;
         position.OpenPrice = recordElement.GetProperty("open_price").GetDecimal();
-        position.DateOpen = DateTimeOffset.FromUnixTimeMilliseconds(recordElement.GetProperty("open_time").GetInt64())
-            .DateTime;
+        position.DateOpen =
+            TimeZoneConverter.ConvertMillisecondsToUtc(recordElement.GetProperty("open_time").GetInt64());
         position.ClosePrice = recordElement.GetProperty("close_price").GetDecimal();
         position.DateClose = recordElement.TryGetProperty("close_time", out var closeDate) &&
                              closeDate.ValueKind != JsonValueKind.Null
-            ? DateTimeOffset.FromUnixTimeMilliseconds(closeDate.GetInt64()).DateTime
+            ? TimeZoneConverter.ConvertMillisecondsToUtc(closeDate.GetInt64())
             : new DateTime();
 
         var comment = recordElement.GetProperty("comment").GetString();
@@ -530,7 +532,7 @@ public class XtbAdapter : IReponseAdapter
             ? bidVolumeProp.GetDecimal()
             : null;
         var date = jsonElement.TryGetProperty("timestamp", out var timestampProp)
-            ? DateTimeOffset.FromUnixTimeMilliseconds(timestampProp.GetInt64()).DateTime
+            ? TimeZoneConverter.ConvertMillisecondsToUtc(timestampProp.GetInt64())
             : new DateTime();
 
         var tick = new Tick
@@ -603,8 +605,7 @@ public class XtbAdapter : IReponseAdapter
         return new News
         {
             Body = jsonElement.GetProperty("body").ToString(),
-            Time = DateTimeOffset.FromUnixTimeMilliseconds(jsonElement.GetProperty("time").GetInt64())
-                .DateTime,
+            Time = TimeZoneConverter.ConvertMillisecondsToUtc(jsonElement.GetProperty("time").GetInt64()),
             Title = jsonElement.GetProperty("title").ToString()
         };
     }
@@ -623,7 +624,7 @@ public class XtbAdapter : IReponseAdapter
         return new Candle
         {
             Close = close,
-            Date = DateTimeOffset.FromUnixTimeMilliseconds(element.GetProperty("ctm").GetInt64()).DateTime,
+            Date = TimeZoneConverter.ConvertMillisecondsToUtc(element.GetProperty("ctm").GetInt64()),
             High = high,
             Low = low,
             Open = open,

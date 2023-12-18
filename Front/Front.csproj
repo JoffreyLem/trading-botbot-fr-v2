@@ -65,9 +65,6 @@
         <Compile Update="Composants\ToastCustomBase.cs">
             <DependentUpon>ToastCustomComponent.razor</DependentUpon>
         </Compile>
-        <Compile Update="Composants\Strategy\StrategyComponentBase.cs">
-            <DependentUpon>StrategyComponent.razor</DependentUpon>
-        </Compile>
         <Compile Update="Composants\Strategy\StrategiInitFormBase.cs">
             <DependentUpon>StrategyInitFormComponent.razor</DependentUpon>
         </Compile>
@@ -85,6 +82,9 @@
         </Compile>
         <Compile Update="Composants\HeathCheckComponentBase.cs">
             <DependentUpon>HealthCheckComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Composants\Strategy\AllStrategyComponentBase.cs">
+            <DependentUpon>AllStrategyComponent.razor</DependentUpon>
         </Compile>
     </ItemGroup>
 

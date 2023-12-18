@@ -1,6 +1,6 @@
 ﻿namespace RobotAppLibraryV2.Modeles;
 
-public record struct Tick
+public struct Tick
 {
     public Tick()
     {

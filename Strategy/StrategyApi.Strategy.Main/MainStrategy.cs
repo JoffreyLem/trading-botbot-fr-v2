@@ -17,7 +17,6 @@ public class MainStrategy : StrategyImplementationBase
         UpdateOnTick = false;
         CloseOnTick = false;
         CanRun = true;
-
     }
 
     public PivotPoint PivotPoint { get; set; } = new(PeriodSize.Day);
@@ -72,7 +71,7 @@ public class MainStrategy : StrategyImplementationBase
         }
     }
 
-    private async void OpenBuy(ParabolicSarResult? lastSarB, HeikinAshiResult? lastHashi,
+    private void OpenBuy(ParabolicSarResult? lastSarB, HeikinAshiResult? lastHashi,
         SuperTrendResult? superTrandSelected, ParabolicSarResult? sarSelected, double? sl, PivotPointsResult? tp)
     {
         if (lastSarB?.Sar < (double)LastCandle.Close && (bool)lastHashi?.IsStrongBuy())
@@ -84,7 +83,7 @@ public class MainStrategy : StrategyImplementationBase
         }
     }
 
-    private async void OpenSell(ParabolicSarResult? lastSarB, HeikinAshiResult? lastHashi,
+    private void OpenSell(ParabolicSarResult? lastSarB, HeikinAshiResult? lastHashi,
         SuperTrendResult? superTrandSelected, ParabolicSarResult? sarSelected, double? sl, PivotPointsResult? tp)
     {
         if (lastSarB?.Sar > (double)LastCandle.Close && (bool)lastHashi?.IsStrongSell())

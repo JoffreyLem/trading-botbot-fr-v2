@@ -6,7 +6,7 @@ using Syncfusion.Blazor.Grids;
 
 namespace Front.Composants.Strategy;
 
-public class PositionClosedComponentBase : ComponentBase
+public class PositionClosedComponentBase : StrategyIdComponentBase
 {
     protected SfGrid<PositionDto> Grid { get; set; }
     protected ObservableCollection<PositionDto> Positions { get; set; } = new();
@@ -15,7 +15,7 @@ public class PositionClosedComponentBase : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        var data = await _apiStrategyService.GetStrategyPositionClosed();
+        var data = await _apiStrategyService.GetStrategyPositionClosed(StrategyId);
         Positions = new ObservableCollection<PositionDto>(data.Positions);
     }
 }

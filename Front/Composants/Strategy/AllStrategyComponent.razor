@@ -1,0 +1,31 @@
+@inherits AllStrategyComponentBase
+
+<div>
+    <div class="row">
+        <StrategyInitFormComponent StrategyFormUpdateRequested="@InitializeStrategy"/>
+    </div>
+    <div class="row">
+        <SfTab LoadOn="ContentLoad.Dynamic">
+            <TabItems>
+                @foreach (var strategy in StrategyList)
+                {
+                    <TabItem>
+                        <HeaderTemplate>
+                            <div>@(strategy.StrategyName)</div>
+                        </HeaderTemplate>
+                        <ContentTemplate>
+                            <CascadingValue Value="strategy.Id">
+                                <StrategyDataComponent StrategyCloseRequested="@InitializeStrategy"/>
+                            </CascadingValue>
+                        </ContentTemplate>
+                    </TabItem>
+                }
+            </TabItems>
+        </SfTab>
+    </div>
+</div>
+
+
+@code {
+
+}

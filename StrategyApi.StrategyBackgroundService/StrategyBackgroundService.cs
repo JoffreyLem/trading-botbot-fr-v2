@@ -47,7 +47,7 @@ public class StrategyBackgroundService : BackgroundService
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex, "Error on {command} execution", command);
+                _logger.Error(ex, "Error on {@Command} execution", command);
                 command.SetException(ex);
             }
     }
@@ -61,7 +61,7 @@ public class StrategyBackgroundService : BackgroundService
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex, "Error on {command} execution", command);
+                _logger.Error(ex, "Error on {@Command} execution", command);
                 command.SetException(ex);
             }
     }

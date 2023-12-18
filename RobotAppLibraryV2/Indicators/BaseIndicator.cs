@@ -7,7 +7,6 @@ namespace RobotAppLibraryV2.Indicators;
 public abstract class BaseIndicator<T> : IIndicator, IDisposable where T : ResultBase
 {
     private T[] _data = ArrayPool<T>.Shared.Rent(2100);
-
     public int LoopBackPeriod { get; set; } = 1;
 
     public T this[int index]
@@ -17,12 +16,6 @@ public abstract class BaseIndicator<T> : IIndicator, IDisposable where T : Resul
             if (index < 0 || index >= Count)
                 throw new IndexOutOfRangeException();
             return _data[index];
-        }
-        set
-        {
-            if (index < 0 || index >= Count)
-                throw new IndexOutOfRangeException();
-            _data[index] = value;
         }
     }
 

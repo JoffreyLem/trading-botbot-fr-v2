@@ -1,10 +1,11 @@
 ﻿using RobotAppLibraryV2.Modeles;
+using RobotAppLibraryV2.Modeles.events;
 
 namespace RobotAppLibraryV2.Interfaces;
 
 public interface IStrategyEvent
 {
-    public event EventHandler<StrategyReasonClosed>? StrategyClosed;
+    public event EventHandler<RobotEvent<StrategyReasonClosed>>? StrategyClosed;
     public event EventHandler<Tick>? TickEvent;
     public event EventHandler<Candle>? CandleEvent;
     public event EventHandler<EventTreshold>? TresholdEvent;

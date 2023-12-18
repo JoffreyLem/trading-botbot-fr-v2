@@ -94,7 +94,7 @@ public class FakeStrategyTestContextIndicatorTest
 
         // Assert 
         fakeStrategyContextIndicator.SarIndicator.Count.Should().Be(500);
-        fakeStrategyContextIndicator.SarIndicator2.Count.Should().Be(42);
+        fakeStrategyContextIndicator.SarIndicator2.Count.Should().Be(43);
     }
 
     [Fact]
@@ -112,6 +112,6 @@ public class FakeStrategyTestContextIndicatorTest
 
         // Assert 
         fakeStrategyContextIndicator.SarIndicator.Count.Should().Be(501);
-        fakeStrategyContextIndicator.SarIndicator2.Count.Should().Be(42);
+        fakeStrategyContextIndicator.SarIndicator2.Count.Should().Be(43);
     }
 }

@@ -20,7 +20,8 @@ public static class TestUtils
     {
         var random = new Random();
         var candles = new List<Candle>();
-        var dateDebut = start ?? new DateTime(2022, 01, 01);
+        var now = DateTime.UtcNow;
+        var dateDebut = start ?? new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
 
         for (var i = 0; i < nombre; i++)
         {
@@ -33,11 +34,14 @@ public static class TestUtils
                 .SetLow(Math.Max(open, close) + (decimal)(random.NextDouble() * 100))
                 .SetDate(dateDebut);
 
-            dateDebut += interval;
+            if (start is not null)
+                dateDebut += interval;
+            else
+                dateDebut -= interval;
 
             candles.Add(candle);
         }
 
-        return candles;
+        return candles.OrderBy(candle => candle.Date).ToList();
     }
 }

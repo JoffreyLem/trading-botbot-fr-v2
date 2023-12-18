@@ -57,6 +57,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
             CommandExecutor.ExecuteTradeStatusCommandStreaming();
             CommandExecutor.ExecuteSubscribeProfitsCommandStreaming();
             CommandExecutor.ExecuteSubscribeNewsCommandStreaming();
+            CommandExecutor.ExecuteSubscribeKeepAliveCommandStreaming();
             TimerCallback timerCallback = async state => await PingAsync();
             pingTimer = new Timer(timerCallback, null, 0, PingInterval.Ticks / TimeSpan.TicksPerMillisecond);
         }

@@ -14,11 +14,6 @@ public class IndexBase : ComponentBase
         await LoadConnectionState();
     }
 
-    protected async Task HandleApiUpdate()
-    {
-        await LoadConnectionState();
-    }
-
     private async Task LoadConnectionState()
     {
         var isConnected = await ApiConnectService.IsConnected();

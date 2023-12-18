@@ -11,6 +11,7 @@ public class StrategiInitFormBase : ComponentBase, IDisposable
     private bool _disposed;
 
     protected StrategyInitDto _strategyInitDto = new();
+    protected bool Visibility { get; set; }
 
     protected bool OnLoading { get; set; }
 
@@ -68,23 +69,26 @@ public class StrategiInitFormBase : ComponentBase, IDisposable
         finally
         {
             OnLoading = false;
+            Visibility = false;
         }
     }
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                Symbols?.Clear();
-                Symbols = null;
-            }
+        // if (!_disposed)
+        // {
+        //     if (disposing)
+        //     {
+        //         Symbols?.Clear();
+        //         Symbols = null;
+        //     }
+        //     _disposed = true;
+        // }
+        // GC.Collect();
+    }
 
-
-            _disposed = true;
-        }
-
-        GC.Collect();
+    protected void CreateStrategy()
+    {
+        Visibility = true;
     }
 }

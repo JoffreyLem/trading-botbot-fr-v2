@@ -12,14 +12,11 @@ public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamin
 
     public event Action<Tick>? TickRecordReceived;
 
-
     public event Action<Position?>? TradeRecordReceived;
-
 
     public event Action<AccountBalance?>? BalanceRecordReceived;
 
     public event Action<Position>? ProfitRecordReceived;
-
 
     public event Action<News>? NewsRecordReceived;
     public event Action? KeepAliveRecordReceived;
@@ -28,7 +25,6 @@ public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamin
     public override async Task ConnectAsync()
     {
         await base.ConnectAsync();
-
 
         var t = new Thread(async () =>
         {
@@ -57,46 +53,52 @@ public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamin
         }
     }
 
+    public override Task SendAsync(string messageToSend)
+    {
+        Logger.Information("Streaming message to send {Message}",messageToSend);
+        return base.SendAsync(messageToSend);
+    }
+
     protected virtual void OnTickRecordReceived(Tick obj)
     {
-        Logger.Debug("New tick event {@Tick}", obj);
+        Logger.Verbose("New tick event {@Tick}", obj);
         TickRecordReceived?.Invoke(obj);
     }
 
     protected virtual void OnTradeRecordReceived(Position? obj)
     {
-        Logger.Debug("Position event {@obj}", obj);
+        Logger.Information("Position event {@obj}", obj);
         TradeRecordReceived?.Invoke(obj);
     }
 
     protected virtual void OnBalanceRecordReceived(AccountBalance? obj)
     {
-        Logger.Debug("Account balance event {@obj}", obj);
+        Logger.Verbose("Account balance event {@obj}", obj);
         BalanceRecordReceived?.Invoke(obj);
     }
 
 
     protected virtual void OnProfitRecordReceived(Position obj)
     {
-        Logger.Debug("Profit record event {@obj}", obj);
+        Logger.Verbose("Profit record event {@obj}", obj);
         ProfitRecordReceived?.Invoke(obj);
     }
 
     protected virtual void OnNewsRecordReceived(News obj)
     {
-        Logger.Debug("News event {@obj}", obj);
+        Logger.Verbose("News event {@obj}", obj);
         NewsRecordReceived?.Invoke(obj);
     }
 
     protected virtual void OnKeepAliveRecordReceived()
     {
-        Logger.Debug("Keep alive event");
+        Logger.Verbose("Keep alive event");
         KeepAliveRecordReceived?.Invoke();
     }
 
     protected virtual void OnCandleRecordReceived(Candle obj)
     {
-        Logger.Debug("Candle event {@obj}", obj);
+        Logger.Verbose("Candle event {@obj}", obj);
         CandleRecordReceived?.Invoke(obj);
     }
 }

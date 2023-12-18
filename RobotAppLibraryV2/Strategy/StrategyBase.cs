@@ -6,8 +6,8 @@ using RobotAppLibraryV2.CandleList;
 using RobotAppLibraryV2.Factory;
 using RobotAppLibraryV2.Indicators;
 using RobotAppLibraryV2.Indicators.Attributes;
-using RobotAppLibraryV2.Interfaces;
 using RobotAppLibraryV2.Modeles;
+using RobotAppLibraryV2.Modeles.events;
 using RobotAppLibraryV2.MoneyManagement;
 using RobotAppLibraryV2.Positions;
 using RobotAppLibraryV2.Result;
@@ -15,19 +15,16 @@ using Serilog;
 
 namespace RobotAppLibraryV2.Strategy;
 
-public sealed class StrategyBase : IStrategyEvent, IDisposable
+public sealed class StrategyBase : IDisposable
 {
     private readonly IApiHandler _apiHandler;
-    private readonly object _lockOpenPositionEvent = new();
-    private readonly object _lockTickEvent = new();
+    private readonly object _lockRunHandler = new();
 
     private readonly ILogger _logger;
     private readonly IMoneyManagement _moneyManagement;
     private readonly IPositionHandler _positionHandler;
     private readonly IStrategyResult _strategyResult;
     public readonly ICandleList History;
-
-    private bool canRun = true;
 
     public StrategyBase(
         StrategyImplementationBase strategyImplementationBase,
@@ -87,7 +84,7 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
         set
         {
             StrategyImplementation.CanRun = value;
-            StrategyInfoUpdated?.Invoke(this, EventArgs.Empty);
+            StrategyInfoUpdated?.Invoke(this, new RobotEvent(Id));
         }
     }
 
@@ -158,16 +155,15 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public event EventHandler<StrategyReasonClosed>? StrategyClosed;
-    public event EventHandler<Tick>? TickEvent;
-    public event EventHandler<Candle>? CandleEvent;
-    public event EventHandler<EventTreshold>? TresholdEvent;
-    public event EventHandler<Position>? PositionOpenedEvent;
-    public event EventHandler<Position>? PositionUpdatedEvent;
-    public event EventHandler<Position>? PositionRejectedEvent;
-    public event EventHandler<Position>? PositionClosedEvent;
-
-    public event EventHandler? StrategyInfoUpdated;
+    public event EventHandler<RobotEvent<StrategyReasonClosed>>? StrategyClosed;
+    public event EventHandler<RobotEvent<Tick>>? TickEvent;
+    public event EventHandler<RobotEvent<Candle>>? CandleEvent;
+    public event EventHandler<RobotEvent<EventTreshold>>? TresholdEvent;
+    public event EventHandler<RobotEvent<Position>>? PositionOpenedEvent;
+    public event EventHandler<RobotEvent<Position>>? PositionUpdatedEvent;
+    public event EventHandler<RobotEvent<Position>>? PositionRejectedEvent;
+    public event EventHandler<RobotEvent<Position>>? PositionClosedEvent;
+    public event EventHandler<RobotEvent>? StrategyInfoUpdated;
 
 
     private void Init()
@@ -176,10 +172,14 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
         History.OnTickEvent += HistoryOnOnTickEvent;
         History.OnCandleEvent += HistoryOnOnCandleEvent;
         _strategyResult.ResultTresholdEvent += MoneyManagementOnTreshHoldEvent;
-        _apiHandler.PositionOpenedEvent += (_, position) => PositionOpenedEvent?.Invoke(this, position);
-        _apiHandler.PositionUpdatedEvent += (_, position) => PositionUpdatedEvent?.Invoke(this, position);
-        _apiHandler.PositionClosedEvent += (_, position) => PositionClosedEvent?.Invoke(this, position);
-        _apiHandler.PositionRejectedEvent += (_, position) => PositionRejectedEvent?.Invoke(this, position);
+        _apiHandler.PositionOpenedEvent += (_, position) =>
+            PositionOpenedEvent?.Invoke(this, new RobotEvent<Position>(position, Id));
+        _apiHandler.PositionUpdatedEvent += (_, position) =>
+            PositionUpdatedEvent?.Invoke(this, new RobotEvent<Position>(position, Id));
+        _apiHandler.PositionClosedEvent += (_, position) =>
+            PositionClosedEvent?.Invoke(this, new RobotEvent<Position>(position, Id));
+        _apiHandler.PositionRejectedEvent += (_, position) =>
+            PositionRejectedEvent?.Invoke(this, new RobotEvent<Position>(position, Id));
 
         // Care about order call
         InitStrategyImplementation();
@@ -191,12 +191,13 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
     private void MoneyManagementOnTreshHoldEvent(object? sender, EventTreshold e)
     {
         CanRun = false;
-        TresholdEvent?.Invoke(this, e);
+        TresholdEvent?.Invoke(this, new RobotEvent<EventTreshold>(e, Id));
     }
 
 
     private void InitStrategyImplementation()
     {
+        // TODO : voir pour gérer l'update des valeurs ici ? 
         StrategyImplementation.History = History;
         StrategyImplementation.LastPrice = LastPrice;
         StrategyImplementation.LastCandle = LastCandle;
@@ -210,7 +211,7 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
         RunOnTick = StrategyImplementation.RunOnTick;
         UpdateOnTick = StrategyImplementation.UpdateOnTick;
         CloseOnTick = StrategyImplementation.CloseOnTick;
-        CanRun = StrategyImplementation.CanRun;
+        StrategyImplementation.CanRun = true;
     }
 
     private void InitIndicator()
@@ -230,52 +231,19 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
         UpdateIndicator();
     }
 
-    private void HistoryOnOnTickEvent(Tick tick)
+    private async Task HistoryOnOnTickEvent(Tick tick)
     {
         // TODO : Perf tests et voir temporisation dans history event tick ?
-        lock (_lockTickEvent)
+
+        UpdateIndicator();
+        try
         {
-            UpdateIndicator();
-            try
+            if (CanRun && RunOnTick && !_positionHandler.PositionInProgress)
             {
-                if (CanRun && RunOnTick && !_positionHandler.PositionInProgress)
+                lock (_lockRunHandler)
                 {
                     RunHandler();
                 }
-                else
-                {
-                    if (_positionHandler.PositionInProgress)
-                    {
-                        var currentPosition = _positionHandler.PositionOpened;
-
-                        if (UpdateOnTick) UpdateHandler(currentPosition);
-
-                        if (CloseOnTick) CloseHandler(currentPosition);
-                    }
-                }
-
-
-                TickEvent?.Invoke(this, tick);
-                CandleEvent?.Invoke(this, History.LastOrDefault());
-            }
-            catch (Exception e)
-            {
-                // TODO : Catch peut être inutile ? 
-                CanRun = false;
-                _logger.Error(e, "Erreur de traitement tick");
-                CloseStrategy(StrategyReasonClosed.Error);
-            }
-        }
-    }
-
-    private void HistoryOnOnCandleEvent(Candle candle)
-    {
-        try
-        {
-            UpdateIndicator();
-            if (CanRun && !RunOnTick && !_positionHandler.PositionInProgress)
-            {
-                RunHandler();
             }
             else
             {
@@ -283,9 +251,46 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
                 {
                     var currentPosition = _positionHandler.PositionOpened;
 
-                    if (!UpdateOnTick) UpdateHandler(currentPosition);
+                    if (UpdateOnTick) await UpdateHandler(currentPosition);
 
-                    if (!CloseOnTick) CloseHandler(currentPosition);
+                    if (CloseOnTick) await CloseHandler(currentPosition);
+                }
+            }
+
+
+            TickEvent?.Invoke(this, new RobotEvent<Tick>(tick, Id));
+            CandleEvent?.Invoke(this, new RobotEvent<Candle>(History.LastOrDefault(), Id));
+        }
+        catch (Exception e)
+        {
+            // TODO : Catch peut être inutile ? 
+            CanRun = false;
+            _logger.Error(e, "Erreur de traitement tick");
+            await CloseStrategy(StrategyReasonClosed.Error);
+        }
+    }
+
+    private async Task HistoryOnOnCandleEvent(Candle candle)
+    {
+        try
+        {
+            UpdateIndicator();
+            if (CanRun && !RunOnTick && !_positionHandler.PositionInProgress)
+            {
+                lock (_lockRunHandler)
+                {
+                    RunHandler();
+                }
+            }
+            else
+            {
+                if (_positionHandler.PositionInProgress)
+                {
+                    var currentPosition = _positionHandler.PositionOpened;
+
+                    if (!UpdateOnTick) await UpdateHandler(currentPosition);
+
+                    if (!CloseOnTick) await CloseHandler(currentPosition);
                 }
             }
         }
@@ -293,23 +298,24 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
         {
             CanRun = false;
             _logger.Error(e, "Erreur de traitement candle");
-            CloseStrategy(StrategyReasonClosed.Error);
+            await CloseStrategy(StrategyReasonClosed.Error);
         }
     }
 
+    // TODO : Faire tests de perf sur cette implémentation !
     private void UpdateIndicator()
     {
         try
         {
-            var candles = History.TakeLast(1000);
+            var candles = History.TakeLast(1000).ToList();
 
-            foreach (var indicator in IndicatorsList) indicator.UpdateIndicator(candles);
+            Parallel.ForEach(IndicatorsList, indicator => { indicator.UpdateIndicator(candles); });
 
             if (Timeframe2 is not null)
             {
-                var candles2 = History.Aggregate(Timeframe2.GetValueOrDefault());
+                var candles2 = History.Aggregate(Timeframe2.GetValueOrDefault()).ToList();
 
-                foreach (var indicator in IndicatorsList2) indicator.UpdateIndicator(candles2);
+                Parallel.ForEach(IndicatorsList2, indicator => { indicator.UpdateIndicator(candles2); });
             }
         }
         catch (Exception e)
@@ -321,7 +327,7 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
     }
 
 
-    private void OpenPosition(TypeOperation typePosition, decimal sl = 0,
+    private Task OpenPosition(TypeOperation typePosition, decimal sl = 0,
         decimal tp = 0, long? expiration = 0,
         double? volume = null, double risk = 5)
     {
@@ -337,30 +343,25 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
             volume ??= _moneyManagement.CalculatePositionSize(entryPrice, sl, risk);
         }
 
-        _positionHandler
-            .OpenPositionAsync(Symbol, typePosition, volume.GetValueOrDefault(), sl, tp, expiration)
-            .GetAwaiter().GetResult();
+        return _positionHandler
+            .OpenPositionAsync(Symbol, typePosition, volume.GetValueOrDefault(), sl, tp, expiration);
     }
 
-    public void CloseStrategy(StrategyReasonClosed strategyReasonClosed)
+    public async Task CloseStrategy(StrategyReasonClosed strategyReasonClosed)
     {
         try
         {
             _logger.Fatal("On Closing strategy for reason {Reason}", strategyReasonClosed);
-
+            _apiHandler.UnsubscribePrice(Symbol);
             CanRun = false;
 
             if (strategyReasonClosed is StrategyReasonClosed.User)
             {
                 var trades = _apiHandler.GetCurrentTradeAsync(StrategyIdPosition).Result;
-
-                if (trades is not null) _positionHandler.ClosePositionAsync(trades).GetAwaiter().GetResult();
-
-                _apiHandler.UnsubscribePrice(Symbol);
+                if (trades is not null) await _positionHandler.ClosePositionAsync(trades);
             }
 
-
-            StrategyClosed?.Invoke(this, strategyReasonClosed);
+            StrategyClosed?.Invoke(this, new RobotEvent<StrategyReasonClosed>(strategyReasonClosed, Id));
             StrategyClosed = null;
             Dispose();
             _logger.Fatal("Strategy closed");
@@ -386,7 +387,7 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
     }
 
 
-    private void UpdateHandler(Position? position)
+    private async Task UpdateHandler(Position? position)
     {
         try
         {
@@ -397,7 +398,7 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
                 if (StrategyImplementation.ShouldUpdatePosition(position))
                 {
                     _logger.Verbose("Position {Id} can be updated", position.Id);
-                    _positionHandler.UpdatePositionAsync(positionClone).GetAwaiter().GetResult();
+                    await _positionHandler.UpdatePositionAsync(positionClone);
                 }
                 else
                 {
@@ -411,7 +412,7 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
         }
     }
 
-    private void CloseHandler(Position? position)
+    private async Task CloseHandler(Position? position)
     {
         try
         {
@@ -421,7 +422,7 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
                 if (StrategyImplementation.ShouldClosePosition(position))
                 {
                     _logger.Verbose("Position {Id} can be closed", position.Id);
-                    _positionHandler.ClosePositionAsync(position).GetAwaiter().GetResult();
+                    await _positionHandler.ClosePositionAsync(position);
                 }
                 else
                 {
@@ -451,6 +452,6 @@ public sealed class StrategyBase : IStrategyEvent, IDisposable
     private void ApiOnDisconnected(object? sender, EventArgs e)
     {
         _logger.Information("Api disconnected");
-        CloseStrategy(StrategyReasonClosed.Api);
+        CloseStrategy(StrategyReasonClosed.Api).GetAwaiter().GetResult();
     }
 }
