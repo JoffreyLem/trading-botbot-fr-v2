@@ -233,8 +233,6 @@ public sealed class StrategyBase : IDisposable
 
     private async Task HistoryOnOnTickEvent(Tick tick)
     {
-        // TODO : Perf tests et voir temporisation dans history event tick ?
-
         UpdateIndicator();
         try
         {
@@ -263,7 +261,6 @@ public sealed class StrategyBase : IDisposable
         }
         catch (Exception e)
         {
-            // TODO : Catch peut être inutile ? 
             CanRun = false;
             _logger.Error(e, "Erreur de traitement tick");
             await CloseStrategy(StrategyReasonClosed.Error);

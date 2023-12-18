@@ -42,6 +42,6 @@ public static class TestUtils
             candles.Add(candle);
         }
 
-        return candles.OrderBy(candle => candle.Date).ToList();
+        return candles.Distinct().OrderBy(candle => candle.Date).ToList();
     }
 }
