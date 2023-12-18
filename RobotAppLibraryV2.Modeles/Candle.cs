@@ -5,8 +5,8 @@ namespace RobotAppLibraryV2.Modeles;
 public class Candle : CandleProperties
 {
     public List<Tick> Ticks { get; set; } = new();
-    public double BidVolume { get; set; }
-    public double AskVolume { get; set; }
+    public decimal BidVolume { get; set; }
+    public decimal AskVolume { get; set; }
 
     public Candle SetOpen(decimal open)
     {
@@ -44,13 +44,13 @@ public class Candle : CandleProperties
         return this;
     }
 
-    public Candle SetAskVolume(double askVolume)
+    public Candle SetAskVolume(decimal askVolume)
     {
         AskVolume = askVolume;
         return this;
     }
 
-    public Candle SetBidVolume(double bidVolume)
+    public Candle SetBidVolume(decimal bidVolume)
     {
         BidVolume = bidVolume;
         return this;

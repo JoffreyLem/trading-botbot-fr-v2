@@ -676,10 +676,10 @@ public class CandleListTest
     public void Test_CurrentHoursRecord_NoBoucle_superior_to()
     {
         // Arrange
-        var now = DateTime.Now;
-        var todayWithTimeZeroed = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
+        var now = DateTime.UtcNow;
+        var todayWithTimeZeroed = new DateTime(now.Year, now.Month, now.Day, 0, 0, 0);
         var candles = TestUtils.GenerateCandle(TimeSpan.FromMinutes(15), 100);
-        candles.Last().SetDate(todayWithTimeZeroed.AddHours(1).AddMinutes(-15));
+  
         _apiHandlerMock.Setup(x => x.GetChartAsync(It.IsAny<string>(), It.IsAny<Timeframe>()))
             .ReturnsAsync(candles);
 
@@ -688,16 +688,16 @@ public class CandleListTest
         tradingHour.HoursRecords.Add(
             new TradeHourRecord.HoursRecordData
             {
-                Day = DateTime.Now.DayOfWeek,
-                From = todayWithTimeZeroed.AddMinutes(30).TimeOfDay,
-                To = todayWithTimeZeroed.AddHours(1).TimeOfDay
+                Day = DateTime.UtcNow.DayOfWeek,
+                From = todayWithTimeZeroed.AddHours(2).TimeOfDay,
+                To = todayWithTimeZeroed.AddHours(now.AddHours(-1).Hour).TimeOfDay
             });
         tradingHour.HoursRecords.Add(
             new TradeHourRecord.HoursRecordData
             {
-                Day = DateTime.Now.AddDays(1).DayOfWeek,
-                From = todayWithTimeZeroed.AddMinutes(30).TimeOfDay,
-                To = todayWithTimeZeroed.AddHours(1).TimeOfDay
+                Day = DateTime.UtcNow.AddDays(1).DayOfWeek,
+                From = todayWithTimeZeroed.AddHours(2).TimeOfDay,
+                To = todayWithTimeZeroed.AddHours(now.AddHours(-1).Hour).TimeOfDay
             });
 
         _apiHandlerMock.Setup(x => x.GetTradingHoursAsync(It.IsAny<string>()))
