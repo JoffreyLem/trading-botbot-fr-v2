@@ -39,23 +39,12 @@ public class StrategyHandlerService : IStrategyHandlerService
         await initStrategyCommand.ResponseSource.Task;
     }
 
-    public async Task<IsInitializedDto> IsInitialized()
+    public async Task<StrategyInfoDto> GetStrategyInfo(string id)
     {
-        var isInitializedCommand = new IsInitializerCommand();
-
-        await _channelStrategyWriter.WriteAsync(isInitializedCommand);
-
-        var result = await isInitializedCommand.ResponseSource.Task;
-
-        return new IsInitializedDto
+        var getStrategyInfoCommand = new GetStrategyInfoCommand
         {
-            Initialized = result.IsInitialized
+            Id = id
         };
-    }
-
-    public async Task<StrategyInfoDto> GetStrategyInfo()
-    {
-        var getStrategyInfoCommand = new GetStrategyInfoCommand();
 
         await _channelStrategyWriter.WriteAsync(getStrategyInfoCommand);
 
@@ -74,9 +63,21 @@ public class StrategyHandlerService : IStrategyHandlerService
         return Task.FromResult(Enum.GetNames(typeof(Timeframe)).ToList());
     }
 
-    public async Task CloseStrategy()
+    public async Task<List<StrategyInfoDto>> GetAllStrategy()
     {
-        var closeStrategyCommand = new CloseStrategyCommand();
+        var allStrategyCommand = new GetAllStrategyCommandRequest();
+
+        await _channelStrategyWriter.WriteAsync(allStrategyCommand);
+
+        return (await allStrategyCommand.ResponseSource.Task).ListStrategyInfoDto;
+    }
+
+    public async Task CloseStrategy(string id)
+    {
+        var closeStrategyCommand = new CloseStrategyCommand
+        {
+            Id = id
+        };
 
         await _channelStrategyWriter.WriteAsync(closeStrategyCommand);
 
@@ -84,9 +85,12 @@ public class StrategyHandlerService : IStrategyHandlerService
     }
 
 
-    public async Task<ListPositionsDto> GetStrategyPositionClosed()
+    public async Task<ListPositionsDto> GetStrategyPositionClosed(string id)
     {
-        var getStrategyPositionClosed = new GetStrategyPositionClosedCommand();
+        var getStrategyPositionClosed = new GetStrategyPositionClosedCommand
+        {
+            Id = id
+        };
 
         await _channelStrategyWriter.WriteAsync(getStrategyPositionClosed);
 
@@ -95,9 +99,12 @@ public class StrategyHandlerService : IStrategyHandlerService
         return result.PositionDtos;
     }
 
-    public async Task<ResultDto> GetResult()
+    public async Task<ResultDto> GetResult(string id)
     {
-        var resultCommand = new GetStrategyResultRequestCommand();
+        var resultCommand = new GetStrategyResultRequestCommand
+        {
+            Id = id
+        };
 
         await _channelStrategyWriter.WriteAsync(resultCommand);
 
@@ -106,11 +113,12 @@ public class StrategyHandlerService : IStrategyHandlerService
         return result.ResultDto;
     }
 
-    public async Task SetCanRun(bool value)
+    public async Task SetCanRun(string id, bool value)
     {
         var setCanRunCommand = new SetCanRunCommand
         {
-            Bool = value
+            Bool = value,
+            Id = id
         };
 
 
@@ -120,9 +128,12 @@ public class StrategyHandlerService : IStrategyHandlerService
     }
 
 
-    public async Task<ListPositionsDto> GetOpenedPositions()
+    public async Task<ListPositionsDto> GetOpenedPositions(string id)
     {
-        var command = new GetOpenedPositionRequestCommand();
+        var command = new GetOpenedPositionRequestCommand
+        {
+            Id = id
+        };
 
 
         await _channelStrategyWriter.WriteAsync(command);
@@ -130,16 +141,5 @@ public class StrategyHandlerService : IStrategyHandlerService
         var result = await command.ResponseSource.Task;
 
         return result.ListPositionsDto;
-    }
-
-    public async Task<List<CandleDto>> GetChart()
-    {
-        var getChartCommand = new GetChartCommandRequest();
-
-        await _channelStrategyWriter.WriteAsync(getChartCommand);
-
-        var result = await getChartCommand.ResponseSource.Task;
-
-        return result.CandleDtos;
     }
 }

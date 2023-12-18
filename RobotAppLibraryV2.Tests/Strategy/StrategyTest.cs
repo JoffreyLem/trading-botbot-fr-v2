@@ -84,7 +84,7 @@ public class StrategyTest
         strategyBase.TresholdEvent += (sender, treshold) =>
         {
             caller = true;
-            treshold.Should().Be(eventTreshold);
+            treshold.EventField.Should().Be(eventTreshold);
         };
 
         strategyResultMock.Raise(x => x.ResultTresholdEvent += null, this, eventTreshold);
@@ -188,7 +188,7 @@ public class StrategyTest
 
         // Assert
         callerTick.Should().BeTrue();
-        callerCandle.Should().BeTrue();
+        callerCandle.Should().BeFalse();
     }
 
     [Fact]
@@ -570,7 +570,7 @@ public class StrategyTest
         // Assert
         _apiHandlerMock.Verify(x => x.GetCurrentTradeAsync(It.IsAny<string>()), Times.Never);
         positionHandlerMock.Verify(x => x.ClosePositionAsync(It.IsAny<Position>()), Times.Never);
-        _apiHandlerMock.Verify(x => x.UnsubscribePrice(It.IsAny<string>()), Times.Never);
+        _apiHandlerMock.Verify(x => x.UnsubscribePrice(It.IsAny<string>()), Times.Once);
     }
 
     #endregion

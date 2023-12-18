@@ -5,6 +5,14 @@ services:
     restart: always
     networks:
       - proxy
+    environment:
+      - SmtpSettings__Host=smtp.gmail.com
+      - SmtpSettings__Port=587
+      - SmtpSettings__EnableSsl=true
+      - SmtpSettings__User=botbotProject@gmail.com
+      - SmtpSettings__Password=${SMTP_PASSWORD}
+      - SmtpSettings__DefaultEmail=lemery.joffrey@outlook.fr
+
 
 networks:
   proxy:

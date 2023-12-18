@@ -4,6 +4,8 @@ public class ServiceCommandBaseStrategy<T> : ServiceCommandeBaseStrategyAbstract
 {
     public TaskCompletionSource<T> ResponseSource { get; } = new();
 
+    public string Id { get; set; }
+
     public override void SetException(System.Exception exception)
     {
         ResponseSource.SetException(exception);

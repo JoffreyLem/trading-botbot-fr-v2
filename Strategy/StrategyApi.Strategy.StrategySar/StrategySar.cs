@@ -52,7 +52,7 @@ public class StrategySar : StrategyImplementationBase
                     {
                         CanOpen = false;
                         var tp = CalculateTakeProfit(10, TypeOperation.Buy);
-                        OpenPosition(TypeOperation.Buy, (decimal)sar.Sar, tp);
+                        OpenPositionAsync(TypeOperation.Buy, (decimal)sar.Sar, tp);
                     }
             }
             else if (heiki.IsStrongSell())
@@ -62,7 +62,7 @@ public class StrategySar : StrategyImplementationBase
                     {
                         CanOpen = false;
                         var tp = CalculateTakeProfit(10, TypeOperation.Buy);
-                        OpenPosition(TypeOperation.Sell, (decimal)sar.Sar, tp);
+                        OpenPositionAsync(TypeOperation.Sell, (decimal)sar.Sar, tp);
                     }
             }
             else

@@ -5,7 +5,7 @@ using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Composants.Strategy;
 
-public class ResultComponentBase : ComponentBase
+public class ResultComponentBase : StrategyIdComponentBase
 {
     protected ResultDto? ResultData { get; set; } = new();
 
@@ -28,7 +28,7 @@ public class ResultComponentBase : ComponentBase
 
     private async Task<ResultDto?> GetResults()
     {
-        var data = await _strategyService.GetResult();
+        var data = await _strategyService.GetResult(StrategyId);
 
         return data;
     }

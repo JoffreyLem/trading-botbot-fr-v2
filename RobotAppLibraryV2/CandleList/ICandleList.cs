@@ -6,7 +6,7 @@ public interface ICandleList : IList<Candle>
 {
     Tick? LastPrice { get; }
     void Dispose();
-    event Action<Tick>? OnTickEvent;
-    event Action<Candle>? OnCandleEvent;
+    event Func<Tick, Task>? OnTickEvent;
+    event Func<Candle, Task>? OnCandleEvent;
     public IEnumerable<Candle> Aggregate(Timeframe timeframeData);
 }

@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using Serilog;
 
@@ -18,7 +19,7 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
     protected StreamWriter? ApiWriteStream;
 
-    public TimeSpan CommandTImeSpace = TimeSpan.FromMilliseconds(200);
+    public TimeSpan CommandTimeSpanmeSpace = TimeSpan.FromMilliseconds(200);
 
     public volatile bool IsConnected;
 
@@ -87,7 +88,7 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
         }
     }
 
-    public async Task SendAsync(string messageToSend)
+    public virtual async Task SendAsync(string messageToSend)
     {
         if (IsConnected)
         {
@@ -109,15 +110,14 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
         }
     }
 
-    public async Task<string?> ReceiveAsync(CancellationToken cancellationToken = default)
+    public virtual Task<string?> ReceiveAsync(CancellationToken cancellationToken = default)
     {
         var result = new StringBuilder();
         var lastChar = ' ';
 
         try
         {
-            var buffer = new byte[client.ReceiveBufferSize];
-
+            // var buffer = new byte[client.ReceiveBufferSize];
             string line;
             while ((line = ApiReadStream.ReadLine()) != null)
             {
@@ -136,7 +136,7 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
                 throw new ApiCommunicationException("Disconnected from server");
             }
 
-            return result.ToString();
+            return Task.FromResult(result.ToString());
         }
         catch (OperationCanceledException)
         {

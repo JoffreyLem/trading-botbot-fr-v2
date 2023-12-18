@@ -22,7 +22,7 @@ public class TestStrategy : StrategyImplementationBase
         var type = SarIndicator.IsBuy() ? TypeOperation.Buy : TypeOperation.Sell;
         var sl = (decimal)SarIndicator.Last().Sar;
 
-        OpenPosition(type, CalculateStopLoss(100, type), CalculateTakeProfit(80, type));
+        OpenPositionAsync(type, CalculateStopLoss(100, type), CalculateTakeProfit(80, type));
     }
 
 

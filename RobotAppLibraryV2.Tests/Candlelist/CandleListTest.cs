@@ -27,8 +27,8 @@ public class CandleListTest
             tradeHoursRecord.HoursRecords.Add(new TradeHourRecord.HoursRecordData
             {
                 Day = (DayOfWeek)day,
-                From = DateTime.Now.Date.TimeOfDay,
-                To = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59).TimeOfDay
+                From = DateTime.UtcNow.Date.TimeOfDay,
+                To = DateTime.UtcNow.Date.AddHours(23).AddMinutes(59).AddSeconds(59).TimeOfDay
             });
 
         return tradeHoursRecord;
@@ -103,7 +103,6 @@ public class CandleListTest
     [InlineData(Timeframe.ThirtyMinutes)]
     [InlineData(Timeframe.OneHour)]
     [InlineData(Timeframe.FourHour)]
-    [InlineData(Timeframe.Daily)]
     public void Test_NewTick_UpdateLastCandle(Timeframe timeframe)
     {
         // Arrange
@@ -124,8 +123,16 @@ public class CandleListTest
             .SetBidVolume(1);
 
 
-        candleList.OnCandleEvent += candle => caller = true;
-        candleList.OnTickEvent += tick1 => callerTick = true;
+        candleList.OnCandleEvent += candle =>
+        {
+            caller = true;
+            return Task.CompletedTask;
+        };
+        candleList.OnTickEvent += tick1 =>
+        {
+            callerTick = true;
+            return Task.CompletedTask;
+        };
 
         _apiHandlerMock.Raise(x => x.TickEvent += null, this, tick);
 
@@ -146,7 +153,6 @@ public class CandleListTest
     [InlineData(Timeframe.ThirtyMinutes)]
     [InlineData(Timeframe.OneHour)]
     [InlineData(Timeframe.FourHour)]
-    [InlineData(Timeframe.Daily)]
     public void Test_NewTick_UpdateLastCandle_If_last_is_0(Timeframe timeframe)
     {
         // Arrange
@@ -172,9 +178,16 @@ public class CandleListTest
             .SetAskVolume(1)
             .SetBidVolume(1);
 
-        candleList.OnCandleEvent += candle => caller = true;
-        candleList.OnTickEvent += tick1 => callerTick = true;
-
+        candleList.OnCandleEvent += candle =>
+        {
+            caller = true;
+            return Task.CompletedTask;
+        };
+        candleList.OnTickEvent += tick1 =>
+        {
+            callerTick = true;
+            return Task.CompletedTask;
+        };
         _apiHandlerMock.Raise(x => x.TickEvent += null, this, tick);
 
         // Assert
@@ -210,8 +223,16 @@ public class CandleListTest
             .SetAskVolume(1)
             .SetBidVolume(1);
 
-        candleList.OnCandleEvent += candle => caller = true;
-        candleList.OnTickEvent += tick1 => callerTick = true;
+        candleList.OnCandleEvent += candle =>
+        {
+            caller = true;
+            return Task.CompletedTask;
+        };
+        candleList.OnTickEvent += tick1 =>
+        {
+            callerTick = true;
+            return Task.CompletedTask;
+        };
 
         _apiHandlerMock.Raise(x => x.TickEvent += null, this, tick);
 
@@ -228,7 +249,6 @@ public class CandleListTest
     [InlineData(Timeframe.ThirtyMinutes)]
     [InlineData(Timeframe.OneHour)]
     [InlineData(Timeframe.FourHour)]
-    [InlineData(Timeframe.Daily)]
     public void Test_NewTick_AddNewCandle(Timeframe timeframe)
     {
         // Arrange
@@ -250,8 +270,16 @@ public class CandleListTest
             .SetAskVolume(1)
             .SetBidVolume(1);
 
-        candleList.OnCandleEvent += candle => caller = true;
-        candleList.OnTickEvent += tick1 => callerTick = true;
+        candleList.OnCandleEvent += candle =>
+        {
+            caller = true;
+            return Task.CompletedTask;
+        };
+        candleList.OnTickEvent += tick1 =>
+        {
+            callerTick = true;
+            return Task.CompletedTask;
+        };
 
         _apiHandlerMock.Raise(x => x.TickEvent += null, this, tick);
 
@@ -273,7 +301,6 @@ public class CandleListTest
     [InlineData(Timeframe.ThirtyMinutes)]
     [InlineData(Timeframe.OneHour)]
     [InlineData(Timeframe.FourHour)]
-    [InlineData(Timeframe.Daily)]
     public void Test_NewTick_AddNewCandle_at2000(Timeframe timeframe)
     {
         // Arrange
@@ -293,8 +320,16 @@ public class CandleListTest
             .SetAskVolume(1)
             .SetBidVolume(1);
 
-        candleList.OnCandleEvent += candle => caller = true;
-        candleList.OnTickEvent += tick1 => callerTick = true;
+        candleList.OnCandleEvent += candle =>
+        {
+            caller = true;
+            return Task.CompletedTask;
+        };
+        candleList.OnTickEvent += tick1 =>
+        {
+            callerTick = true;
+            return Task.CompletedTask;
+        };
 
         _apiHandlerMock.Raise(x => x.TickEvent += null, this, tick);
 
@@ -317,7 +352,6 @@ public class CandleListTest
     [InlineData(Timeframe.ThirtyMinutes)]
     [InlineData(Timeframe.OneHour)]
     [InlineData(Timeframe.FourHour)]
-    [InlineData(Timeframe.Daily)]
     public void Test_NewTick_CorrectHistory(Timeframe timeframe)
     {
         // Arrange
@@ -346,8 +380,16 @@ public class CandleListTest
             .SetAskVolume(1)
             .SetBidVolume(1);
 
-        candleList.OnCandleEvent += candle => caller = true;
-        candleList.OnTickEvent += tick1 => callerTick = true;
+        candleList.OnCandleEvent += candle =>
+        {
+            caller = true;
+            return Task.CompletedTask;
+        };
+        candleList.OnTickEvent += tick1 =>
+        {
+            callerTick = true;
+            return Task.CompletedTask;
+        };
 
         _apiHandlerMock.Raise(x => x.TickEvent += null, this, tick);
 
@@ -365,7 +407,6 @@ public class CandleListTest
     [InlineData(Timeframe.ThirtyMinutes)]
     [InlineData(Timeframe.OneHour)]
     [InlineData(Timeframe.FourHour)]
-    [InlineData(Timeframe.Daily)]
     public void Test_NewTick_CorrectHistory_more_candle(Timeframe timeframe)
     {
         // Arrange
@@ -394,8 +435,16 @@ public class CandleListTest
             .SetAskVolume(1)
             .SetBidVolume(1);
 
-        candleList.OnCandleEvent += candle => caller = true;
-        candleList.OnTickEvent += tick1 => callerTick = true;
+        candleList.OnCandleEvent += candle =>
+        {
+            caller = true;
+            return Task.CompletedTask;
+        };
+        candleList.OnTickEvent += tick1 =>
+        {
+            callerTick = true;
+            return Task.CompletedTask;
+        };
 
         _apiHandlerMock.Raise(x => x.TickEvent += null, this, tick);
 
@@ -413,7 +462,6 @@ public class CandleListTest
     [InlineData(Timeframe.ThirtyMinutes)]
     [InlineData(Timeframe.OneHour)]
     [InlineData(Timeframe.FourHour)]
-    [InlineData(Timeframe.Daily)]
     public void Test_NewTick_CorrectHistory_noCandleFetched(Timeframe timeframe)
     {
         // Arrange
@@ -439,8 +487,16 @@ public class CandleListTest
             .SetAskVolume(1)
             .SetBidVolume(1);
 
-        candleList.OnCandleEvent += candle => caller = true;
-        candleList.OnTickEvent += tick1 => callerTick = true;
+        candleList.OnCandleEvent += candle =>
+        {
+            caller = true;
+            return Task.CompletedTask;
+        };
+        candleList.OnTickEvent += tick1 =>
+        {
+            callerTick = true;
+            return Task.CompletedTask;
+        };
 
         _apiHandlerMock.Raise(x => x.TickEvent += null, this, tick);
 

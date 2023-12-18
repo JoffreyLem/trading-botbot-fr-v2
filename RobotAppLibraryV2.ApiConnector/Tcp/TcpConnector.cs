@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using RobotAppLibraryV2.ApiConnector.Modeles;
 using Serilog;
@@ -18,7 +19,7 @@ public class TcpConnector : TcpClientWrapperBase, ITcpConnectorSynchronisation
         await _semaphore.WaitAsync();
         var tcpLog = new TcpLog
         {
-            RequestMessage = messageToSend
+            RequestMessage = FilterSensitiveData(messageToSend)
         };
         try
         {
@@ -26,16 +27,16 @@ public class TcpConnector : TcpClientWrapperBase, ITcpConnectorSynchronisation
 
             var interval = currentTimestamp - lastCommandTimestamp;
 
-            if (interval < CommandTImeSpace.Ticks) await Task.Delay(CommandTImeSpace);
+            if (interval < CommandTimeSpanmeSpace.Ticks) await Task.Delay(CommandTimeSpanmeSpace);
 
             await SendAsync(messageToSend);
             lastCommandTimestamp = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
             var response = await ReceiveAsync();
-            if (logResponse)
-                tcpLog.ResponseMessage = response;
-            else
-                tcpLog.ResponseMessage = "TO BIG FOR THE LOG :(";
+
+            var maskedResponse = logResponse ? FilterSensitiveData(response) : "Response not logged";
+
+            tcpLog.ResponseMessage = maskedResponse;
 
             return response;
         }
@@ -51,8 +52,15 @@ public class TcpConnector : TcpClientWrapperBase, ITcpConnectorSynchronisation
         }
     }
 
-    private string TruncateResponse(string response, int maxLength)
+    private string FilterSensitiveData(string message)
     {
-        return response.Length <= maxLength ? response : response.Substring(0, maxLength) + "...";
+        message = MaskSensitiveData(message, "\"Password\":\".*?\"", "\"Password\":\"****\"");
+        message = MaskSensitiveData(message, "\"ApiKey\":\".*?\"", "\"ApiKey\":\"****\"");
+        return message;
+    }
+
+    private string MaskSensitiveData(string message, string pattern, string replacement)
+    {
+        return Regex.Replace(message, pattern, replacement);
     }
 }

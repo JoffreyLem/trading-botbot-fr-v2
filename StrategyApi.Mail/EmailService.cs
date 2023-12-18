@@ -26,12 +26,12 @@ public class EmailService : IEmailService
         };
     }
 
-    public Task SendEmail(string toEmail, string subject, string body)
+    public Task SendEmail(string subject, string body)
     {
         try
         {
             var fromAddress = new MailAddress(_smtpSettings.User);
-            var toAddress = new MailAddress(toEmail);
+            var toAddress = new MailAddress(_smtpSettings.DefaultEmail);
 
             using var message = new MailMessage(fromAddress, toAddress)
             {

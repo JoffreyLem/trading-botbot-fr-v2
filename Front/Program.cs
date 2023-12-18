@@ -59,10 +59,11 @@ forwardedHeaderOptions.KnownNetworks.Clear();
 forwardedHeaderOptions.KnownProxies.Clear();
 app.UseForwardedHeaders(forwardedHeaderOptions);
 
-
-if (!app.Environment.IsDevelopment())
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+if (app.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
+else
     app.UseHsts();
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

@@ -7,22 +7,13 @@ namespace StrategyApi.StrategyBackgroundService.Services;
 public interface IStrategyHandlerService
 {
     Task InitStrategy(StrategyTypeEnum strategyType, string symbol, Timeframe timeframe, Timeframe? timeframe2);
-
-    Task<IsInitializedDto> IsInitialized();
-
     Task<List<string>> GetListStrategy();
     Task<List<string>> GetListTimeframes();
-    Task CloseStrategy();
-
-    Task<StrategyInfoDto> GetStrategyInfo();
-
-    Task<ListPositionsDto> GetStrategyPositionClosed();
-
-    Task<ResultDto> GetResult();
-
-    Task SetCanRun(bool value);
-
-    Task<ListPositionsDto> GetOpenedPositions();
-
-    Task<List<CandleDto>> GetChart();
+    Task<List<StrategyInfoDto>> GetAllStrategy();
+    Task CloseStrategy(string id);
+    Task<StrategyInfoDto> GetStrategyInfo(string id);
+    Task<ListPositionsDto> GetStrategyPositionClosed(string id);
+    Task<ResultDto> GetResult(string id);
+    Task SetCanRun(string id, bool value);
+    Task<ListPositionsDto> GetOpenedPositions(string id);
 }

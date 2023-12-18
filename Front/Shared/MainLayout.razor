@@ -11,13 +11,12 @@
         <SfAppBar ColorMode="AppBarColor.Dark">
             <SfButton Type="button" CssClass="e-inherit" IconCss="e-icons e-menu"></SfButton>
             <span class="regular">Bot bot</span>
-
             <AppBarSpacer/>
-            <HealthCheckComponent/>
+            @* <HealthCheckComponent/>  *@
             <AppBarSeparator/>
             <LoginDisplay/>
         </SfAppBar>
-        <SfSidebar Target=".maincontent" Width="200px">
+        <SfSidebar Type="SidebarType.Auto" Target=".maincontent" Width="200px">
             <ChildContent>
                 <nav id="sidebarMenu" class="sidebar">
                     <div class="nav-item px-3 border-bottom py-3 thick-border">
