@@ -11,7 +11,7 @@ namespace RobotAppLibraryV2.ApiConnector.Tcp;
 
 public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 {
-    private readonly TcpClient? client = new();
+    private readonly TcpClient client = new();
 
     protected readonly ILogger Logger;
 
@@ -19,9 +19,9 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
     protected StreamWriter? ApiWriteStream;
 
-    public TimeSpan CommandTimeSpanmeSpace = TimeSpan.FromMilliseconds(200);
+    protected TimeSpan CommandTimeSpanmeSpace = TimeSpan.FromMilliseconds(200);
 
-    public volatile bool IsConnected;
+    public bool IsConnected => client.Connected;
 
     protected int Port;
 
@@ -40,7 +40,6 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
     public void Dispose()
     {
-        IsConnected = false;
         ApiReadStream?.Dispose();
         ApiWriteStream?.Dispose();
         client?.Dispose();
@@ -61,82 +60,71 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
             if (completedTask == delayTask)
             {
-                client.Close();
+                Close();
                 throw new ApiCommunicationException("Connection timed out.");
             }
 
             await connectTask;
             stream = new SslStream(client.GetStream(), false, ValidateServerCertificate);
             var authenticationTask = stream.AuthenticateAsClientAsync(ServerAddress, new X509CertificateCollection(),
-                SslProtocols.Tls13 | SslProtocols.Tls12, false);
+                SslProtocols.Tls13 | SslProtocols.Tls12, true);
             var delayTask2 = Task.Delay(TimeSpan.FromSeconds(30));
 
             var completedTask2 = await Task.WhenAny(authenticationTask, delayTask2);
 
             if (completedTask2 == delayTask) throw new TimeoutException("SSL handshake timed out.");
-
-            ApiWriteStream ??= new StreamWriter(stream);
-            ApiReadStream ??= new StreamReader(stream);
-            IsConnected = true;
+            var bufferedStream = new BufferedStream(stream, 8192);
+            
+            ApiWriteStream ??= new StreamWriter(bufferedStream, Encoding.UTF8, bufferSize: -1, leaveOpen: true);
+            ApiReadStream ??= new StreamReader(bufferedStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: -1, leaveOpen: true);
             OnConnectedEvent();
         }
         catch (Exception e)
         {
             Logger.Information(e, "Error on tcp connection");
-            IsConnected = false;
+            Close();
             throw new ApiCommunicationException("Error on connection", e);
         }
     }
 
     public virtual async Task SendAsync(string messageToSend)
     {
-        if (IsConnected)
-        {
-            try
-            {
-                await ApiWriteStream.WriteAsync(messageToSend);
-                await ApiWriteStream.FlushAsync();
-            }
-            catch (IOException ex)
-            {
-                Close();
-                throw new ApiCommunicationException("Error while sending the data: " + ex.Message);
-            }
-        }
-        else
+        if (!IsConnected)
         {
             Close();
             throw new ApiCommunicationException("Error while sending the data (socket disconnected)");
         }
-    }
-
-    public virtual Task<string?> ReceiveAsync(CancellationToken cancellationToken = default)
-    {
-        var result = new StringBuilder();
-        var lastChar = ' ';
 
         try
         {
-            // var buffer = new byte[client.ReceiveBufferSize];
-            string line;
-            while ((line = ApiReadStream.ReadLine()) != null)
+            await ApiWriteStream.WriteAsync(messageToSend);
+            await ApiWriteStream.FlushAsync();
+        }
+        catch (IOException ex)
+        {
+            Close();
+            throw new ApiCommunicationException("Error while sending the data: " + ex.Message);
+        }
+   
+    }
+
+    public virtual async Task<string> ReceiveAsync(CancellationToken cancellationToken = default)
+    {
+        var result = new StringBuilder();
+
+        try
+        {
+            string? line;
+            while ((line = await ApiReadStream.ReadLineAsync(cancellationToken).ConfigureAwait(false)) != null)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 result.Append(line);
 
-                // Last line is always empty
-                if (line == "" && lastChar == '}')
+                if (line.EndsWith("}")) 
                     break;
-
-                if (line.Length != 0) lastChar = line[line.Length - 1];
             }
 
-            if (line == null)
-            {
-                Close();
-                throw new ApiCommunicationException("Disconnected from server");
-            }
-
-            return Task.FromResult(result.ToString());
+            return result.ToString();
         }
         catch (OperationCanceledException)
         {
@@ -151,14 +139,15 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
     }
 
 
+
+
     public void Close()
     {
         if (IsConnected)
         {
             ApiReadStream?.Close();
             ApiWriteStream?.Close();
-            client?.Close();
-            IsConnected = false;
+            client.Close();
             OnDisconnected();
         }
     }
@@ -175,7 +164,7 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
         Disconnected?.Invoke(this, EventArgs.Empty);
     }
 
-    private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain,
+    private bool ValidateServerCertificate(object sender, X509Certificate? certificate, X509Chain? chain,
         SslPolicyErrors sslPolicyErrors)
     {
         if (sslPolicyErrors == SslPolicyErrors.None)

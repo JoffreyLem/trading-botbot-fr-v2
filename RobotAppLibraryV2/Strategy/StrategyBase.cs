@@ -306,12 +306,16 @@ public sealed class StrategyBase : IDisposable
             var candles = History.TakeLast(1000).ToList();
 
             Parallel.ForEach(IndicatorsList, indicator => { indicator.UpdateIndicator(candles); });
-
+            
+            candles.Clear();
+            candles = null;
+            
             if (Timeframe2 is not null)
             {
                 var candles2 = History.Aggregate(Timeframe2.GetValueOrDefault()).ToList();
-
                 Parallel.ForEach(IndicatorsList2, indicator => { indicator.UpdateIndicator(candles2); });
+                candles2.Clear();
+                candles2 = null;
             }
         }
         catch (Exception e)

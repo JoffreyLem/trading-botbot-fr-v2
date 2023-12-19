@@ -7,6 +7,6 @@ public interface ITcpConnectorBase
     event EventHandler? Disconnected;
     Task ConnectAsync();
     Task SendAsync(string messageToSend);
-    Task<string?> ReceiveAsync(CancellationToken cancellationToken = default);
+    Task<string> ReceiveAsync(CancellationToken cancellationToken = default);
     void Close();
 }
