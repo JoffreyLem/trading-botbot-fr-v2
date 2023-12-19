@@ -542,6 +542,8 @@ public class StrategyTest
         strategyBase.DisableStrategy(strategyReasonClosed);
 
         caller.Should().BeTrue();
+        strategyBase.CanRun.Should().BeFalse();
+        strategyBase.StrategyDisabled.Should().BeTrue();
     }
 
     [Fact]
