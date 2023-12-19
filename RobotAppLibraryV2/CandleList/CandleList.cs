@@ -326,7 +326,7 @@ public class CandleList : List<Candle>, ICandleList, IDisposable
             if (dateToValidate > dateToCompare)
                 dateToValidate = dateToValidate.AddMinutes(-timeframe.GetMinuteFromTimeframe());
 
-            _logger.Information("The new date to add is {DateToValidate}", dateToValidate);
+            _logger.Information("The new date to return is {DateToValidate}", dateToValidate);
 
             return dateToValidate;
         }
