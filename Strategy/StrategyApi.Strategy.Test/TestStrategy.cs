@@ -20,9 +20,9 @@ public class TestStrategy : StrategyImplementationBase
     protected override void Run()
     {
         var type = SarIndicator.IsBuy() ? TypeOperation.Buy : TypeOperation.Sell;
-        var sl = (decimal)SarIndicator.Last().Sar;
+        var sl = SarIndicator.Last().Sar;
 
-        OpenPositionAsync(type, CalculateStopLoss(100, type), CalculateTakeProfit(80, type));
+        OpenPosition(type, CalculateStopLoss(100, type), CalculateTakeProfit(80, type));
     }
 
 

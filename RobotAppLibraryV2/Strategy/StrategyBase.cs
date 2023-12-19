@@ -78,15 +78,14 @@ public sealed class StrategyBase : IDisposable
     public Timeframe Timeframe { get; }
     public Timeframe? Timeframe2 { get; }
 
+    // TODO : Gérer le set en fonction du StrategyDisabled
     public bool CanRun
     {
         get => StrategyImplementation.CanRun;
-        set
-        {
-            StrategyImplementation.CanRun = value;
-            StrategyInfoUpdated?.Invoke(this, new RobotEvent(Id));
-        }
+        set => StrategyImplementation.CanRun = value;
     }
+
+    public bool StrategyDisabled { get; set; } = false;
 
     public bool RunOnTick
     {
@@ -155,15 +154,16 @@ public sealed class StrategyBase : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public event EventHandler<RobotEvent<StrategyReasonClosed>>? StrategyClosed;
+    public event EventHandler<RobotEvent<StrategyReasonDisabled>>? StrategyDisabledEvent;
     public event EventHandler<RobotEvent<Tick>>? TickEvent;
     public event EventHandler<RobotEvent<Candle>>? CandleEvent;
-    public event EventHandler<RobotEvent<EventTreshold>>? TresholdEvent;
     public event EventHandler<RobotEvent<Position>>? PositionOpenedEvent;
     public event EventHandler<RobotEvent<Position>>? PositionUpdatedEvent;
     public event EventHandler<RobotEvent<Position>>? PositionRejectedEvent;
     public event EventHandler<RobotEvent<Position>>? PositionClosedEvent;
-    public event EventHandler<RobotEvent>? StrategyInfoUpdated;
+    public event EventHandler<RobotEvent<string>>? StrategyEvent;
+
+    
 
 
     private void Init()
@@ -190,8 +190,7 @@ public sealed class StrategyBase : IDisposable
 
     private void MoneyManagementOnTreshHoldEvent(object? sender, EventTreshold e)
     {
-        CanRun = false;
-        TresholdEvent?.Invoke(this, new RobotEvent<EventTreshold>(e, Id));
+        DisableStrategy(StrategyReasonDisabled.Treshold).GetAwaiter().GetResult();
     }
 
 
@@ -263,7 +262,7 @@ public sealed class StrategyBase : IDisposable
         {
             CanRun = false;
             _logger.Error(e, "Erreur de traitement tick");
-            await CloseStrategy(StrategyReasonClosed.Error);
+            await DisableStrategy(StrategyReasonDisabled.Error, e);
         }
     }
 
@@ -295,7 +294,7 @@ public sealed class StrategyBase : IDisposable
         {
             CanRun = false;
             _logger.Error(e, "Erreur de traitement candle");
-            await CloseStrategy(StrategyReasonClosed.Error);
+            await DisableStrategy(StrategyReasonDisabled.Error, e);
         }
     }
 
@@ -307,12 +306,16 @@ public sealed class StrategyBase : IDisposable
             var candles = History.TakeLast(1000).ToList();
 
             Parallel.ForEach(IndicatorsList, indicator => { indicator.UpdateIndicator(candles); });
-
+            
+            candles.Clear();
+            candles = null;
+            
             if (Timeframe2 is not null)
             {
                 var candles2 = History.Aggregate(Timeframe2.GetValueOrDefault()).ToList();
-
                 Parallel.ForEach(IndicatorsList2, indicator => { indicator.UpdateIndicator(candles2); });
+                candles2.Clear();
+                candles2 = null;
             }
         }
         catch (Exception e)
@@ -344,29 +347,31 @@ public sealed class StrategyBase : IDisposable
             .OpenPositionAsync(Symbol, typePosition, volume.GetValueOrDefault(), sl, tp, expiration);
     }
 
-    public async Task CloseStrategy(StrategyReasonClosed strategyReasonClosed)
+    public async Task DisableStrategy(StrategyReasonDisabled strategyReasonDisabled, Exception? ex = null)
     {
+        _logger.Fatal(ex, "On disabling strategy for reason {Reason}", strategyReasonDisabled);
+        CanRun = false;
+        // Add les tests pour sa !
+        StrategyDisabled = true;
+        
         try
         {
-            _logger.Fatal("On Closing strategy for reason {Reason}", strategyReasonClosed);
             _apiHandler.UnsubscribePrice(Symbol);
-            CanRun = false;
-
-            if (strategyReasonClosed is StrategyReasonClosed.User)
+            if (strategyReasonDisabled is StrategyReasonDisabled.User)
             {
                 var trades = _apiHandler.GetCurrentTradeAsync(StrategyIdPosition).Result;
                 if (trades is not null) await _positionHandler.ClosePositionAsync(trades);
             }
-
-            StrategyClosed?.Invoke(this, new RobotEvent<StrategyReasonClosed>(strategyReasonClosed, Id));
-            StrategyClosed = null;
-            Dispose();
-            _logger.Fatal("Strategy closed");
+            _logger.Fatal("Strategy disabled");
         }
         catch (Exception e)
         {
-            _logger.Fatal(e, "can't closing strategy");
+            _logger.Fatal(e, "Can't completly disable strategy, some action don't work");
             throw new StrategyException();
+        }
+        finally
+        {
+            StrategyDisabledEvent?.Invoke(this,new RobotEvent<StrategyReasonDisabled>(strategyReasonDisabled,Id));
         }
     }
 
@@ -449,6 +454,6 @@ public sealed class StrategyBase : IDisposable
     private void ApiOnDisconnected(object? sender, EventArgs e)
     {
         _logger.Information("Api disconnected");
-        CloseStrategy(StrategyReasonClosed.Api).GetAwaiter().GetResult();
+        DisableStrategy(StrategyReasonDisabled.Api,null).GetAwaiter().GetResult();
     }
 }

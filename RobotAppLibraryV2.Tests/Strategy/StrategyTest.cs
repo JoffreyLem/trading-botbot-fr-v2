@@ -81,10 +81,10 @@ public class StrategyTest
         // Arrange
         var caller = false;
 
-        strategyBase.TresholdEvent += (sender, treshold) =>
+        strategyBase.StrategyDisabledEvent += (sender, treshold) =>
         {
             caller = true;
-            treshold.EventField.Should().Be(eventTreshold);
+            treshold.EventField.Should().NotBe(StrategyReasonDisabled.User);
         };
 
         strategyResultMock.Raise(x => x.ResultTresholdEvent += null, this, eventTreshold);
@@ -524,24 +524,26 @@ public class StrategyTest
     #region Close Strategy
 
     [Theory]
-    [InlineData(StrategyReasonClosed.User)]
-    [InlineData(StrategyReasonClosed.Api)]
-    [InlineData(StrategyReasonClosed.Error)]
-    [InlineData(StrategyReasonClosed.Treshold)]
-    public void Test_EventClose(StrategyReasonClosed strategyReasonClosed)
+    [InlineData(StrategyReasonDisabled.User)]
+    [InlineData(StrategyReasonDisabled.Api)]
+    [InlineData(StrategyReasonDisabled.Error)]
+    [InlineData(StrategyReasonDisabled.Treshold)]
+    public void Test_EventClose(StrategyReasonDisabled strategyReasonClosed)
     {
         var caller = false;
 
-        strategyBase.StrategyClosed += (sender, closed) =>
+        strategyBase.StrategyDisabledEvent += (sender, closed) =>
         {
             caller = true;
             closed.Should().Be(strategyReasonClosed);
         };
 
 
-        strategyBase.CloseStrategy(strategyReasonClosed);
+        strategyBase.DisableStrategy(strategyReasonClosed);
 
         caller.Should().BeTrue();
+        strategyBase.CanRun.Should().BeFalse();
+        strategyBase.StrategyDisabled.Should().BeTrue();
     }
 
     [Fact]
@@ -553,7 +555,7 @@ public class StrategyTest
 
 
         // Act
-        strategyBase.CloseStrategy(StrategyReasonClosed.User);
+        strategyBase.DisableStrategy(StrategyReasonDisabled.User);
 
         // Assert
         _apiHandlerMock.Verify(x => x.GetCurrentTradeAsync(It.IsAny<string>()), Times.Once);
@@ -565,7 +567,7 @@ public class StrategyTest
     public void Test_CloseStrategy_Api_Reason()
     {
         // Act and Arrange
-        strategyBase.CloseStrategy(StrategyReasonClosed.Api);
+        strategyBase.DisableStrategy(StrategyReasonDisabled.Api);
 
         // Assert
         _apiHandlerMock.Verify(x => x.GetCurrentTradeAsync(It.IsAny<string>()), Times.Never);

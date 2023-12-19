@@ -18,4 +18,6 @@ public class RobotEvent : EventArgs
     }
 
     public string Id { get; set; }
+
+    public DateTime Date => DateTime.UtcNow;
 }

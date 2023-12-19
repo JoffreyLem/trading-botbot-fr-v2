@@ -17,6 +17,7 @@ public class MappingProfilesBackgroundServices : Profile
             .ForMember(x => x.Timeframe2, opt => opt.MapFrom(src => src.Timeframe2))
             .ForMember(x => x.StrategyName, opt => opt.MapFrom(src => src.StrategyName))
             .ForMember(x => x.CanRun, opt => opt.MapFrom(src => src.CanRun))
+            .ForMember(x => x.StrategyDisabled, opt => opt.MapFrom(src => src.StrategyDisabled))
             .ForMember(x => x.SecureControlPosition, opt => opt.MapFrom(src => src.SecureControlPosition))
             .ForMember(x => x.LastCandle, opt => opt.MapFrom(src => src.CurrentCandle))
             .ForMember(x => x.LastTick, opt => opt.MapFrom(src => src.LastPrice));

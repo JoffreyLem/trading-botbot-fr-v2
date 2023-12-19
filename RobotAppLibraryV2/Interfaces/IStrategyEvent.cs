@@ -5,7 +5,7 @@ namespace RobotAppLibraryV2.Interfaces;
 
 public interface IStrategyEvent
 {
-    public event EventHandler<RobotEvent<StrategyReasonClosed>>? StrategyClosed;
+    public event EventHandler<RobotEvent<StrategyReasonDisabled>>? StrategyClosed;
     public event EventHandler<Tick>? TickEvent;
     public event EventHandler<Candle>? CandleEvent;
     public event EventHandler<EventTreshold>? TresholdEvent;

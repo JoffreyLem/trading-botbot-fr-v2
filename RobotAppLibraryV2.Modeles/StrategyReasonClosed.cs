@@ -1,6 +1,6 @@
 namespace RobotAppLibraryV2.Modeles;
 
-public enum StrategyReasonClosed
+public enum StrategyReasonDisabled
 {
     User,
     Api,

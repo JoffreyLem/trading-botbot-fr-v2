@@ -6,6 +6,8 @@ namespace RobotAppLibraryV2.ApiConnector.Tcp;
 
 public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamingConnector
 {
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
+    
     public TcpStreamingConnector(Server server, ILogger logger) : base(server.Address, server.StreamingPort, logger)
     {
     }
@@ -34,7 +36,7 @@ public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamin
         t.Start();
     }
 
-    protected abstract void HandleMessage(string? message);
+    protected abstract void HandleMessage(string message);
 
     private async Task ReadStreamMessage()
     {

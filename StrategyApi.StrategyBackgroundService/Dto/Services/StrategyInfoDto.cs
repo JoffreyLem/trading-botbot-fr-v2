@@ -14,10 +14,11 @@ public class StrategyInfoDto
 
     public string StrategyName { get; set; }
 
-    public bool? CanRun { get; set; }
+    public bool CanRun { get; set; }
+
+    public bool StrategyDisabled { get; set; } = false;
 
     public bool SecureControlPosition { get; set; }
-    public string? Treshold { get; set; }
 
     public TickDto LastTick { get; set; } = new();
 
