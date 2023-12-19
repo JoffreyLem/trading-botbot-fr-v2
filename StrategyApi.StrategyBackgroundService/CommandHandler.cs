@@ -167,9 +167,9 @@ public class CommandHandler
 
     public static event EventHandler<BackGroundServiceEvent<TickDto>>? TickEvent;
     public static event EventHandler<BackGroundServiceEvent<CandleDto>>? CandleEvent;
-
-
     public static event EventHandler<BackGroundServiceEvent<PositionDto>>? PositionChangeEvent;
+    public static event EventHandler<BackGroundServiceEvent<string>>? StrategyEvent; 
+    public static event EventHandler<RobotEvent<string>>? StrategyDisabled; 
 
     #region StrategyCommand
 
@@ -190,12 +190,10 @@ public class CommandHandler
             strategyBase.PositionUpdatedEvent += StrategyBaseOnPositionUpdatedEvent;
             strategyBase.PositionClosedEvent += StrategyBaseOnPositionClosedEvent;
             strategyBase.PositionRejectedEvent += StrategyBaseOnPositionRejectedEvent;
-            strategyBase.StrategyClosed += StrategyBaseOnStrategyClosed;
-            strategyBase.TresholdEvent += StrategyBaseOnTresholdEvent;
-            strategyBase.StrategyInfoUpdated += StrategyBaseOnStrategyInfoUpdated;
+            strategyBase.StrategyDisabledEvent += StrategyBaseOnStrategyDisabled;
+            strategyBase.StrategyEvent += StrategyBaseOnStrategyEvent;
 
             _strategyList.Add(strategyBase.Id, strategyBase);
-
 
             initStrategyCommandDto.ResponseSource.SetResult(new AcknowledgementResponse());
         }
@@ -205,9 +203,19 @@ public class CommandHandler
         }
     }
 
-    private void StrategyBaseOnStrategyInfoUpdated(object? sender, RobotEvent e)
+    private void StrategyBaseOnStrategyDisabled(object? sender, RobotEvent<StrategyReasonDisabled> e)
     {
+        _logger.Warning("Strategy disabled : {Reason}, send email to user", e.EventField.ToString());
+        var message = $"Strategy disabled cause : {e.EventField.ToString()}";
+        _emailService.SendEmail("Strategy disabled", message).GetAwaiter().GetResult();
+        StrategyDisabled?.Invoke(this,new RobotEvent<string>(message,e.Id));
     }
+
+    private void StrategyBaseOnStrategyEvent(object? sender, RobotEvent<string> e)
+    {
+        StrategyEvent?.Invoke(this,new BackGroundServiceEvent<string>(e.EventField,e.Id));
+    }
+
 
     private void GetChart(GetChartCommandRequest chartCommandRequest)
     {
@@ -226,26 +234,6 @@ public class CommandHandler
             CandleDtos = candles
         });
     }
-
-
-    private async void StrategyBaseOnTresholdEvent(object? sender, RobotEvent<EventTreshold> e)
-    {
-        var message = $"Strategy closed cause of treshold : {e}";
-        await _emailService.SendEmail("Strategy closed", message);
-    }
-
-    private async void StrategyBaseOnStrategyClosed(object? sender, RobotEvent<StrategyReasonClosed> e)
-    {
-        if (e is not { EventField: StrategyReasonClosed.User })
-        {
-            _logger.Warning("Strategy closed : {Reason}, send email to user", e.EventField.ToString());
-            var message = $"Strategy closed cause : {e.EventField.ToString()}";
-            await _emailService.SendEmail("Strategy closed", message);
-        }
-
-        _strategyList.Remove(e.Id);
-    }
-
     private void StrategyBaseOnPositionRejectedEvent(object? sender, RobotEvent<Position> e)
     {
         var posDto = _mapper.Map<PositionDto>(e.EventField);
@@ -302,10 +290,9 @@ public class CommandHandler
     private async Task CloseStrategy(CloseStrategyCommand closeStrategyCommand)
     {
         var strategy = GetStrategyById(closeStrategyCommand.Id);
-        await strategy.CloseStrategy(StrategyReasonClosed.User);
+        await strategy.DisableStrategy(StrategyReasonDisabled.User);
+        strategy.Dispose();
         _strategyList.Remove(closeStrategyCommand.Id);
-
-
         closeStrategyCommand.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 

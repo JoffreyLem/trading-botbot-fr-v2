@@ -1,5 +1,6 @@
 ﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
+using RobotAppLibraryV2.Modeles.events;
 using StrategyApi.StrategyBackgroundService;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Events;
@@ -18,16 +19,14 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
     protected TickDto LastTick { get; set; }
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
     [Inject] private ShowToastService ToastService { get; set; }
-
-
     [Parameter] public EventCallback StrategyCloseRequested { get; set; }
-
     protected int SelectedTab { get; set; } = 0;
 
     public void Dispose()
     {
         CommandHandler.CandleEvent -= CommandHandlerOnCandleEvent;
         CommandHandler.TickEvent -= CommandHandlerOnTickEvent;
+        
     }
 
     protected override async Task OnInitializedAsync()
@@ -40,10 +39,23 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
 
             CommandHandler.CandleEvent += CommandHandlerOnCandleEvent;
             CommandHandler.TickEvent += CommandHandlerOnTickEvent;
+            CommandHandler.StrategyDisabled += CommandHandlerOnStrategyDisabled;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             ToastService.ShowToastError("Error strategy initialization");
+        }
+    }
+
+    private void CommandHandlerOnStrategyDisabled(object? sender, RobotEvent<string> e)
+    {
+        if (e.Id == StrategyId)
+        {
+            InvokeAsync(() =>
+            {
+                StrategyInfo.StrategyDisabled = true;
+                StateHasChanged();
+            });
         }
     }
 

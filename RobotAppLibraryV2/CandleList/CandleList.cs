@@ -209,7 +209,7 @@ public class CandleList : List<Candle>, ICandleList, IDisposable
 
             if (CurrentHoursRecord is not null)
             {
-                _logger.Information("Current trade hours is not null");
+                _logger.Information("Current trade hours is not null {@CurrentHours}",CurrentHoursRecord);
 
                 var dateRefLimitDay = DateTime.UtcNow.Date.AddHours(23).AddMinutes(59).AddSeconds(59).TimeOfDay;
 

@@ -1,6 +1,12 @@
 ﻿@inherits StrategyDataBaseComponent
 
 <div class="container-fluid">
+    @if (StrategyInfo.StrategyDisabled)
+    {
+        <div class="alert alert-warning" role="alert">
+            Strategy désactivée !
+        </div>
+    }
     <div class="mb-3">
         <SfButton @onclick="DeleteStrategy">Delete Strategy</SfButton>
     </div>
@@ -24,7 +30,7 @@
 
         <div class="col-md-4">
             <label for="CanRun" style="padding: 10px 10px 10px 0">Can Run</label>
-            <SfSwitch @bind-Checked="StrategyInfo.CanRun" ValueChange="OnCanRunChange" TChecked="bool?"></SfSwitch>
+            <SfSwitch Disabled="StrategyInfo.StrategyDisabled" @bind-Checked="StrategyInfo.CanRun" ValueChange="OnCanRunChange" TChecked="bool?"></SfSwitch>
         </div>
         @* <div class="col-md-4"> *@
         @*     <label for="SecureControlPosition" style="padding: 10px 10px 10px 0">Secure Control Position</label> *@
@@ -65,6 +71,14 @@
                     </ChildContent>
                     <ContentTemplate>
                         <ResultComponent @ref="ResultComponent"/>
+                    </ContentTemplate>
+                </TabItem>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Events"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                       
                     </ContentTemplate>
                 </TabItem>
             </TabItems>

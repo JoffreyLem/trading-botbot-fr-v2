@@ -9,7 +9,7 @@ using Syncfusion.Blazor.Grids;
 
 namespace Front.Composants.Strategy;
 
-public class PositionOpenedComponentBase : StrategyIdComponentBase
+public class PositionOpenedComponentBase : StrategyIdComponentBase , IDisposable
 {
     internal ObservableCollection<PositionDto> Positions { get; set; } = new();
     protected SfGrid<PositionDto> Grid { get; set; }
@@ -57,5 +57,11 @@ public class PositionOpenedComponentBase : StrategyIdComponentBase
                 }
             }
         }
+    }
+
+    public void Dispose()
+    {
+        ((IDisposable)Grid).Dispose();
+        CommandHandler.PositionChangeEvent -= CommandHandlerOnPositionChangeEvent;
     }
 }
