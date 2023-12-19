@@ -14,7 +14,6 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
     protected bool OnLoading;
 
     protected StrategyInfoDto StrategyInfo = new();
-    protected ResultComponent ResultComponent { get; set; }
     protected CandleDto LastCandle { get; set; } = new();
     protected TickDto LastTick { get; set; }
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
@@ -24,9 +23,7 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
 
     public void Dispose()
     {
-        CommandHandler.CandleEvent -= CommandHandlerOnCandleEvent;
-        CommandHandler.TickEvent -= CommandHandlerOnTickEvent;
-        
+     
     }
 
     protected override async Task OnInitializedAsync()
@@ -81,12 +78,12 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
     }
 
 
-    protected async void OnCanRunChange(ChangeEventArgs<bool?> args)
+    protected async void OnCanRunChange(ChangeEventArgs<bool> args)
     {
         try
         {
             OnLoading = true;
-            await _strategyService.SetCanRun(StrategyId, args.Checked.GetValueOrDefault());
+            await _strategyService.SetCanRun(StrategyId, args.Checked);
             ToastService.ShowToastSuccess("Can run updated");
         }
         catch (Exception e)

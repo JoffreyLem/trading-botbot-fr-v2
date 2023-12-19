@@ -14,7 +14,7 @@ public class TcpConnector : TcpClientWrapperBase, ITcpConnectorSynchronisation
     {
     }
 
-    public async Task<string?> SendAndReceiveAsync(string messageToSend, bool logResponse = true)
+    public async Task<string> SendAndReceiveAsync(string messageToSend, bool logResponse = true)
     {
         await _semaphore.WaitAsync();
         var tcpLog = new TcpLog

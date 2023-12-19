@@ -16,7 +16,7 @@ public class StreamingClientXtb : TcpStreamingConnector
         this.adapter = adapter;
     }
 
-    protected override void HandleMessage(string? message)
+    protected override void HandleMessage(string message)
     {
         try
         {

@@ -75,8 +75,8 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             if (completedTask2 == delayTask) throw new TimeoutException("SSL handshake timed out.");
             var bufferedStream = new BufferedStream(stream, 8192);
             
-            ApiWriteStream ??= new StreamWriter(bufferedStream, Encoding.UTF8, bufferSize: -1, leaveOpen: true);
-            ApiReadStream ??= new StreamReader(bufferedStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: -1, leaveOpen: true);
+            ApiWriteStream ??= new StreamWriter(bufferedStream,  leaveOpen: true);
+            ApiReadStream ??= new StreamReader(bufferedStream, leaveOpen: true);
             OnConnectedEvent();
         }
         catch (Exception e)
@@ -108,23 +108,27 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
    
     }
 
-    public virtual async Task<string> ReceiveAsync(CancellationToken cancellationToken = default)
+    public  Task<string> ReceiveAsync(CancellationToken cancellationToken = default)
     {
         var result = new StringBuilder();
+        var lastChar = ' ';
 
         try
         {
-            string? line;
-            while ((line = await ApiReadStream.ReadLineAsync(cancellationToken).ConfigureAwait(false)) != null)
+            // var buffer = new byte[client.ReceiveBufferSize];
+            string line;
+            while ((line =  ApiReadStream.ReadLine()) != null)
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 result.Append(line);
 
-                if (line.EndsWith("}")) 
+                // Last line is always empty
+                if (line == "" && lastChar == '}')
                     break;
-            }
 
-            return result.ToString();
+                if (line.Length != 0) lastChar = line[^1];
+            }
+            
+            return Task.FromResult(result.ToString());
         }
         catch (OperationCanceledException)
         {
@@ -137,6 +141,7 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             throw new ApiCommunicationException("Disconnected from server: " + ex.Message, ex);
         }
     }
+
 
 
 

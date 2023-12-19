@@ -11,7 +11,7 @@ namespace RobotAppLibraryV2.Api.Xtb;
 
 public class XtbAdapter : IReponseAdapter
 {
-    public List<SymbolInfo> AdaptAllSymbolsResponse(string? jsonResponse)
+    public List<SymbolInfo> AdaptAllSymbolsResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -47,7 +47,7 @@ public class XtbAdapter : IReponseAdapter
     }
 
 
-    public List<CalendarData> AdaptCalendarResponse(string? jsonResponse)
+    public List<CalendarData> AdaptCalendarResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -78,7 +78,7 @@ public class XtbAdapter : IReponseAdapter
         return calendarList;
     }
 
-    public List<Candle> AdaptFullChartResponse(string? jsonResponse)
+    public List<Candle> AdaptFullChartResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -95,7 +95,7 @@ public class XtbAdapter : IReponseAdapter
         return dataRecordsList;
     }
 
-    public List<Candle> AdaptRangeChartResponse(string? jsonResponse)
+    public List<Candle> AdaptRangeChartResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -113,12 +113,12 @@ public class XtbAdapter : IReponseAdapter
 
 
     // TODO : voir pour peut être changer ? 
-    public string AdaptLogOutResponse(string? jsonResponse)
+    public string AdaptLogOutResponse(string jsonResponse)
     {
         return "";
     }
 
-    public AccountBalance? AdaptBalanceAccountResponse(string? jsonResponse)
+    public AccountBalance? AdaptBalanceAccountResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -129,7 +129,7 @@ public class XtbAdapter : IReponseAdapter
     }
 
 
-    public List<News> AdaptNewsResponse(string? jsonResponse)
+    public List<News> AdaptNewsResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -145,12 +145,12 @@ public class XtbAdapter : IReponseAdapter
     }
 
 
-    public string AdaptCurrentUserDataResponse(string? jsonResponse)
+    public string AdaptCurrentUserDataResponse(string jsonResponse)
     {
         throw new NotImplementedException();
     }
 
-    public bool AdaptPingResponse(string? jsonResponse)
+    public bool AdaptPingResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -158,7 +158,7 @@ public class XtbAdapter : IReponseAdapter
         return true;
     }
 
-    public SymbolInfo AdaptSymbolResponse(string? jsonResponse)
+    public SymbolInfo AdaptSymbolResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -186,7 +186,7 @@ public class XtbAdapter : IReponseAdapter
         return symbolRecord;
     }
 
-    public Tick AdaptTickResponse(string? jsonResponse)
+    public Tick AdaptTickResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -205,7 +205,7 @@ public class XtbAdapter : IReponseAdapter
         return new Tick();
     }
 
-    public List<Position?> AdaptTradesHistoryResponse(string? jsonResponse, string positionReference)
+    public List<Position?> AdaptTradesHistoryResponse(string jsonResponse, string positionReference)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -225,7 +225,7 @@ public class XtbAdapter : IReponseAdapter
         return listPosition;
     }
 
-    public Position? AdaptTradesOpenedTradesResponse(string? jsonResponse, string positionId)
+    public Position? AdaptTradesOpenedTradesResponse(string jsonResponse, string positionId)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -247,7 +247,7 @@ public class XtbAdapter : IReponseAdapter
         return listPosition.FirstOrDefault();
     }
 
-    public TradeHourRecord AdaptTradingHoursResponse(string? jsonResponse)
+    public TradeHourRecord AdaptTradingHoursResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -268,7 +268,7 @@ public class XtbAdapter : IReponseAdapter
         return tradeHourRecord;
     }
 
-    public Position AdaptOpenTradeResponse(string? jsonResponse)
+    public Position AdaptOpenTradeResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
         CheckApiStatus(doc);
@@ -277,7 +277,7 @@ public class XtbAdapter : IReponseAdapter
         return MapPositionTrasaction(returnDataElement);
     }
 
-    public Position AdaptUpdateTradeResponse(string? jsonResponse)
+    public Position AdaptUpdateTradeResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -287,7 +287,7 @@ public class XtbAdapter : IReponseAdapter
         return MapPositionTrasaction(returnDataElement);
     }
 
-    public Position AdaptCloseTradeResponse(string? jsonResponse)
+    public Position AdaptCloseTradeResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -296,7 +296,7 @@ public class XtbAdapter : IReponseAdapter
         return MapPositionTrasaction(returnDataElement);
     }
 
-    public Tick AdaptTickRecordStreaming(string? input)
+    public Tick AdaptTickRecordStreaming(string input)
     {
         using var doc = JsonDocument.Parse(input);
 
@@ -304,7 +304,7 @@ public class XtbAdapter : IReponseAdapter
         return MapTick(data.Value);
     }
 
-    public Position? AdaptTradeRecordStreaming(string? input)
+    public Position? AdaptTradeRecordStreaming(string input)
     {
         using var doc = JsonDocument.Parse(input);
 
@@ -371,7 +371,7 @@ public class XtbAdapter : IReponseAdapter
         return null;
     }
 
-    public AccountBalance? AdaptBalanceRecordStreaming(string? input)
+    public AccountBalance? AdaptBalanceRecordStreaming(string input)
     {
         using var doc = JsonDocument.Parse(input);
 
@@ -379,7 +379,7 @@ public class XtbAdapter : IReponseAdapter
         return MapAccountBalanceStreaming(data.Value);
     }
 
-    public Position AdaptTradeStatusRecordStreaming(string? input)
+    public Position AdaptTradeStatusRecordStreaming(string input)
     {
         using var doc = JsonDocument.Parse(input);
 
@@ -395,7 +395,7 @@ public class XtbAdapter : IReponseAdapter
         };
     }
 
-    public Position AdaptProfitRecordStreaming(string? input)
+    public Position AdaptProfitRecordStreaming(string input)
     {
         using var doc = JsonDocument.Parse(input);
 
@@ -410,7 +410,7 @@ public class XtbAdapter : IReponseAdapter
         };
     }
 
-    public News AdaptNewsRecordStreaming(string? input)
+    public News AdaptNewsRecordStreaming(string input)
     {
         using var doc = JsonDocument.Parse(input);
 
@@ -418,7 +418,7 @@ public class XtbAdapter : IReponseAdapter
         return MapNews(data.Value);
     }
 
-    public Candle AdaptCandleRecordStreaming(string? input)
+    public Candle AdaptCandleRecordStreaming(string input)
     {
         using var doc = JsonDocument.Parse(input);
 
@@ -426,7 +426,7 @@ public class XtbAdapter : IReponseAdapter
         throw new NotImplementedException();
     }
 
-    public LoginResponseXtb AdaptLoginResponse(string? jsonResponse)
+    public LoginResponseXtb AdaptLoginResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 

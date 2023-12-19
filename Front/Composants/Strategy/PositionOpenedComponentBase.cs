@@ -13,11 +13,11 @@ public class PositionOpenedComponentBase : StrategyIdComponentBase , IDisposable
 {
     internal ObservableCollection<PositionDto> Positions { get; set; } = new();
     protected SfGrid<PositionDto> Grid { get; set; }
-    [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
+    [Inject] private IStrategyHandlerService ApiStrategyService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var data = await _apiStrategyService.GetOpenedPositions(StrategyId);
+        var data = await ApiStrategyService.GetOpenedPositions(StrategyId);
         Positions = new ObservableCollection<PositionDto>(data.Positions);
         CommandHandler.PositionChangeEvent += CommandHandlerOnPositionChangeEvent;
     }
