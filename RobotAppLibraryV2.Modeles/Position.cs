@@ -9,7 +9,6 @@ public class Position
     public string Id { get; set; }
     public string StrategyId { get; set; }
     public string PositionStrategyReferenceId => $"{StrategyId}|{Id}";
-
     public string? Order { get; set; }
     public string Symbol { get; set; }
     public TypeOperation TypePosition { get; set; }

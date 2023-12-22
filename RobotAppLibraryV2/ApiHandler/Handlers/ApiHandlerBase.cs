@@ -111,7 +111,6 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
         catch (System.Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(PingAsync)}");
-            throw new ApiHandlerException($"Error on  {nameof(PingAsync)}");
         }
     }
 

@@ -1,4 +1,3 @@
-using System.Threading.Channels;
 using DotNetEnv;
 using Front;
 using Front.Services;
@@ -9,12 +8,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
-using StrategyApi.Mail;
-using StrategyApi.StrategyBackgroundService;
-using StrategyApi.StrategyBackgroundService.Command.Api;
-using StrategyApi.StrategyBackgroundService.Command.Strategy;
 using StrategyApi.StrategyBackgroundService.Mapper;
-using StrategyApi.StrategyBackgroundService.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -38,6 +32,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 builder.Services.AddSignalR();
+
 
 builder.AddSyncFusion();
 builder.AddBotDependency();
@@ -92,6 +87,5 @@ app.MapControllers();
 app.MapBlazorHub();
 
 app.MapFallbackToPage("/_Host");
-
 
 app.Run();

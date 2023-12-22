@@ -8,7 +8,7 @@ using Serilog;
 
 namespace RobotAppLibraryV2.ApiHandler;
 
-public class ApiHandlerFactory
+public static class ApiHandlerFactory
 {
     public static IApiHandler GetApiHandler(ApiHandlerEnum api, Server server, ILogger logger)
     {
