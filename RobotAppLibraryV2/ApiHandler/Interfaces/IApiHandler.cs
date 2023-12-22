@@ -2,15 +2,15 @@
 
 namespace RobotAppLibraryV2.ApiHandler.Interfaces;
 
-public interface IApiHandler
+public interface IApiHandler : IDisposable
 {
     public List<SymbolInfo> AllSymbols { get; set; }
     public AccountBalance? AccountBalance { get; set; }
     public event EventHandler Connected;
     public event EventHandler Disconnected;
     public event EventHandler<Tick> TickEvent;
-    public event EventHandler<Position> PositionOpenedEvent;
-    public event EventHandler<Position> PositionUpdatedEvent;
+    public event EventHandler<Position>? PositionOpenedEvent;
+    public event EventHandler<Position>? PositionUpdatedEvent;
     public event EventHandler<Position> PositionRejectedEvent;
     public event EventHandler<Position> PositionClosedEvent;
     public event EventHandler<AccountBalance> NewBalanceEvent;

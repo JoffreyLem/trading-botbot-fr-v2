@@ -37,10 +37,10 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
     public event EventHandler? Connected;
     public event EventHandler? Disconnected;
     public event EventHandler<Tick>? TickEvent;
-    public event EventHandler<Position?>? PositionOpenedEvent;
-    public event EventHandler<Position?>? PositionUpdatedEvent;
-    public event EventHandler<Position?>? PositionRejectedEvent;
-    public event EventHandler<Position?>? PositionClosedEvent;
+    public event EventHandler<Position>? PositionOpenedEvent;
+    public event EventHandler<Position>? PositionUpdatedEvent;
+    public event EventHandler<Position>? PositionRejectedEvent;
+    public event EventHandler<Position>? PositionClosedEvent;
     public event EventHandler<AccountBalance>? NewBalanceEvent;
     public event EventHandler<News>? NewsEvent;
 
@@ -58,7 +58,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
             CommandExecutor.ExecuteSubscribeProfitsCommandStreaming();
             CommandExecutor.ExecuteSubscribeNewsCommandStreaming();
             CommandExecutor.ExecuteSubscribeKeepAliveCommandStreaming();
-            TimerCallback timerCallback = async state => await PingAsync();
+            TimerCallback timerCallback =  state =>  PingAsync().GetAwaiter().GetResult();
             pingTimer = new Timer(timerCallback, null, 0, PingInterval.Ticks / TimeSpan.TicksPerMillisecond);
         }
         catch (System.Exception e)
@@ -73,6 +73,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
         try
         {
             await CommandExecutor.ExecuteLogoutCommand();
+       
         }
         catch (System.Exception e)
         {
@@ -333,6 +334,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
     public void Dispose()
     {
         CommandExecutor.Dispose();
+        pingTimer.Dispose();
     }
 
     private void TcpStreamingConnectorOnDisconnected(object? sender, EventArgs e)

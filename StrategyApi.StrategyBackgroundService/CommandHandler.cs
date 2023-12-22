@@ -1,6 +1,7 @@
 using AutoMapper;
 using RobotAppLibraryV2.Api.Xtb;
 using RobotAppLibraryV2.ApiHandler;
+using RobotAppLibraryV2.ApiHandler.Exception;
 using RobotAppLibraryV2.ApiHandler.Handlers;
 using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
 using RobotAppLibraryV2.ApiHandler.Interfaces;
@@ -45,7 +46,7 @@ public class CommandHandler
 
     public async Task HandleApiCommand(ServiceCommandeBaseApiAbstract command)
     {
-        _logger.Information("Api command received {Command}", command);
+       
         switch (command)
         {
             case InitHandlerCommand initHandlerCommand:
@@ -76,11 +77,11 @@ public class CommandHandler
                 _logger.Error("Trying to use unhandled command {@Command}", command);
                 throw new CommandException($"Commande {command} non gérer");
         }
+       
     }
 
     public async Task HandleStrategyCommand(ServiceCommandeBaseStrategyAbstract command)
     {
-        _logger.Information("Strategy command received {Command}", command);
         switch (command)
         {
             case InitStrategyCommand initStrategyCommandDto:
@@ -374,14 +375,16 @@ public class CommandHandler
     // TODO : a faire evol lors du multi API
     private async Task Connect(ApiConnectCommand command)
     {
-        CheckApiHandlerNotNull();
+       
+            CheckApiHandlerNotNull();
 
-        await _apiHandlerBase.ConnectAsync(command.Credentials);
-        _apiHandlerBase.Connected += ApiHandlerBaseOnConnected;
-        _apiHandlerBase.Disconnected += ApiHandlerBaseOnDisconnected;
-        _apiHandlerBase.NewBalanceEvent += ApiHandlerBaseOnNewBalanceEvent;
+            await _apiHandlerBase.ConnectAsync(command.Credentials).ConfigureAwait(false);
+            _apiHandlerBase.Connected += ApiHandlerBaseOnConnected;
+            _apiHandlerBase.Disconnected += ApiHandlerBaseOnDisconnected;
+            _apiHandlerBase.NewBalanceEvent += ApiHandlerBaseOnNewBalanceEvent;
 
-        command.ResponseSource.SetResult(new AcknowledgementResponse());
+            command.ResponseSource.SetResult(new AcknowledgementResponse());
+      
     }
 
     private void ApiHandlerBaseOnNewBalanceEvent(object? sender, AccountBalance e)
@@ -401,6 +404,10 @@ public class CommandHandler
     {
         CheckApiHandlerNotNull();
         await _apiHandlerBase.DisconnectAsync();
+        _apiHandlerBase.Connected -= ApiHandlerBaseOnConnected;
+        _apiHandlerBase.Disconnected -= ApiHandlerBaseOnDisconnected;
+        _apiHandlerBase.NewBalanceEvent -= ApiHandlerBaseOnNewBalanceEvent;
+        _apiHandlerBase.Dispose();
         _apiHandlerBase = null;
 
         command.ResponseSource.SetResult(new AcknowledgementResponse());

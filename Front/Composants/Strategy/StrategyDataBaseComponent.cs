@@ -23,7 +23,10 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
 
     public void Dispose()
     {
-     
+        CommandHandler.CandleEvent -= CommandHandlerOnCandleEvent;
+        CommandHandler.TickEvent -= CommandHandlerOnTickEvent;
+        CommandHandler.StrategyDisabled -= CommandHandlerOnStrategyDisabled;
+        GC.SuppressFinalize(this);
     }
 
     protected override async Task OnInitializedAsync()

@@ -351,7 +351,6 @@ public sealed class StrategyBase : IDisposable
     {
         _logger.Fatal(ex, "On disabling strategy for reason {Reason}", strategyReasonDisabled);
         CanRun = false;
-        // Add les tests pour sa !
         StrategyDisabled = true;
         
         try

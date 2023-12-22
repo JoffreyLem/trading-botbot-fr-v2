@@ -269,26 +269,13 @@ public abstract class
         await tcpStreamingClient.SendAsync(command);
     }
 
-    public void Dispose()
-    {
-        return;
-
-        static void CastAndDispose(IAsyncDisposable resource)
-        {
-            if (resource is IDisposable resourceDisposable)
-                resourceDisposable.Dispose();
-            else
-                _ = resource.DisposeAsync().AsTask();
-        }
-    }
 
     public ITcpStreamingConnector TcpStreamingConnector => tcpStreamingClient;
     public ITcpConnectorSynchronisation TcpConnector => tcpClient;
 
-    public virtual async Task<string> ExecuteLogOutCommand()
+    public void Dispose()
     {
-        var command = commandCreator.CreateLogOutCommand();
-        var rsp = await tcpClient.SendAndReceiveAsync(command);
-        return _responseAdapter.AdaptLogOutResponse(rsp);
+        tcpStreamingClient.Close();
+        tcpClient.Close();
     }
 }

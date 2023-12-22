@@ -31,7 +31,7 @@ public class AllStrategyComponentBase : ComponentBase
         try
         {
             var result = await _apiStrategyService.GetAllStrategy();
-            if (result is { Count: > 0 }) StrategyList = result;
+            StrategyList = result is { Count: > 0 } ? result : new();
             this.StateHasChanged();
         }
         catch (Exception e)

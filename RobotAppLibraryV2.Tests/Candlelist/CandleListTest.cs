@@ -533,7 +533,7 @@ public class CandleListTest
         // Arrange
 
         var candles = TestUtils.GenerateCandle(TimeSpan.FromMinutes(15), 100);
-        candles.Last().SetDate(DateTime.Now);
+        candles.Last().SetDate(DateTime.UtcNow);
         _apiHandlerMock.Setup(x => x.GetChartAsync(It.IsAny<string>(), It.IsAny<Timeframe>()))
             .ReturnsAsync(candles);
 
