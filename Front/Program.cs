@@ -40,18 +40,7 @@ builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 builder.Services.AddSignalR();
 
 builder.AddSyncFusion();
-builder.Services.AddHostedService<StrategyBackgroundService>();
-builder.Services.AddSingleton<IApiConnectService, ApiConnectService>();
-builder.Services.AddSingleton<IStrategyHandlerService, StrategyHandlerService>();
-var channelApi = Channel.CreateUnbounded<ServiceCommandeBaseApiAbstract>();
-builder.Services.AddSingleton(channelApi.Reader);
-builder.Services.AddSingleton(channelApi.Writer);
-var channelStrategy =
-    Channel.CreateUnbounded<ServiceCommandeBaseStrategyAbstract>();
-builder.Services.AddSingleton(channelStrategy.Reader);
-builder.Services.AddSingleton(channelStrategy.Writer);
-builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
-builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.AddBotDependency();
 
 builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfilesBackgroundServices>(); },
     typeof(MappingProfilesBackgroundServices).Assembly
