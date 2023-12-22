@@ -39,10 +39,14 @@ public class PositionOpenedComponentBase : StrategyIdComponentBase , IDisposable
                 case PositionStateEnum.Updated:
                 {
                     var selected = Positions
-                        .Where((x, i) => x?.Id?.ToString() == e?.Id)
+                        .Where((x, i) => x?.Id?.ToString() == pos?.Id)
                         .Select((x, i) => i).FirstOrDefault();
                     if (selected >= 0 && selected < Positions.Count)
-                        Positions[selected] = pos;
+                    {
+                        Positions[selected].Profit = pos.Profit;
+                        Positions[selected].StopLoss = pos.StopLoss;
+                        Positions[selected].TakeProfit = pos.TakeProfit;
+                    }
                     else
                         Positions.Add(pos);
                     break;
@@ -50,7 +54,7 @@ public class PositionOpenedComponentBase : StrategyIdComponentBase , IDisposable
                 case PositionStateEnum.Closed:
                 case PositionStateEnum.Rejected:
                 {
-                    var selected = Positions.Where((x, _) => x.Id == e.Id)
+                    var selected = Positions.Where((x, _) => x.Id?.ToString() == pos.Id)
                         .Select((x, _) => x).FirstOrDefault();
                     if (selected is not null) Positions.Remove(selected);
                     break;

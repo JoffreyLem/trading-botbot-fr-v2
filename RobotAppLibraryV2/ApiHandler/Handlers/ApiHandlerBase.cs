@@ -260,7 +260,11 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
     {
         try
         {
-            return await CommandExecutor.ExecuteOpenTradeCommand(position, price);
+            
+            var pos = await CommandExecutor.ExecuteOpenTradeCommand(position, price);
+            position.Order = pos.Order;
+            CachePosition.Add(position);
+            return pos;
         }
         catch (System.Exception e)
         {
@@ -361,7 +365,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
             switch (obj.StatusPosition)
             {
                 case StatusPosition.Pending:
-                    // TODO : voir faire quoi ici ? peut être rien ? 
+                    //TODO : Faire quoi ici ??
                     break;
                 case StatusPosition.Rejected:
                     OnPositionRejectedEvent(obj);
@@ -406,10 +410,11 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
 
     protected virtual void OnPositionOpenedEvent(Position? e)
     {
-        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id);
-        if (posSelected is null)
+        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id || x.Order == e.Order);
+        if (posSelected is { Opened:false })
         {
-            CachePosition.Add(e);
+            posSelected.Opened = true;
+            posSelected.Order = e.Order;
             PositionOpenedEvent?.Invoke(this, e);
         }
         else
@@ -420,17 +425,17 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
 
     protected virtual void OnPositionRejectedEvent(Position? e)
     {
-        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id);
+        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id || x.Order == e.Order);
         if (posSelected is not null)
         {
             CachePosition.Remove(posSelected);
-            PositionRejectedEvent?.Invoke(this, e);
+            PositionRejectedEvent?.Invoke(this, posSelected);
         }
     }
 
     protected virtual void OnPositionClosedEvent(Position? e)
     {
-        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id);
+        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id || x.Order == e.Order);
         if (posSelected is not null)
         {
             CachePosition.Remove(posSelected);

@@ -378,7 +378,7 @@ public sealed class StrategyBase : IDisposable
     {
         try
         {
-            _logger.Information("Try run strategy");
+            _logger.Verbose("Try run strategy");
             StrategyImplementation.Run();
         }
         catch (Exception e)

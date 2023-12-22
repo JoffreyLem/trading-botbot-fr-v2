@@ -46,15 +46,14 @@ public class MoneyManagement : IMoneyManagement
             var tickSize = SymbolInfo.Symbol.Contains("JPY") ? 0.01m : 0.0001m;
             var pipsRisk = Math.Abs(entryPrice - stopLossPrice) / tickSize;
             var riskValue = pipsRisk * (decimal)LotValueCalculator.PipValueStandard;
-            positionSize = riskMoney / (double)riskValue;
-            // TODO : Voir pour s'harmoniser comme les indices ? 
-            var margeRequired = positionSize * LotValueCalculator.MarginPerLot;
-            if (margeRequired >= _accountBalance.MarginFree)
-            {
-                _logger?.Warning("Margin exceded : {MarginRequired} | {MarginFree}, switch lot size to minimun value",
-                    margeRequired, _accountBalance.MarginFree);
-                positionSize = SymbolInfo.LotMin ?? throw new InvalidOperationException("Lot min is not defined");
-            }
+            var positionSizeByRisk = riskMoney / (double)riskValue;
+      
+            //TODO : TU ICI !
+            var maxPositionSizeByMargin = (double)(_accountBalance.Equity / LotValueCalculator.MarginPerLot);
+            positionSize = Math.Min(positionSizeByRisk, maxPositionSizeByMargin);
+
+            // Ajustement. 
+            positionSize -= 0.01;
         }
         else if (SymbolInfo.Category == Category.Indices)
         {
@@ -64,9 +63,10 @@ public class MoneyManagement : IMoneyManagement
 
             var positionSizeByRisk = riskMoney / lossPerStopLoss;
 
+            // TODO : Pq cette var ? 
             var requiredMarge = positionSizeByRisk * LotValueCalculator.MarginPerLot;
 
-            var maxPositionSizeByMargin = _accountBalance.Equity / LotValueCalculator.MarginPerLot;
+            var maxPositionSizeByMargin = (double)(_accountBalance.Equity / LotValueCalculator.MarginPerLot);
 
             positionSize = Math.Min(positionSizeByRisk, (double)maxPositionSizeByMargin);
         }

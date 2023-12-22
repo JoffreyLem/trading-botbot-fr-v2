@@ -260,13 +260,38 @@ public class XtbAdapter : IReponseAdapter
             tradeHourRecord.HoursRecords.Add(new TradeHourRecord.HoursRecordData
             {
                 Day = (DayOfWeek)tradingElement.GetProperty("day").GetInt32(),
-                From = TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(tradingElement
+                From = ParseFromDatTradeHour(tradingElement
                     .GetProperty("fromT").GetInt64()),
-                To = TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(tradingElement.GetProperty("toT")
+                To = ParseToDatTradeHour(tradingElement.GetProperty("toT")
                     .GetInt64())
             });
         return tradeHourRecord;
     }
+
+    private TimeSpan ParseFromDatTradeHour(long time)
+    {
+        if (time is 0)
+        {
+            return TimeSpan.FromMilliseconds(0);
+        }
+
+        return TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(time);
+
+    }
+    
+    private TimeSpan ParseToDatTradeHour(long time)
+    {
+        var dateRefLimitDay = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59).TimeOfDay.TotalMilliseconds;
+        if (time is 86400000)
+        {
+            return TimeSpan.FromMilliseconds(dateRefLimitDay);
+        }
+
+        return TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(time);
+
+    }
+
+
 
     public Position AdaptOpenTradeResponse(string jsonResponse)
     {

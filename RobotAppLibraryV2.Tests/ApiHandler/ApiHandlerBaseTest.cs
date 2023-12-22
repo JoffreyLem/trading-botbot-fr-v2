@@ -926,7 +926,9 @@ public class ApiHandlerBaseTest
         var caller = false;
         var position = new Position
         {
-            StatusPosition = StatusPosition.Open
+            StatusPosition = StatusPosition.Open,
+            StrategyId = "1",
+            Id = "1"
         };
 
 
@@ -977,7 +979,9 @@ public class ApiHandlerBaseTest
         var caller = false;
         var position = new Position
         {
-            StatusPosition = StatusPosition.Close
+            StatusPosition = StatusPosition.Close,
+            StrategyId = "1",
+            Id = "1"
         };
 
 
@@ -985,7 +989,9 @@ public class ApiHandlerBaseTest
 
         var position1 = new Position
         {
-            StatusPosition = StatusPosition.Open
+            StatusPosition = StatusPosition.Open,
+            StrategyId = "1",
+            Id = "1"
         };
         _commandExecutor.Raise(x => x.TcpStreamingConnector.TradeRecordReceived += null, position1);
         // Act
