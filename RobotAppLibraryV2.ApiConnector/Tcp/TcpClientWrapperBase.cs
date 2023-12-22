@@ -3,7 +3,6 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.RegularExpressions;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using Serilog;
 
@@ -18,17 +17,14 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
     protected StreamReader? ApiReadStream;
 
     protected StreamWriter? ApiWriteStream;
-    
-    private SslStream? stream;
 
     protected TimeSpan CommandTimeSpanmeSpace = TimeSpan.FromMilliseconds(200);
-
-    public bool IsConnected => client.Connected;
 
     protected int Port;
 
     protected string ServerAddress;
 
+    private SslStream? stream;
 
 
     public TimeSpan TimeOutMilliSeconds = TimeSpan.FromMilliseconds(5000);
@@ -39,6 +35,8 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
         ServerAddress = serverAddress;
         Port = port;
     }
+
+    public bool IsConnected => client.Connected;
 
     public void Dispose()
     {
@@ -75,8 +73,8 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             var completedTask2 = await Task.WhenAny(authenticationTask, delayTask2);
 
             if (completedTask2 == delayTask) throw new TimeoutException("SSL handshake timed out.");
-    
-            ApiWriteStream ??= new StreamWriter(stream,  leaveOpen: true);
+
+            ApiWriteStream ??= new StreamWriter(stream, leaveOpen: true);
             ApiReadStream ??= new StreamReader(stream, leaveOpen: true);
             OnConnectedEvent();
         }
@@ -106,7 +104,6 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             Close();
             throw new ApiCommunicationException("Error while sending the data: " + ex.Message);
         }
-   
     }
 
     public async Task<string> ReceiveAsync(CancellationToken cancellationToken = default)

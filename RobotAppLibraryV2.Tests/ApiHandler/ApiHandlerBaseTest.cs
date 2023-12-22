@@ -920,7 +920,7 @@ public class ApiHandlerBaseTest
     }
 
     [Fact]
-    public void Test_PositionState_Open()
+    public async Task Test_PositionState_Open()
     {
         // Arrange
         var caller = false;
@@ -930,6 +930,15 @@ public class ApiHandlerBaseTest
             StrategyId = "1",
             Id = "1"
         };
+        
+        _commandExecutor.Setup(x => x.ExecuteOpenTradeCommand(It.IsAny<Position>(), It.IsAny<decimal>()))
+            .ReturnsAsync(new Position()
+            {
+                StrategyId = "1",
+                Id = "1"
+            });
+        
+        await apiHandlerBase.Object.OpenPositionAsync(new Position(), 1);
 
 
         apiHandlerBase.Object.PositionOpenedEvent += (sender, position1) => caller = true;
@@ -973,7 +982,7 @@ public class ApiHandlerBaseTest
     }
 
     [Fact]
-    public void Test_PositionState_Close()
+    public async Task Test_PositionState_Close()
     {
         // Arrange
         var caller = false;
@@ -983,6 +992,15 @@ public class ApiHandlerBaseTest
             StrategyId = "1",
             Id = "1"
         };
+
+        _commandExecutor.Setup(x => x.ExecuteOpenTradeCommand(It.IsAny<Position>(), It.IsAny<decimal>()))
+            .ReturnsAsync(new Position()
+            {
+                StrategyId = "1",
+                Id = "1"
+            });
+        
+        await apiHandlerBase.Object.OpenPositionAsync(new Position(), 1);
 
 
         apiHandlerBase.Object.PositionClosedEvent += (sender, position1) => caller = true;
@@ -994,6 +1012,9 @@ public class ApiHandlerBaseTest
             Id = "1"
         };
         _commandExecutor.Raise(x => x.TcpStreamingConnector.TradeRecordReceived += null, position1);
+        
+        
+        
         // Act
         _commandExecutor.Raise(x => x.TcpStreamingConnector.TradeRecordReceived += null, position);
 

@@ -58,7 +58,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
             CommandExecutor.ExecuteSubscribeProfitsCommandStreaming();
             CommandExecutor.ExecuteSubscribeNewsCommandStreaming();
             CommandExecutor.ExecuteSubscribeKeepAliveCommandStreaming();
-            TimerCallback timerCallback =  state =>  PingAsync().GetAwaiter().GetResult();
+            TimerCallback timerCallback = state => PingAsync().GetAwaiter().GetResult();
             pingTimer = new Timer(timerCallback, null, 0, PingInterval.Ticks / TimeSpan.TicksPerMillisecond);
         }
         catch (System.Exception e)
@@ -73,7 +73,6 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
         try
         {
             await CommandExecutor.ExecuteLogoutCommand();
-       
         }
         catch (System.Exception e)
         {
@@ -260,7 +259,6 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
     {
         try
         {
-            
             var pos = await CommandExecutor.ExecuteOpenTradeCommand(position, price);
             position.Order = pos.Order;
             CachePosition.Add(position);
@@ -411,7 +409,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
     protected virtual void OnPositionOpenedEvent(Position? e)
     {
         var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id || x.Order == e.Order);
-        if (posSelected is { Opened:false })
+        if (posSelected is { Opened: false })
         {
             posSelected.Opened = true;
             posSelected.Order = e.Order;

@@ -7,7 +7,7 @@ namespace RobotAppLibraryV2.ApiConnector.Tcp;
 public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamingConnector
 {
     private readonly SemaphoreSlim _semaphore = new(1, 1);
-    
+
     public TcpStreamingConnector(Server server, ILogger logger) : base(server.Address, server.StreamingPort, logger)
     {
     }
@@ -36,6 +36,12 @@ public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamin
         t.Start();
     }
 
+    public override Task SendAsync(string messageToSend)
+    {
+        Logger.Information("Streaming message to send {Message}", messageToSend);
+        return base.SendAsync(messageToSend);
+    }
+
     protected abstract void HandleMessage(string message);
 
     private async Task ReadStreamMessage()
@@ -53,12 +59,6 @@ public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamin
         {
             Logger.Error(e, "Error on read stream message");
         }
-    }
-
-    public override Task SendAsync(string messageToSend)
-    {
-        Logger.Information("Streaming message to send {Message}",messageToSend);
-        return base.SendAsync(messageToSend);
     }
 
     protected virtual void OnTickRecordReceived(Tick obj)

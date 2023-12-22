@@ -1,7 +1,6 @@
 using AutoMapper;
 using RobotAppLibraryV2.Api.Xtb;
 using RobotAppLibraryV2.ApiHandler;
-using RobotAppLibraryV2.ApiHandler.Exception;
 using RobotAppLibraryV2.ApiHandler.Handlers;
 using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
 using RobotAppLibraryV2.ApiHandler.Interfaces;
@@ -33,9 +32,9 @@ public class CommandHandler
     private readonly IEmailService _emailService;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
-    private IApiHandler? _apiHandlerBase;
 
     private readonly Dictionary<string, StrategyBase> _strategyList = new();
+    private IApiHandler? _apiHandlerBase;
 
     public CommandHandler(ILogger logger, IMapper mapper, IEmailService emailService)
     {
@@ -46,7 +45,6 @@ public class CommandHandler
 
     public async Task HandleApiCommand(ServiceCommandeBaseApiAbstract command)
     {
-       
         switch (command)
         {
             case InitHandlerCommand initHandlerCommand:
@@ -77,7 +75,6 @@ public class CommandHandler
                 _logger.Error("Trying to use unhandled command {@Command}", command);
                 throw new CommandException($"Commande {command} non gérer");
         }
-       
     }
 
     public async Task HandleStrategyCommand(ServiceCommandeBaseStrategyAbstract command)
@@ -169,8 +166,8 @@ public class CommandHandler
     public static event EventHandler<BackGroundServiceEvent<TickDto>>? TickEvent;
     public static event EventHandler<BackGroundServiceEvent<CandleDto>>? CandleEvent;
     public static event EventHandler<BackGroundServiceEvent<PositionDto>>? PositionChangeEvent;
-    public static event EventHandler<BackGroundServiceEvent<string>>? StrategyEvent; 
-    public static event EventHandler<RobotEvent<string>>? StrategyDisabled; 
+    public static event EventHandler<BackGroundServiceEvent<string>>? StrategyEvent;
+    public static event EventHandler<RobotEvent<string>>? StrategyDisabled;
 
     #region StrategyCommand
 
@@ -209,12 +206,12 @@ public class CommandHandler
         _logger.Warning("Strategy disabled : {Reason}, send email to user", e.EventField.ToString());
         var message = $"Strategy disabled cause : {e.EventField.ToString()}";
         _emailService.SendEmail("Strategy disabled", message).GetAwaiter().GetResult();
-        StrategyDisabled?.Invoke(this,new RobotEvent<string>(message,e.Id));
+        StrategyDisabled?.Invoke(this, new RobotEvent<string>(message, e.Id));
     }
 
     private void StrategyBaseOnStrategyEvent(object? sender, RobotEvent<string> e)
     {
-        StrategyEvent?.Invoke(this,new BackGroundServiceEvent<string>(e.EventField,e.Id));
+        StrategyEvent?.Invoke(this, new BackGroundServiceEvent<string>(e.EventField, e.Id));
     }
 
 
@@ -235,6 +232,7 @@ public class CommandHandler
             CandleDtos = candles
         });
     }
+
     private void StrategyBaseOnPositionRejectedEvent(object? sender, RobotEvent<Position> e)
     {
         var posDto = _mapper.Map<PositionDto>(e.EventField);
@@ -375,16 +373,14 @@ public class CommandHandler
     // TODO : a faire evol lors du multi API
     private async Task Connect(ApiConnectCommand command)
     {
-       
-            CheckApiHandlerNotNull();
+        CheckApiHandlerNotNull();
 
-            await _apiHandlerBase.ConnectAsync(command.Credentials).ConfigureAwait(false);
-            _apiHandlerBase.Connected += ApiHandlerBaseOnConnected;
-            _apiHandlerBase.Disconnected += ApiHandlerBaseOnDisconnected;
-            _apiHandlerBase.NewBalanceEvent += ApiHandlerBaseOnNewBalanceEvent;
+        await _apiHandlerBase.ConnectAsync(command.Credentials).ConfigureAwait(false);
+        _apiHandlerBase.Connected += ApiHandlerBaseOnConnected;
+        _apiHandlerBase.Disconnected += ApiHandlerBaseOnDisconnected;
+        _apiHandlerBase.NewBalanceEvent += ApiHandlerBaseOnNewBalanceEvent;
 
-            command.ResponseSource.SetResult(new AcknowledgementResponse());
-      
+        command.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
     private void ApiHandlerBaseOnNewBalanceEvent(object? sender, AccountBalance e)

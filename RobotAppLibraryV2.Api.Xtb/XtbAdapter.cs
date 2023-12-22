@@ -268,30 +268,6 @@ public class XtbAdapter : IReponseAdapter
         return tradeHourRecord;
     }
 
-    private TimeSpan ParseFromDatTradeHour(long time)
-    {
-        if (time is 0)
-        {
-            return TimeSpan.FromMilliseconds(0);
-        }
-
-        return TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(time);
-
-    }
-    
-    private TimeSpan ParseToDatTradeHour(long time)
-    {
-        var dateRefLimitDay = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59).TimeOfDay.TotalMilliseconds;
-        if (time is 86400000)
-        {
-            return TimeSpan.FromMilliseconds(dateRefLimitDay);
-        }
-
-        return TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(time);
-
-    }
-
-
 
     public Position AdaptOpenTradeResponse(string jsonResponse)
     {
@@ -449,6 +425,21 @@ public class XtbAdapter : IReponseAdapter
 
         var data = ReturnDataStreaming(doc);
         throw new NotImplementedException();
+    }
+
+    private TimeSpan ParseFromDatTradeHour(long time)
+    {
+        if (time is 0) return TimeSpan.FromMilliseconds(0);
+
+        return TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(time);
+    }
+
+    private TimeSpan ParseToDatTradeHour(long time)
+    {
+        var dateRefLimitDay = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59).TimeOfDay.TotalMilliseconds;
+        if (time is 86400000) return TimeSpan.FromMilliseconds(dateRefLimitDay);
+
+        return TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(time);
     }
 
     public LoginResponseXtb AdaptLoginResponse(string jsonResponse)

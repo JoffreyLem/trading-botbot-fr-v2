@@ -50,13 +50,11 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
     private void CommandHandlerOnStrategyDisabled(object? sender, RobotEvent<string> e)
     {
         if (e.Id == StrategyId)
-        {
             InvokeAsync(() =>
             {
                 StrategyInfo.StrategyDisabled = true;
                 StateHasChanged();
             });
-        }
     }
 
 

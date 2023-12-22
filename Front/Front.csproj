@@ -87,7 +87,7 @@
             <DependentUpon>AllStrategyComponent.razor</DependentUpon>
         </Compile>
         <Compile Update="Pages\Api\ApiComponentBase.cs">
-          <DependentUpon>ApiComponent.razor</DependentUpon>
+            <DependentUpon>ApiComponent.razor</DependentUpon>
         </Compile>
     </ItemGroup>
 

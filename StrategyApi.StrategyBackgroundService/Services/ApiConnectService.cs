@@ -23,22 +23,19 @@ public class ApiConnectService : IApiConnectService
 
     public async Task Connect(string user, string pwd)
     {
-       
-            var connecCommand = new ApiConnectCommand
+        var connecCommand = new ApiConnectCommand
+        {
+            Credentials = new Credentials
             {
-                Credentials = new Credentials
-                {
-                    User = user,
-                    Password = pwd
-                }
-            };
+                User = user,
+                Password = pwd
+            }
+        };
 
 
-            await _channelApiWriter.WriteAsync(connecCommand);
+        await _channelApiWriter.WriteAsync(connecCommand);
 
-            await connecCommand.ResponseSource.Task;
-      
-    
+        await connecCommand.ResponseSource.Task;
     }
 
     public async Task Disconnect()

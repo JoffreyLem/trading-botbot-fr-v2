@@ -9,11 +9,17 @@ using Syncfusion.Blazor.Grids;
 
 namespace Front.Composants.Strategy;
 
-public class PositionOpenedComponentBase : StrategyIdComponentBase , IDisposable
+public class PositionOpenedComponentBase : StrategyIdComponentBase, IDisposable
 {
     internal ObservableCollection<PositionDto> Positions { get; set; } = new();
     protected SfGrid<PositionDto> Grid { get; set; }
     [Inject] private IStrategyHandlerService ApiStrategyService { get; set; }
+
+    public void Dispose()
+    {
+        ((IDisposable)Grid).Dispose();
+        CommandHandler.PositionChangeEvent -= CommandHandlerOnPositionChangeEvent;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,7 +54,10 @@ public class PositionOpenedComponentBase : StrategyIdComponentBase , IDisposable
                         Positions[selected].TakeProfit = pos.TakeProfit;
                     }
                     else
+                    {
                         Positions.Add(pos);
+                    }
+
                     break;
                 }
                 case PositionStateEnum.Closed:
@@ -61,11 +70,5 @@ public class PositionOpenedComponentBase : StrategyIdComponentBase , IDisposable
                 }
             }
         }
-    }
-
-    public void Dispose()
-    {
-        ((IDisposable)Grid).Dispose();
-        CommandHandler.PositionChangeEvent -= CommandHandlerOnPositionChangeEvent;
     }
 }

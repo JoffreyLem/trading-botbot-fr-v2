@@ -47,7 +47,7 @@ public class MoneyManagement : IMoneyManagement
             var pipsRisk = Math.Abs(entryPrice - stopLossPrice) / tickSize;
             var riskValue = pipsRisk * (decimal)LotValueCalculator.PipValueStandard;
             var positionSizeByRisk = riskMoney / (double)riskValue;
-      
+
             //TODO : TU ICI !
             var maxPositionSizeByMargin = (double)(_accountBalance.Equity / LotValueCalculator.MarginPerLot);
             positionSize = Math.Min(positionSizeByRisk, maxPositionSizeByMargin);
@@ -68,7 +68,7 @@ public class MoneyManagement : IMoneyManagement
 
             var maxPositionSizeByMargin = (double)(_accountBalance.Equity / LotValueCalculator.MarginPerLot);
 
-            positionSize = Math.Min(positionSizeByRisk, (double)maxPositionSizeByMargin);
+            positionSize = Math.Min(positionSizeByRisk, maxPositionSizeByMargin);
         }
 
         if (positionSize < SymbolInfo.LotMin)

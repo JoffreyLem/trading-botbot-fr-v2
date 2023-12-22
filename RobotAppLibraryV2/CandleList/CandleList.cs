@@ -205,11 +205,12 @@ public class CandleList : List<Candle>, ICandleList, IDisposable
     {
         using (LogContext.PushProperty("Timeframe", timeframe))
         {
-            _logger.Information("Adapting the start for timeframe {Timeframe} at {@Datetime}", timeframe, DateTime.UtcNow);
+            _logger.Information("Adapting the start for timeframe {Timeframe} at {@Datetime}", timeframe,
+                DateTime.UtcNow);
 
             if (CurrentHoursRecord is not null)
             {
-                _logger.Information("Current trade hours is not null {@CurrentHours}",CurrentHoursRecord);
+                _logger.Information("Current trade hours is not null {@CurrentHours}", CurrentHoursRecord);
 
                 var dateRefLimitDay = DateTime.UtcNow.Date.AddHours(23).AddMinutes(59).AddSeconds(59).TimeOfDay;
 
@@ -231,7 +232,8 @@ public class CandleList : List<Candle>, ICandleList, IDisposable
                 }
                 else if (NextDateToRegister >= dateToTcheckTo)
                 {
-                    _logger.Information("Date 'to' depassed {@DateNow} | {@DateToCheck}", DateTime.UtcNow, dateToTcheckTo);
+                    _logger.Information("Date 'to' depassed {@DateNow} | {@DateToCheck}", DateTime.UtcNow,
+                        dateToTcheckTo);
                     RegisterCandleForNewDate(GetNewNextDayDateRegisterFrom());
                 }
             }

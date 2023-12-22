@@ -679,7 +679,7 @@ public class CandleListTest
         var now = DateTime.UtcNow;
         var todayWithTimeZeroed = new DateTime(now.Year, now.Month, now.Day, 0, 0, 0);
         var candles = TestUtils.GenerateCandle(TimeSpan.FromMinutes(15), 100);
-  
+
         _apiHandlerMock.Setup(x => x.GetChartAsync(It.IsAny<string>(), It.IsAny<Timeframe>()))
             .ReturnsAsync(candles);
 
