@@ -9,7 +9,6 @@ public class Position
     public string Id { get; set; }
     public string StrategyId { get; set; }
     public string PositionStrategyReferenceId => $"{StrategyId}|{Id}";
-
     public string? Order { get; set; }
     public string Symbol { get; set; }
     public TypeOperation TypePosition { get; set; }
@@ -17,13 +16,13 @@ public class Position
     public decimal Profit { get; set; }
     public decimal OpenPrice { get; set; }
     public DateTime DateOpen { get; set; }
-    public decimal ClosePrice { get; set; }
+    public decimal? ClosePrice { get; set; }
     public DateTime? DateClose { get; set; }
     public ReasonClosed? ReasonClosed { get; set; }
-    public decimal? StopLoss { get; set; }
-    public decimal? TakeProfit { get; set; }
+    public decimal StopLoss { get; set; }
+    public decimal TakeProfit { get; set; }
     public double Volume { get; set; }
-    public decimal Pips => ClosePrice != 0 ? Math.Abs(OpenPrice - ClosePrice) : 0;
+    public decimal Pips => ClosePrice != 0 ? Math.Abs(OpenPrice - ClosePrice.GetValueOrDefault()) : 0;
     public StatusPosition StatusPosition { get; set; }
 
     public bool Opened { get; set; } = false;
@@ -90,13 +89,13 @@ public class Position
         return this;
     }
 
-    public Position SetStopLoss(decimal? stopLoss)
+    public Position SetStopLoss(decimal stopLoss)
     {
         StopLoss = stopLoss;
         return this;
     }
 
-    public Position SetTakeProfit(decimal? takeProfit)
+    public Position SetTakeProfit(decimal takeProfit)
     {
         TakeProfit = takeProfit;
         return this;
@@ -132,6 +131,7 @@ public class Position
         return new Position
         {
             Id = Id,
+            Order = Order,
             StrategyId = StrategyId,
             TypePosition = TypePosition,
             Spread = Spread,

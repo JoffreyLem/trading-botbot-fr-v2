@@ -1,0 +1,17 @@
+﻿@inherits BacktestComponentBase
+
+<div class="container-fluid">
+    <div>
+        <button class="e-btn" @onclick="@RunBacktest">Run backtest</button>
+    </div>
+    <div>
+        <label for="BacktestRun">Last backtest run</label>
+        <SfTextBox ID="BacktestRun" Value="@BackTestDto?.LastBackTestExecution.ToString()" Readonly="true"/>
+    </div>
+    <div>
+        <ResultComponent BacktestResultComponent="true"></ResultComponent>
+    </div>
+        <div id="container">
+                            <SfSpinner @bind-Visible="@OnLoading"/>
+                        </div>
+</div>

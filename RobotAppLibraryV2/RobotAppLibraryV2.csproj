@@ -30,7 +30,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="ApiHandler\Backtest\BacktestApiHandler.cs"/>
         <Compile Remove="ApiHandler\Handlers\XtbApi.cs"/>
     </ItemGroup>
 

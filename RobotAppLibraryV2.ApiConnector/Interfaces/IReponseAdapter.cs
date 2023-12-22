@@ -9,6 +9,7 @@ public interface IReponseAdapter
     List<Candle> AdaptFullChartResponse(string jsonResponse);
     List<Candle> AdaptRangeChartResponse(string jsonResponse);
     string AdaptLogOutResponse(string jsonResponse);
+    public LoginResponse AdaptLoginResponse(string jsonResponse);
     AccountBalance? AdaptBalanceAccountResponse(string jsonResponse);
     List<News> AdaptNewsResponse(string jsonResponse);
     string AdaptCurrentUserDataResponse(string jsonResponse);

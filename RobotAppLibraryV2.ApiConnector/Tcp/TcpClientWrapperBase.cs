@@ -4,6 +4,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
+using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 using Serilog;
 
 namespace RobotAppLibraryV2.ApiConnector.Tcp;

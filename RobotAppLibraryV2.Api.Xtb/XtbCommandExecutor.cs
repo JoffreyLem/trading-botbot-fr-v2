@@ -1,10 +1,10 @@
+using RobotAppLibraryV2.ApiConnector.Executor;
 using RobotAppLibraryV2.ApiConnector.Tcp;
 using RobotAppLibraryV2.Modeles;
 
 namespace RobotAppLibraryV2.Api.Xtb;
 
-public class
-    XtbCommandExecutor : TcpCommandExecutorBase<TcpConnector, StreamingClientXtb, CommandCreatorXtb, XtbAdapter>
+public class XtbCommandExecutor : TcpCommandExecutorBase
 {
     public XtbCommandExecutor(TcpConnector tcpClient, StreamingClientXtb tcpStreamingClient,
         CommandCreatorXtb commandCreator, XtbAdapter responseAdapter) : base(tcpClient, tcpStreamingClient,
@@ -14,9 +14,11 @@ public class
 
     public override async Task ExecuteLoginCommand(Credentials credentials)
     {
-        var command = commandCreator.CreateLoginCommand(credentials);
-        var rsp = await tcpClient.SendAndReceiveAsync(command);
-        var rspAdapter = _responseAdapter.AdaptLoginResponse(rsp);
-        commandCreator.StreamingSessionId = rspAdapter.StreamingSessionId;
+        await TcpClient.ConnectAsync();
+        var command = CommandCreator.CreateLoginCommand(credentials);
+        var rsp = await TcpClient.SendAndReceiveAsync(command);
+        var rspAdapter = ResponseAdapter.AdaptLoginResponse(rsp);
+        ((CommandCreatorXtb)CommandCreator).StreamingSessionId = rspAdapter.StreamingSessionId;
+        await TcpStreamingClient.ConnectAsync();
     }
 }

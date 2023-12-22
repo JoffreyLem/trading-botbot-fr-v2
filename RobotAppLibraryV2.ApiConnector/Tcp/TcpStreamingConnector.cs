@@ -1,10 +1,11 @@
 using RobotAppLibraryV2.ApiConnector.Modeles;
+using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 using RobotAppLibraryV2.Modeles;
 using Serilog;
 
 namespace RobotAppLibraryV2.ApiConnector.Tcp;
 
-public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamingConnector
+public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamingEvent
 {
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
@@ -13,13 +14,9 @@ public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamin
     }
 
     public event Action<Tick>? TickRecordReceived;
-
     public event Action<Position?>? TradeRecordReceived;
-
     public event Action<AccountBalance?>? BalanceRecordReceived;
-
     public event Action<Position>? ProfitRecordReceived;
-
     public event Action<News>? NewsRecordReceived;
     public event Action? KeepAliveRecordReceived;
     public event Action<Candle>? CandleRecordReceived;

@@ -1,4 +1,4 @@
-﻿namespace RobotAppLibraryV2.ApiHandler.Backtest;
+﻿namespace RobotAppLibraryV2.BackTest;
 
 public class SpreadSimulator
 {

@@ -64,10 +64,12 @@ public class CommandHandler
                 _logger.Information("Api command processed {@Command}", connectedCommand);
                 break;
             case ApiConnectCommand apiConnectCommand:
+                CheckApiHandlerNotNull();
                 await Connect(apiConnectCommand);
                 _logger.Information("Api command processed {@Command}", apiConnectCommand);
                 break;
             case DisconnectCommand disconnectCommand:
+                CheckApiHandlerNotNull();
                 await Disconnect(disconnectCommand);
                 _logger.Information("Api command processed {@Command}", disconnectCommand);
                 break;
@@ -77,51 +79,64 @@ public class CommandHandler
         }
     }
 
+  
+
     public async Task HandleStrategyCommand(ServiceCommandeBaseStrategyAbstract command)
     {
         switch (command)
         {
             case InitStrategyCommand initStrategyCommandDto:
+                CheckApiHandlerNotNull();
                 InitStrategy(initStrategyCommandDto);
                 _logger.Information("Strategy command processed {@Command}", initStrategyCommandDto);
                 break;
             case GetStrategyInfoCommand getStrategyInfoCommand:
-                GetStrategyInfo(getStrategyInfoCommand);
+                GetStrategyInfo(getStrategyInfoCommand, GetStrategyById(getStrategyInfoCommand.Id));
                 _logger.Information("Strategy command processed {@Command}", getStrategyInfoCommand);
                 break;
             case CloseStrategyCommand closeStrategyCommand:
-                await CloseStrategy(closeStrategyCommand);
+                await CloseStrategy(closeStrategyCommand, GetStrategyById(closeStrategyCommand.Id));
                 _logger.Information("Strategy command processed {@Command}", closeStrategyCommand);
                 break;
             case GetStrategyPositionClosedCommand getStrategyPositionClosedCommand:
-                GetStrategyPositionClosed(getStrategyPositionClosedCommand);
+                GetStrategyPositionClosed(getStrategyPositionClosedCommand, GetStrategyById(getStrategyPositionClosedCommand.Id));
                 _logger.Information("Strategy command processed {@Command}", nameof(getStrategyPositionClosedCommand));
                 break;
             case GetStrategyResultRequestCommand getStrategyResultRequestCommand:
-                GetStrategyResult(getStrategyResultRequestCommand);
+                GetStrategyResult(getStrategyResultRequestCommand, GetStrategyById(getStrategyResultRequestCommand.Id));
                 _logger.Information("Strategy command processed {@Command}", getStrategyResultRequestCommand);
                 break;
             case GetOpenedPositionRequestCommand getOpenedPositionRequestCommand:
-                GetOpenedPosition(getOpenedPositionRequestCommand);
+                GetOpenedPosition(getOpenedPositionRequestCommand, GetStrategyById(getOpenedPositionRequestCommand.Id));
                 _logger.Information("Strategy command processed {@Command}", getOpenedPositionRequestCommand);
                 break;
             case SetCanRunCommand setCanRunCommand:
-                SetCanRun(setCanRunCommand);
+                SetCanRun(setCanRunCommand, GetStrategyById(setCanRunCommand.Id));
                 _logger.Information("Strategy command processed {@Command}", setCanRunCommand);
                 break;
             case GetChartCommandRequest getChartCommandRequest:
-                GetChart(getChartCommandRequest);
+                GetChart(getChartCommandRequest, GetStrategyById(getChartCommandRequest.Id));
                 _logger.Information("Strategy command processed {@Command}", getChartCommandRequest);
                 break;
             case GetAllStrategyCommandRequest getAllStrategyCommandRequest:
                 GetAllStrategy(getAllStrategyCommandRequest);
                 _logger.Information("Strategy command processed {@Command}", getAllStrategyCommandRequest);
                 break;
+            case RunStrategyBacktestCommand runStrategyBacktestCommand:
+                await RunBackTest(runStrategyBacktestCommand, GetStrategyById(runStrategyBacktestCommand.Id));
+                _logger.Information("Api command processed {@Command}", runStrategyBacktestCommand);
+                break;
+            case GetBacktestInfoCommand getBacktestInfoCommand:
+                await GetBacktestInfo(getBacktestInfoCommand, GetStrategyById(getBacktestInfoCommand.Id));
+                _logger.Information("Api command processed {@Command}", getBacktestInfoCommand);
+                break;
             default:
                 _logger.Error("Trying to use unanhdled command {@Command}", command);
                 throw new CommandException($"Commande {command} non gérer");
         }
     }
+
+  
 
     private void GetAllStrategy(GetAllStrategyCommandRequest getAllStrategyCommandRequest)
     {
@@ -173,7 +188,6 @@ public class CommandHandler
 
     private void InitStrategy(InitStrategyCommand initStrategyCommandDto)
     {
-        CheckApiHandlerNotNull();
         try
         {
             var strategyImplementation = GenerateStrategy(initStrategyCommandDto.StrategyType);
@@ -200,6 +214,34 @@ public class CommandHandler
             throw;
         }
     }
+    
+    private async Task RunBackTest(RunStrategyBacktestCommand runStrategyBacktestCommand, StrategyBase strategy)
+    {
+        await strategy.RunBackTest(runStrategyBacktestCommand.Balance,runStrategyBacktestCommand.MinSpread,runStrategyBacktestCommand.MaxSpread);
+        BacktestCommandResponse backtestCommandResponse = new BacktestCommandResponse()
+        {
+            BackTestDto = new BackTestDto()
+            {
+                IsBackTestRunning = strategy.BackTest.BacktestRunning,
+                LastBackTestExecution = strategy.BackTest.LastBacktestExecution.GetValueOrDefault()
+            }
+        };
+        runStrategyBacktestCommand.ResponseSource.SetResult(backtestCommandResponse);
+    }
+    
+    private async Task GetBacktestInfo(GetBacktestInfoCommand getBacktestInfoCommand, StrategyBase strategy)
+    {
+        BacktestCommandResponse backtestCommandResponse = new BacktestCommandResponse()
+        {
+            BackTestDto = new BackTestDto()
+            {
+                IsBackTestRunning = strategy.BackTest.BacktestRunning,
+                LastBackTestExecution = strategy.BackTest.LastBacktestExecution.GetValueOrDefault()
+            }
+        };
+        
+        getBacktestInfoCommand.ResponseSource.SetResult(backtestCommandResponse);
+    }
 
     private void StrategyBaseOnStrategyDisabled(object? sender, RobotEvent<StrategyReasonDisabled> e)
     {
@@ -215,9 +257,9 @@ public class CommandHandler
     }
 
 
-    private void GetChart(GetChartCommandRequest chartCommandRequest)
+    private void GetChart(GetChartCommandRequest chartCommandRequest, StrategyBase strategy)
     {
-        var strategy = GetStrategyById(chartCommandRequest.Id);
+ 
         var candles = strategy.History.Select(x => new CandleDto
         {
             Open = (double)x.Open,
@@ -276,9 +318,9 @@ public class CommandHandler
     }
 
 
-    private void GetStrategyInfo(GetStrategyInfoCommand getStrategyInfoCommand)
+    private void GetStrategyInfo(GetStrategyInfoCommand getStrategyInfoCommand, StrategyBase strategy)
     {
-        var strategy = GetStrategyById(getStrategyInfoCommand.Id);
+     
         var strategyInfoDto = _mapper.Map<StrategyInfoDto>(strategy);
         getStrategyInfoCommand.ResponseSource.SetResult(new GetStrategyInfoCommandResponse
         {
@@ -286,18 +328,16 @@ public class CommandHandler
         });
     }
 
-    private async Task CloseStrategy(CloseStrategyCommand closeStrategyCommand)
+    private async Task CloseStrategy(CloseStrategyCommand closeStrategyCommand, StrategyBase strategy)
     {
-        var strategy = GetStrategyById(closeStrategyCommand.Id);
         await strategy.DisableStrategy(StrategyReasonDisabled.User);
         strategy.Dispose();
         _strategyList.Remove(closeStrategyCommand.Id);
         closeStrategyCommand.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
-    private void GetStrategyPositionClosed(GetStrategyPositionClosedCommand command)
+    private void GetStrategyPositionClosed(GetStrategyPositionClosedCommand command, StrategyBase strategy)
     {
-        var strategy = GetStrategyById(command.Id);
         var data = new ListPositionsDto
         {
             Positions = _mapper.Map<List<PositionDto>>(strategy.PositionsClosed.ToList())
@@ -308,19 +348,30 @@ public class CommandHandler
         });
     }
 
-    private void GetStrategyResult(GetStrategyResultRequestCommand strategyResultRequest)
+    private void GetStrategyResult(GetStrategyResultRequestCommand strategyResultRequest,StrategyBase strategy)
     {
-        var strategy = GetStrategyById(strategyResultRequest.Id);
-        var data = _mapper.Map<ResultDto>(strategy.Results);
-        strategyResultRequest.ResponseSource.SetResult(new GetStrategyResultCommandResponse
+    
+        if (strategyResultRequest.IsBacktest == false)
         {
-            ResultDto = data
-        });
+            var data = _mapper.Map<ResultDto>(strategy.Results);
+            strategyResultRequest.ResponseSource.SetResult(new GetStrategyResultCommandResponse
+            {
+                ResultDto = data
+            });
+        }
+        else
+        {
+            var data = _mapper.Map<ResultDto>(strategy.BackTest.Result);
+            strategyResultRequest.ResponseSource.SetResult(new GetStrategyResultCommandResponse
+            {
+                ResultDto = data
+            });
+        }
+      
     }
 
-    private void GetOpenedPosition(GetOpenedPositionRequestCommand command)
+    private void GetOpenedPosition(GetOpenedPositionRequestCommand command,StrategyBase strategy)
     {
-        var strategy = GetStrategyById(command.Id);
         var listPositionsDto = new ListPositionsDto();
 
         if (strategy.PositionOpened is not null)
@@ -335,10 +386,9 @@ public class CommandHandler
         });
     }
 
-    private void SetCanRun(SetCanRunCommand setCanRunCommand)
+    private void SetCanRun(SetCanRunCommand setCanRunCommand, StrategyBase strategy)
     {
-        var stategy = GetStrategyById(setCanRunCommand.Id);
-        stategy.CanRun = setCanRunCommand.Bool;
+        strategy.CanRun = setCanRunCommand.Bool;
         setCanRunCommand.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
@@ -373,8 +423,6 @@ public class CommandHandler
     // TODO : a faire evol lors du multi API
     private async Task Connect(ApiConnectCommand command)
     {
-        CheckApiHandlerNotNull();
-
         await _apiHandlerBase.ConnectAsync(command.Credentials).ConfigureAwait(false);
         _apiHandlerBase.Connected += ApiHandlerBaseOnConnected;
         _apiHandlerBase.Disconnected += ApiHandlerBaseOnDisconnected;
@@ -398,7 +446,6 @@ public class CommandHandler
 
     private async Task Disconnect(DisconnectCommand command)
     {
-        CheckApiHandlerNotNull();
         await _apiHandlerBase.DisconnectAsync();
         _apiHandlerBase.Connected -= ApiHandlerBaseOnConnected;
         _apiHandlerBase.Disconnected -= ApiHandlerBaseOnDisconnected;
