@@ -61,7 +61,7 @@ public class TimeZoneConvertersTests
         // Assert
         offset.Should().Be(expectedOffset);
     }
-    
+
     [Fact]
     public void ConvertMidnightCetCestMillisecondsToUtcOffset_Should_CalculateOffsetCorrectly_2()
     {

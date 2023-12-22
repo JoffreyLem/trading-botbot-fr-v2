@@ -102,7 +102,7 @@ public class LotValueCalculatorTest
 
         // Assert
         lotCalculator.PipValueStandard.Should().BeApproximately(9.31, 0.02);
-        lotCalculator.MarginPerLot.Should().BeApproximately(2329.91, 0.01);
+        lotCalculator.MarginPerLot.Should().BeApproximately(5000, 0.01);
     }
 
 

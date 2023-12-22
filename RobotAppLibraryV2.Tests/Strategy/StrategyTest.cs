@@ -561,6 +561,7 @@ public class StrategyTest
         _apiHandlerMock.Verify(x => x.GetCurrentTradeAsync(It.IsAny<string>()), Times.Once);
         positionHandlerMock.Verify(x => x.ClosePositionAsync(It.IsAny<Position>()), Times.Exactly(1));
         _apiHandlerMock.Verify(x => x.UnsubscribePrice(It.IsAny<string>()), Times.Once);
+        strategyBase.StrategyDisabled.Should().BeTrue();
     }
 
     [Fact]
@@ -573,6 +574,7 @@ public class StrategyTest
         _apiHandlerMock.Verify(x => x.GetCurrentTradeAsync(It.IsAny<string>()), Times.Never);
         positionHandlerMock.Verify(x => x.ClosePositionAsync(It.IsAny<Position>()), Times.Never);
         _apiHandlerMock.Verify(x => x.UnsubscribePrice(It.IsAny<string>()), Times.Once);
+        strategyBase.StrategyDisabled.Should().BeTrue();
     }
 
     #endregion

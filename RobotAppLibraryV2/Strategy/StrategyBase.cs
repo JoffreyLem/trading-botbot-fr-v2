@@ -85,7 +85,7 @@ public sealed class StrategyBase : IDisposable
         set => StrategyImplementation.CanRun = value;
     }
 
-    public bool StrategyDisabled { get; set; } = false;
+    public bool StrategyDisabled { get; set; }
 
     public bool RunOnTick
     {
@@ -162,8 +162,6 @@ public sealed class StrategyBase : IDisposable
     public event EventHandler<RobotEvent<Position>>? PositionRejectedEvent;
     public event EventHandler<RobotEvent<Position>>? PositionClosedEvent;
     public event EventHandler<RobotEvent<string>>? StrategyEvent;
-
-    
 
 
     private void Init()
@@ -306,10 +304,10 @@ public sealed class StrategyBase : IDisposable
             var candles = History.TakeLast(1000).ToList();
 
             Parallel.ForEach(IndicatorsList, indicator => { indicator.UpdateIndicator(candles); });
-            
+
             candles.Clear();
             candles = null;
-            
+
             if (Timeframe2 is not null)
             {
                 var candles2 = History.Aggregate(Timeframe2.GetValueOrDefault()).ToList();
@@ -351,9 +349,8 @@ public sealed class StrategyBase : IDisposable
     {
         _logger.Fatal(ex, "On disabling strategy for reason {Reason}", strategyReasonDisabled);
         CanRun = false;
-        // Add les tests pour sa !
         StrategyDisabled = true;
-        
+
         try
         {
             _apiHandler.UnsubscribePrice(Symbol);
@@ -362,6 +359,7 @@ public sealed class StrategyBase : IDisposable
                 var trades = _apiHandler.GetCurrentTradeAsync(StrategyIdPosition).Result;
                 if (trades is not null) await _positionHandler.ClosePositionAsync(trades);
             }
+
             _logger.Fatal("Strategy disabled");
         }
         catch (Exception e)
@@ -371,7 +369,7 @@ public sealed class StrategyBase : IDisposable
         }
         finally
         {
-            StrategyDisabledEvent?.Invoke(this,new RobotEvent<StrategyReasonDisabled>(strategyReasonDisabled,Id));
+            StrategyDisabledEvent?.Invoke(this, new RobotEvent<StrategyReasonDisabled>(strategyReasonDisabled, Id));
         }
     }
 
@@ -379,7 +377,7 @@ public sealed class StrategyBase : IDisposable
     {
         try
         {
-            _logger.Information("Try run strategy");
+            _logger.Verbose("Try run strategy");
             StrategyImplementation.Run();
         }
         catch (Exception e)
@@ -454,6 +452,6 @@ public sealed class StrategyBase : IDisposable
     private void ApiOnDisconnected(object? sender, EventArgs e)
     {
         _logger.Information("Api disconnected");
-        DisableStrategy(StrategyReasonDisabled.Api,null).GetAwaiter().GetResult();
+        DisableStrategy(StrategyReasonDisabled.Api).GetAwaiter().GetResult();
     }
 }

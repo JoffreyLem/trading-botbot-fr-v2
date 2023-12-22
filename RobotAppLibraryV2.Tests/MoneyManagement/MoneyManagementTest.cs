@@ -69,7 +69,7 @@ public class MoneyManagementTest
         var positionSize = management.CalculatePositionSize(1.1210m, 1.1250m, 5);
 
         // Assert
-        positionSize.Should().BeApproximately(0.13, 0.01);
+        positionSize.Should().BeApproximately(0.12, 0.01);
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class MoneyManagementTest
         var positionSize = management.CalculatePositionSize(1.1210m, 1.1250m, 5);
 
         // Assert
-        positionSize.Should().Be(0.01);
+        positionSize.Should().Be(0.12);
     }
 
 

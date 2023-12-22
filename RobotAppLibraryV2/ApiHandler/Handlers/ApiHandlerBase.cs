@@ -37,10 +37,10 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
     public event EventHandler? Connected;
     public event EventHandler? Disconnected;
     public event EventHandler<Tick>? TickEvent;
-    public event EventHandler<Position?>? PositionOpenedEvent;
-    public event EventHandler<Position?>? PositionUpdatedEvent;
-    public event EventHandler<Position?>? PositionRejectedEvent;
-    public event EventHandler<Position?>? PositionClosedEvent;
+    public event EventHandler<Position>? PositionOpenedEvent;
+    public event EventHandler<Position>? PositionUpdatedEvent;
+    public event EventHandler<Position>? PositionRejectedEvent;
+    public event EventHandler<Position>? PositionClosedEvent;
     public event EventHandler<AccountBalance>? NewBalanceEvent;
     public event EventHandler<News>? NewsEvent;
 
@@ -58,7 +58,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
             CommandExecutor.ExecuteSubscribeProfitsCommandStreaming();
             CommandExecutor.ExecuteSubscribeNewsCommandStreaming();
             CommandExecutor.ExecuteSubscribeKeepAliveCommandStreaming();
-            TimerCallback timerCallback = async state => await PingAsync();
+            TimerCallback timerCallback = state => PingAsync().GetAwaiter().GetResult();
             pingTimer = new Timer(timerCallback, null, 0, PingInterval.Ticks / TimeSpan.TicksPerMillisecond);
         }
         catch (System.Exception e)
@@ -259,7 +259,10 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
     {
         try
         {
-            return await CommandExecutor.ExecuteOpenTradeCommand(position, price);
+            var pos = await CommandExecutor.ExecuteOpenTradeCommand(position, price);
+            position.Order = pos.Order;
+            CachePosition.Add(position);
+            return pos;
         }
         catch (System.Exception e)
         {
@@ -333,6 +336,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
     public void Dispose()
     {
         CommandExecutor.Dispose();
+        pingTimer.Dispose();
     }
 
     private void TcpStreamingConnectorOnDisconnected(object? sender, EventArgs e)
@@ -359,7 +363,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
             switch (obj.StatusPosition)
             {
                 case StatusPosition.Pending:
-                    // TODO : voir faire quoi ici ? peut être rien ? 
+                    //TODO : Faire quoi ici ??
                     break;
                 case StatusPosition.Rejected:
                     OnPositionRejectedEvent(obj);
@@ -404,10 +408,11 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
 
     protected virtual void OnPositionOpenedEvent(Position? e)
     {
-        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id);
-        if (posSelected is null)
+        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id || x.Order == e.Order);
+        if (posSelected is { Opened: false })
         {
-            CachePosition.Add(e);
+            posSelected.Opened = true;
+            posSelected.Order = e.Order;
             PositionOpenedEvent?.Invoke(this, e);
         }
         else
@@ -418,17 +423,17 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
 
     protected virtual void OnPositionRejectedEvent(Position? e)
     {
-        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id);
+        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id || x.Order == e.Order);
         if (posSelected is not null)
         {
             CachePosition.Remove(posSelected);
-            PositionRejectedEvent?.Invoke(this, e);
+            PositionRejectedEvent?.Invoke(this, posSelected);
         }
     }
 
     protected virtual void OnPositionClosedEvent(Position? e)
     {
-        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id);
+        var posSelected = CachePosition.FirstOrDefault(x => x.Id == e.Id || x.Order == e.Order);
         if (posSelected is not null)
         {
             CachePosition.Remove(posSelected);

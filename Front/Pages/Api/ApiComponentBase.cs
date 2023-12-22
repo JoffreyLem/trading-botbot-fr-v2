@@ -24,7 +24,6 @@ public class ApiComponentBase : ComponentBase, IDisposable
 
     public void Dispose()
     {
-        ((IDisposable)_dropDownList).Dispose();
     }
 
 
@@ -32,6 +31,7 @@ public class ApiComponentBase : ComponentBase, IDisposable
     {
         try
         {
+            OnLoading = true;
             if (await ApiConnectService.IsConnected() == ConnexionStateEnum.Connected)
             {
                 IsConnected = true;
@@ -47,6 +47,10 @@ public class ApiComponentBase : ComponentBase, IDisposable
         catch (Exception e)
         {
             ToastService.ShowToastError(e.Message);
+        }
+        finally
+        {
+            OnLoading = false;
         }
     }
 
@@ -110,10 +114,10 @@ public class ApiComponentBase : ComponentBase, IDisposable
             ApiHandlerListEnabled = false;
             ConnectDto = new ConnectDto();
         }
-        catch (Exception e)
+        catch (Exception)
         {
             OnLoading = false;
-            ToastService.ShowToastError(e);
+            ToastService.ShowToastError("Erreur de connexion");
         }
         finally
         {

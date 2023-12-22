@@ -23,7 +23,10 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
 
     public void Dispose()
     {
-     
+        CommandHandler.CandleEvent -= CommandHandlerOnCandleEvent;
+        CommandHandler.TickEvent -= CommandHandlerOnTickEvent;
+        CommandHandler.StrategyDisabled -= CommandHandlerOnStrategyDisabled;
+        GC.SuppressFinalize(this);
     }
 
     protected override async Task OnInitializedAsync()
@@ -47,13 +50,11 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
     private void CommandHandlerOnStrategyDisabled(object? sender, RobotEvent<string> e)
     {
         if (e.Id == StrategyId)
-        {
             InvokeAsync(() =>
             {
                 StrategyInfo.StrategyDisabled = true;
                 StateHasChanged();
             });
-        }
     }
 
 

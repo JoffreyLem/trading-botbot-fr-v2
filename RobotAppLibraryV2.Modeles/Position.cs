@@ -26,6 +26,8 @@ public class Position
     public decimal Pips => ClosePrice != 0 ? Math.Abs(OpenPrice - ClosePrice) : 0;
     public StatusPosition StatusPosition { get; set; }
 
+    public bool Opened { get; set; } = false;
+
 
     public Position SetId(string id)
     {

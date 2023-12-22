@@ -32,9 +32,9 @@ public class CommandHandler
     private readonly IEmailService _emailService;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
-    private IApiHandler? _apiHandlerBase;
 
     private readonly Dictionary<string, StrategyBase> _strategyList = new();
+    private IApiHandler? _apiHandlerBase;
 
     public CommandHandler(ILogger logger, IMapper mapper, IEmailService emailService)
     {
@@ -45,7 +45,6 @@ public class CommandHandler
 
     public async Task HandleApiCommand(ServiceCommandeBaseApiAbstract command)
     {
-        _logger.Information("Api command received {Command}", command);
         switch (command)
         {
             case InitHandlerCommand initHandlerCommand:
@@ -80,7 +79,6 @@ public class CommandHandler
 
     public async Task HandleStrategyCommand(ServiceCommandeBaseStrategyAbstract command)
     {
-        _logger.Information("Strategy command received {Command}", command);
         switch (command)
         {
             case InitStrategyCommand initStrategyCommandDto:
@@ -168,8 +166,8 @@ public class CommandHandler
     public static event EventHandler<BackGroundServiceEvent<TickDto>>? TickEvent;
     public static event EventHandler<BackGroundServiceEvent<CandleDto>>? CandleEvent;
     public static event EventHandler<BackGroundServiceEvent<PositionDto>>? PositionChangeEvent;
-    public static event EventHandler<BackGroundServiceEvent<string>>? StrategyEvent; 
-    public static event EventHandler<RobotEvent<string>>? StrategyDisabled; 
+    public static event EventHandler<BackGroundServiceEvent<string>>? StrategyEvent;
+    public static event EventHandler<RobotEvent<string>>? StrategyDisabled;
 
     #region StrategyCommand
 
@@ -208,12 +206,12 @@ public class CommandHandler
         _logger.Warning("Strategy disabled : {Reason}, send email to user", e.EventField.ToString());
         var message = $"Strategy disabled cause : {e.EventField.ToString()}";
         _emailService.SendEmail("Strategy disabled", message).GetAwaiter().GetResult();
-        StrategyDisabled?.Invoke(this,new RobotEvent<string>(message,e.Id));
+        StrategyDisabled?.Invoke(this, new RobotEvent<string>(message, e.Id));
     }
 
     private void StrategyBaseOnStrategyEvent(object? sender, RobotEvent<string> e)
     {
-        StrategyEvent?.Invoke(this,new BackGroundServiceEvent<string>(e.EventField,e.Id));
+        StrategyEvent?.Invoke(this, new BackGroundServiceEvent<string>(e.EventField, e.Id));
     }
 
 
@@ -234,6 +232,7 @@ public class CommandHandler
             CandleDtos = candles
         });
     }
+
     private void StrategyBaseOnPositionRejectedEvent(object? sender, RobotEvent<Position> e)
     {
         var posDto = _mapper.Map<PositionDto>(e.EventField);
@@ -376,7 +375,7 @@ public class CommandHandler
     {
         CheckApiHandlerNotNull();
 
-        await _apiHandlerBase.ConnectAsync(command.Credentials);
+        await _apiHandlerBase.ConnectAsync(command.Credentials).ConfigureAwait(false);
         _apiHandlerBase.Connected += ApiHandlerBaseOnConnected;
         _apiHandlerBase.Disconnected += ApiHandlerBaseOnDisconnected;
         _apiHandlerBase.NewBalanceEvent += ApiHandlerBaseOnNewBalanceEvent;
@@ -401,6 +400,10 @@ public class CommandHandler
     {
         CheckApiHandlerNotNull();
         await _apiHandlerBase.DisconnectAsync();
+        _apiHandlerBase.Connected -= ApiHandlerBaseOnConnected;
+        _apiHandlerBase.Disconnected -= ApiHandlerBaseOnDisconnected;
+        _apiHandlerBase.NewBalanceEvent -= ApiHandlerBaseOnNewBalanceEvent;
+        _apiHandlerBase.Dispose();
         _apiHandlerBase = null;
 
         command.ResponseSource.SetResult(new AcknowledgementResponse());

@@ -30,7 +30,6 @@ public static class TimeZoneConverter
 
     public static TimeSpan ConvertMidnightCetCestMillisecondsToUtcOffset(long milliseconds)
     {
-      
         var timeZone = TimeZoneInfo.FindSystemTimeZoneById(CentralEuropeanTimeZoneId);
 
         // Calculer l'heure et la date en CET/CEST à partir des millisecondes depuis minuit

@@ -43,11 +43,12 @@ public class StrategyBackgroundService : BackgroundService
         await foreach (var command in _channelApiReader.ReadAllAsync(stoppingToken))
             try
             {
+                _logger.Information("Strategy command received {Command}", command);
                 await _apiHandlerGestion.HandleApiCommand(command);
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex, "Error on {@Command} execution", command);
+                _logger.Error(ex, "Error on {Command} execution", command);
                 command.SetException(ex);
             }
     }
@@ -57,11 +58,12 @@ public class StrategyBackgroundService : BackgroundService
         await foreach (var command in _channelStrategyReader.ReadAllAsync(stoppingToken))
             try
             {
+                _logger.Information("Api command received {Command}", command);
                 await _apiHandlerGestion.HandleStrategyCommand(command);
             }
             catch (System.Exception ex)
             {
-                _logger.Error(ex, "Error on {@Command} execution", command);
+                _logger.Error(ex, "Error on {Command} execution", command);
                 command.SetException(ex);
             }
     }

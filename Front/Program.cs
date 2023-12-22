@@ -1,3 +1,4 @@
+using System.Threading.Channels;
 using DotNetEnv;
 using Front;
 using Front.Services;
@@ -8,9 +9,14 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using StrategyApi.Mail;
 using StrategyApi.StrategyBackgroundService;
+using StrategyApi.StrategyBackgroundService.Command.Api;
+using StrategyApi.StrategyBackgroundService.Command.Strategy;
+using StrategyApi.StrategyBackgroundService.Mapper;
+using StrategyApi.StrategyBackgroundService.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 Env.Load();
 builder.Configuration.AddEnvironmentVariables();
 
@@ -34,7 +40,13 @@ builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 builder.Services.AddSignalR();
 
 builder.AddSyncFusion();
-builder.AddDependencyRobot();
+builder.AddBotDependency();
+
+builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfilesBackgroundServices>(); },
+    typeof(MappingProfilesBackgroundServices).Assembly
+);
+
+builder.Services.AddSignalR();
 builder.AddLogger();
 builder.Services.AddSingleton<ShowToastService>();
 builder.Services.AddHealthChecks();
@@ -74,7 +86,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.AddDependency2();
 app.MapRazorPages();
 
 app.MapControllers();

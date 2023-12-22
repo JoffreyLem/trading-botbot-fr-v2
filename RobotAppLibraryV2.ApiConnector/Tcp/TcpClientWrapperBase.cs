@@ -3,7 +3,6 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.RegularExpressions;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using Serilog;
 
@@ -21,13 +20,12 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
     protected TimeSpan CommandTimeSpanmeSpace = TimeSpan.FromMilliseconds(200);
 
-    public bool IsConnected => client.Connected;
-
     protected int Port;
 
     protected string ServerAddress;
 
-    private SslStream stream;
+    private SslStream? stream;
+
 
     public TimeSpan TimeOutMilliSeconds = TimeSpan.FromMilliseconds(5000);
 
@@ -37,6 +35,8 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
         ServerAddress = serverAddress;
         Port = port;
     }
+
+    public bool IsConnected => client.Connected;
 
     public void Dispose()
     {
@@ -73,10 +73,9 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             var completedTask2 = await Task.WhenAny(authenticationTask, delayTask2);
 
             if (completedTask2 == delayTask) throw new TimeoutException("SSL handshake timed out.");
-            var bufferedStream = new BufferedStream(stream, 8192);
-            
-            ApiWriteStream ??= new StreamWriter(bufferedStream,  leaveOpen: true);
-            ApiReadStream ??= new StreamReader(bufferedStream, leaveOpen: true);
+
+            ApiWriteStream ??= new StreamWriter(stream, leaveOpen: true);
+            ApiReadStream ??= new StreamReader(stream, leaveOpen: true);
             OnConnectedEvent();
         }
         catch (Exception e)
@@ -105,30 +104,29 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             Close();
             throw new ApiCommunicationException("Error while sending the data: " + ex.Message);
         }
-   
     }
 
-    public  Task<string> ReceiveAsync(CancellationToken cancellationToken = default)
+    public async Task<string> ReceiveAsync(CancellationToken cancellationToken = default)
     {
-        var result = new StringBuilder();
+        var result = new StringBuilder(client.ReceiveBufferSize); // Taille initiale estimée
         var lastChar = ' ';
 
         try
         {
-            // var buffer = new byte[client.ReceiveBufferSize];
-            string line;
-            while ((line =  ApiReadStream.ReadLine()) != null)
+            string? line;
+            while ((line = await ApiReadStream.ReadLineAsync(cancellationToken).ConfigureAwait(false)) != null)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 result.Append(line);
 
                 // Last line is always empty
-                if (line == "" && lastChar == '}')
+                if (string.IsNullOrEmpty(line) && lastChar == '}')
                     break;
 
                 if (line.Length != 0) lastChar = line[^1];
             }
-            
-            return Task.FromResult(result.ToString());
+
+            return result.ToString();
         }
         catch (OperationCanceledException)
         {
@@ -141,10 +139,6 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             throw new ApiCommunicationException("Disconnected from server: " + ex.Message, ex);
         }
     }
-
-
-
-
 
     public void Close()
     {

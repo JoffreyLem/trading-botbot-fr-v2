@@ -117,7 +117,7 @@ public class LotValueCalculator : ILotValueCalculator, IDisposable
         var leverageRatio = SymbolInfo.Leverage != 0 ? 100 / SymbolInfo.Leverage : 0;
 
         if (leverageRatio > 0)
-            MarginPerLot = PipValueStandard * STANDARD_LOT_SIZE / leverageRatio / leverageRatio;
+            MarginPerLot = SymbolInfo.Leverage * STANDARD_LOT_SIZE / 100;
         else
             MarginPerLot = PipValueStandard * STANDARD_LOT_SIZE;
 
@@ -159,7 +159,7 @@ public class LotValueCalculator : ILotValueCalculator, IDisposable
     [ExcludeFromCodeCoverage]
     protected virtual void Dispose(bool disposing)
     {
-        _apiHandler.TickEvent += null;
+        _apiHandler.TickEvent -= null;
         if (_secondarySymbolAccount is not null && _apiHandler.IsConnected())
             _apiHandler.UnsubscribePrice(_secondarySymbolAccount);
     }
