@@ -17,7 +17,10 @@ public class CandleHelperTest
         string symbol = "TEST";
 
         // Act
-        var ticks = CandleHelper.DecomposeCandlestick(candle, timeframe, askBidSpread, new SymbolInfo());
+        var ticks = CandleHelper.DecomposeCandlestick(candle, timeframe, askBidSpread, new SymbolInfo()
+        {
+            Symbol = "eurusd"
+        });
 
         // Assert
         ticks.Should().HaveCount(4);
