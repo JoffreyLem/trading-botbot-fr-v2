@@ -28,6 +28,6 @@ public class TestStrategy : StrategyImplementationBase
 
     protected override bool ShouldClosePosition(Position position)
     {
-        return false;
+        return true;
     }
 }

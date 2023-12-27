@@ -18,7 +18,7 @@ public class StrategyTest
     private readonly Mock<ILogger> _loggerMock = new();
     private readonly Mock<ICandleList> candleListMock = new();
 
-    private readonly List<Candle> fakeHistory = TestUtils.GenerateCandle(TimeSpan.FromMinutes(5), 100);
+    private readonly List<Candle> fakeHistory = TestUtils.GenerateCandle(Timeframe.FiveMinutes, 100);
     private readonly Mock<IMoneyManagement> moneyManagementMock = new();
     private readonly Mock<IPositionHandler> positionHandlerMock = new();
 

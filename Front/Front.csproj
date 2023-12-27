@@ -88,6 +88,9 @@
         <Compile Update="Pages\Api\ApiComponentBase.cs">
             <DependentUpon>ApiComponent.razor</DependentUpon>
         </Compile>
+        <Compile Update="Composants\Strategy\BacktestComponentBase.cs">
+          <DependentUpon>BacktestComponent.razor</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 

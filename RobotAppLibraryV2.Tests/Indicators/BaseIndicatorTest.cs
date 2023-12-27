@@ -13,7 +13,7 @@ public class IndicatorTest
         // Arrange
         var sarIndicaor = new SarIndicator();
 
-        var candleList = TestUtils.GenerateCandle(TimeSpan.FromMinutes(Timeframe.FiveMinutes.GetMinuteFromTimeframe()));
+        var candleList = TestUtils.GenerateCandle(Timeframe.FiveMinutes);
 
         // Act
         sarIndicaor.UpdateIndicator(candleList);

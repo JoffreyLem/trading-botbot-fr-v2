@@ -1,10 +1,8 @@
-﻿namespace RobotAppLibraryV2.ApiConnector.Tcp;
+﻿namespace RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 
-public interface ITcpConnectorBase
+public interface ITcpConnectorBase : ITcpEvent
 {
     void Dispose();
-    event EventHandler? Connected;
-    event EventHandler? Disconnected;
     Task ConnectAsync();
     Task SendAsync(string messageToSend);
     Task<string> ReceiveAsync(CancellationToken cancellationToken = default);

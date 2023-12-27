@@ -1,4 +1,4 @@
-﻿namespace RobotAppLibraryV2.ApiConnector.Tcp;
+﻿namespace RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 
 public interface ITcpConnectorSynchronisation : ITcpConnectorBase
 {
