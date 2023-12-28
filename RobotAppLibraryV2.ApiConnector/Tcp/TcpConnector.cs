@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using RobotAppLibraryV2.ApiConnector.Modeles;
+using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 using Serilog;
 
 namespace RobotAppLibraryV2.ApiConnector.Tcp;

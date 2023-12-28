@@ -25,6 +25,7 @@ public sealed class StrategyBase : IDisposable
     private readonly IPositionHandler _positionHandler;
     private readonly IStrategyResult _strategyResult;
     public readonly ICandleList History;
+    public readonly BackTest.BackTest BackTest;
 
     public StrategyBase(
         StrategyImplementationBase strategyImplementationBase,
@@ -55,6 +56,8 @@ public sealed class StrategyBase : IDisposable
             _strategyResult = strategyServiceFactory.GetStrategyResultService(apiHandler, StrategyIdPosition);
             _positionHandler =
                 strategyServiceFactory.GetPositionHandler(logger, apiHandler, symbol, StrategyIdPosition);
+            BackTest = new BackTest.BackTest(strategyImplementationBase, apiHandler, logger, symbol, timeframe,
+                timeframe2);
             Init();
         }
         catch (Exception e)
@@ -68,6 +71,7 @@ public sealed class StrategyBase : IDisposable
     public string Version => GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ?? "NotDefined";
 
 
+    
     /// <summary>
     ///     Used for position definition comment.
     /// </summary>
@@ -104,8 +108,7 @@ public sealed class StrategyBase : IDisposable
         get => StrategyImplementation.CloseOnTick;
         set => StrategyImplementation.CloseOnTick = value;
     }
-
-    public bool PositionInProgress => _positionHandler.PositionInProgress;
+    
     public IReadOnlyCollection<Position> PositionsClosed => _strategyResult.Positions;
 
     public bool SecureControlPosition
@@ -117,9 +120,9 @@ public sealed class StrategyBase : IDisposable
     public Position? PositionOpened => _positionHandler.PositionOpened;
     public Modeles.Result Results => _strategyResult.Results;
     public Tick LastPrice => History.LastPrice.GetValueOrDefault();
-    public Candle LastCandle => History[^2];
+    public Candle? LastCandle => History.Count >= 2 ? History[^2] : null;
 
-    public Candle CurrentCandle => History.Last();
+    public Candle? CurrentCandle => History.LastOrDefault();
 
     private List<IIndicator> IndicatorsList { get; } = new();
     private List<IIndicator> IndicatorsList2 { get; } = new();
@@ -191,6 +194,11 @@ public sealed class StrategyBase : IDisposable
         DisableStrategy(StrategyReasonDisabled.Treshold).GetAwaiter().GetResult();
     }
 
+    public async Task RunBackTest(double balance, decimal minSpread, decimal maxSpread)
+    {
+        await BackTest.RunBackTest(balance, minSpread, maxSpread);
+    }
+
 
     private void InitStrategyImplementation()
     {
@@ -231,6 +239,8 @@ public sealed class StrategyBase : IDisposable
     private async Task HistoryOnOnTickEvent(Tick tick)
     {
         UpdateIndicator();
+        // TODO : Tester ce truc !!!!
+        StrategyImplementation.LastPrice = tick;
         try
         {
             if (CanRun && RunOnTick && !_positionHandler.PositionInProgress)
@@ -242,7 +252,8 @@ public sealed class StrategyBase : IDisposable
             }
             else
             {
-                if (_positionHandler.PositionInProgress)
+                // TODO : Faut refacto au propre ! 
+                if (_positionHandler.PositionOpened is not null)
                 {
                     var currentPosition = _positionHandler.PositionOpened;
 
@@ -278,7 +289,8 @@ public sealed class StrategyBase : IDisposable
             }
             else
             {
-                if (_positionHandler.PositionInProgress)
+                // TODO : Faut refacto au propre ! 
+                if (_positionHandler.PositionOpened is not null)
                 {
                     var currentPosition = _positionHandler.PositionOpened;
 

@@ -572,8 +572,8 @@ public class CommandCreatorXtb : ICommandCreatorXtb
         writer.WriteNumber("cmd", ToXtbAssembler.ToTradeOperationCode(position.TypePosition));
         writer.WriteNumber("type", typeCode.GetValueOrDefault());
         writer.WriteNumber("price", price);
-        writer.WriteNumber("sl", position.StopLoss.GetValueOrDefault());
-        writer.WriteNumber("tp", position.TakeProfit.GetValueOrDefault());
+        writer.WriteNumber("sl", position.StopLoss);
+        writer.WriteNumber("tp", position.TakeProfit);
         writer.WriteString("symbol", position.Symbol);
         writer.WriteNumber("volume", position.Volume);
         writer.WriteNumber("order",

@@ -7,7 +7,8 @@ namespace Front.Composants.Strategy;
 
 public class ResultComponentBase : StrategyIdComponentBase
 {
-    protected ResultDto? ResultData { get; set; } = new();
+    [Parameter] public bool BacktestResultComponent { get; set; } = false;
+     protected ResultDto? ResultData { get; set; } = new();
 
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
 
@@ -28,7 +29,7 @@ public class ResultComponentBase : StrategyIdComponentBase
 
     private async Task<ResultDto?> GetResults()
     {
-        var data = await _strategyService.GetResult(StrategyId);
+        var data = await _strategyService.GetResult(StrategyId, BacktestResultComponent);
 
         return data;
     }

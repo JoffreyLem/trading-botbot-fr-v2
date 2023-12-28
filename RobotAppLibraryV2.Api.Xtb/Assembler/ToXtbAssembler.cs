@@ -40,18 +40,18 @@ public static class ToXtbAssembler
                 return 0;
             case TypeOperation.Sell:
                 return 1;
-            case TypeOperation.BuyLimit:
-                return 2;
-            case TypeOperation.SellLimit:
-                return 3;
-            case TypeOperation.BuyStop:
-                return 4;
-            case TypeOperation.SellStop:
-                return 5;
-            case TypeOperation.Balance:
-                return 6;
-            case TypeOperation.Credit:
-            case TypeOperation.None:
+            // case TypeOperation.BuyLimit:
+            //     return 2;
+            // case TypeOperation.SellLimit:
+            //     return 3;
+            // case TypeOperation.BuyStop:
+            //     return 4;
+            // case TypeOperation.SellStop:
+            //     return 5;
+            // case TypeOperation.Balance:
+            //     return 6;
+            // case TypeOperation.Credit:
+            // case TypeOperation.None:
             default:
                 throw new ArgumentOutOfRangeException(nameof(typePosition), typePosition, null);
         }

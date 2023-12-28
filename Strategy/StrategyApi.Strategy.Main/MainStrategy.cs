@@ -116,26 +116,26 @@ public class MainStrategy : StrategyImplementationBase
         return false;
     }
 
-    private decimal? CalculateBuyStopLoss(PivotPointsResult? lastPivot, ParabolicSarResult? lastSar)
+    private decimal CalculateBuyStopLoss(PivotPointsResult? lastPivot, ParabolicSarResult? lastSar)
     {
         if (LastCandle.Close > lastPivot?.R1)
-            return lastSar?.Sar > (double)lastPivot?.R1 ? (decimal?)lastSar?.Sar : lastPivot?.R1;
+            return lastSar?.Sar > (double)lastPivot?.R1 ? (decimal)lastSar?.Sar : (decimal)lastPivot?.R1;
 
         if (LastCandle.Close > lastPivot?.R2)
-            return lastSar?.Sar > (double)lastPivot?.R2 ? (decimal?)lastSar?.Sar : lastPivot?.R2;
+            return lastSar?.Sar > (double)lastPivot?.R2 ? (decimal)lastSar?.Sar : (decimal)lastPivot?.R2;
 
-        return (decimal?)lastSar?.Sar;
+        return (decimal)lastSar?.Sar;
     }
 
-    private decimal? CalculateSellStopLoss(PivotPointsResult? lastPivot, ParabolicSarResult? lastSar)
+    private decimal CalculateSellStopLoss(PivotPointsResult? lastPivot, ParabolicSarResult? lastSar)
     {
         if (LastCandle.Close < lastPivot?.S1)
-            return lastSar?.Sar < (double)lastPivot?.S1 ? (decimal?)lastSar?.Sar : lastPivot?.S1;
+            return lastSar?.Sar < (double)lastPivot?.S1 ? (decimal)lastSar?.Sar : (decimal)lastPivot?.S1;
 
         if (LastCandle.Close < lastPivot?.S2)
-            return lastSar?.Sar < (double)lastPivot?.S2 ? (decimal?)lastSar?.Sar : lastPivot?.S2;
+            return lastSar?.Sar < (double)lastPivot?.S2 ? (decimal)lastSar?.Sar : (decimal)lastPivot?.S2;
 
-        return (decimal?)lastSar?.Sar;
+        return (decimal)lastSar?.Sar;
     }
 
 

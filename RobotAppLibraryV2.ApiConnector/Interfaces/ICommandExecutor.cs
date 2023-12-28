@@ -1,8 +1,10 @@
+using RobotAppLibraryV2.ApiConnector.Tcp;
+using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 using RobotAppLibraryV2.Modeles;
 
 namespace RobotAppLibraryV2.ApiConnector.Interfaces;
 
-public interface ICommandExecutor : ITcpExposition, IDisposable
+public interface ICommandExecutor : ITcpStreamingEvent, ITcpEvent, IDisposable
 {
     Task ExecuteLoginCommand(Credentials credentials);
 
@@ -18,7 +20,7 @@ public interface ICommandExecutor : ITcpExposition, IDisposable
     Task<bool> ExecutePingCommand();
     Task<SymbolInfo> ExecuteSymbolCommand(string symbol);
     Task<Tick> ExecuteTickCommand(string symbol);
-    Task<List<Position?>> ExecuteTradesHistoryCommand(string positionReference);
+    Task<List<Position>> ExecuteTradesHistoryCommand(string positionReference);
     Task<Position?> ExecuteTradesOpenedTradesCommand(string positionReference);
     Task<TradeHourRecord> ExecuteTradingHoursCommand(string symbol);
     Task<Position> ExecuteOpenTradeCommand(Position position, decimal price);

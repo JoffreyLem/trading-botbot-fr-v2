@@ -2,6 +2,7 @@
 using Moq;
 using RobotAppLibraryV2.ApiConnector.Interfaces;
 using RobotAppLibraryV2.ApiConnector.Tcp;
+using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 using RobotAppLibraryV2.ApiHandler.Exception;
 using RobotAppLibraryV2.ApiHandler.Handlers;
 using RobotAppLibraryV2.Modeles;
@@ -16,19 +17,13 @@ public class ApiHandlerBaseTest
     private readonly Mock<ILogger> _logger = new();
     private readonly Mock<ApiHandlerBase> apiHandlerBase;
 
-    private readonly Mock<ITcpConnectorSynchronisation> tcpConnectorSynchronisationMock = new();
-
-    private readonly Mock<ITcpStreamingConnector> tcpStreamingConnector = new();
 
     public ApiHandlerBaseTest()
     {
         _logger.Setup(x => x.ForContext<ApiHandlerBase>())
             .Returns(_logger.Object);
 
-
-        _commandExecutor.SetupGet(x => x.TcpConnector).Returns(tcpConnectorSynchronisationMock.Object);
-        _commandExecutor.SetupGet(x => x.TcpStreamingConnector).Returns(tcpStreamingConnector.Object);
-
+     
         apiHandlerBase = new Mock<ApiHandlerBase>(MockBehavior.Default, _commandExecutor.Object, _logger.Object)
         {
             CallBase = true
@@ -63,7 +58,7 @@ public class ApiHandlerBaseTest
             balance.MarginLevel.Should().Be(10);
         };
 
-        _commandExecutor.Raise(x => x.TcpStreamingConnector.BalanceRecordReceived += null, accountBalance);
+        _commandExecutor.Raise(x => x.BalanceRecordReceived += null, accountBalance);
 
         caller.Should().BeTrue();
     }
@@ -82,31 +77,14 @@ public class ApiHandlerBaseTest
         await apiHandlerBase.Object.ConnectAsync(new Credentials());
 
         // Assert
-
-        _commandExecutor.Verify(x => x.TcpConnector.ConnectAsync(), Times.Once);
+        
         _commandExecutor.Verify(x => x.ExecuteLoginCommand(It.IsAny<Credentials>()), Times.Once);
-        _commandExecutor.Verify(x => x.TcpStreamingConnector.ConnectAsync(), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteSubscribeBalanceCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteTradesCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteTradeStatusCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteSubscribeProfitsCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteSubscribeNewsCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecutePingCommand(), Times.Between(0, 1, Range.Inclusive));
-    }
-
-    [Fact]
-    public async void Test_Connect_Async_throw_Excption()
-    {
-        // Arrange
-        _commandExecutor.Setup(x => x.ExecuteIsConnected()).Returns(true);
-        _commandExecutor.Setup(x => x.TcpConnector.ConnectAsync())
-            .ThrowsAsync(new Exception());
-
-        // Act
-        var act = () => apiHandlerBase.Object.ConnectAsync(new Credentials());
-
-        // Assert
-        await act.Should().ThrowAsync<ApiHandlerException>();
     }
 
     #endregion
@@ -207,10 +185,10 @@ public class ApiHandlerBaseTest
         _commandExecutor.Setup(x => x.ExecutePingCommand()).ThrowsAsync(new Exception());
 
         // Act
-        var act = () => apiHandlerBase.Object.PingAsync();
+        await apiHandlerBase.Object.PingAsync();
 
         // Assert
-        await act.Should().ThrowAsync<ApiHandlerException>();
+        _logger.Verify(x=>x.Error(It.IsAny<Exception>(),It.IsAny<string>()),Times.Exactly(1));
     }
 
     #endregion
@@ -855,21 +833,11 @@ public class ApiHandlerBaseTest
         var caller = false;
         apiHandlerBase.Object.Disconnected += (sender, args) => caller = true;
 
-        _commandExecutor.Raise(x => x.TcpConnector.Disconnected += null, this, EventArgs.Empty);
+        _commandExecutor.Raise(x => x.Disconnected += null, this, EventArgs.Empty);
 
         caller.Should().BeTrue();
     }
 
-    [Fact]
-    public void Test_OnDisconnectedEvent_Streaming()
-    {
-        var caller = false;
-        apiHandlerBase.Object.Disconnected += (sender, args) => caller = true;
-
-        _commandExecutor.Raise(x => x.TcpStreamingConnector.Disconnected += null, this, EventArgs.Empty);
-
-        caller.Should().BeTrue();
-    }
 
     #endregion
 
@@ -913,7 +881,7 @@ public class ApiHandlerBaseTest
         apiHandlerBase.Object.PositionClosedEvent += (sender, position1) => caller = true;
 
         // Act
-        _commandExecutor.Raise(x => x.TcpStreamingConnector.TradeRecordReceived += null, position);
+        _commandExecutor.Raise(x => x.TradeRecordReceived += null, position);
 
         // Assert
         caller.Should().BeFalse();
@@ -945,7 +913,7 @@ public class ApiHandlerBaseTest
 
 
         // Act
-        _commandExecutor.Raise(x => x.TcpStreamingConnector.TradeRecordReceived += null, position);
+        _commandExecutor.Raise(x => x.TradeRecordReceived += null, position);
 
         // Assert
         caller.Should().BeTrue();
@@ -972,10 +940,10 @@ public class ApiHandlerBaseTest
             StrategyId = "1",
             Id = "1"
         };
-        _commandExecutor.Raise(x => x.TcpStreamingConnector.TradeRecordReceived += null, position1);
+        _commandExecutor.Raise(x => x.TradeRecordReceived += null, position1);
 
         // Act
-        _commandExecutor.Raise(x => x.TcpStreamingConnector.TradeRecordReceived += null, position);
+        _commandExecutor.Raise(x => x.TradeRecordReceived += null, position);
 
         // Assert
         caller.Should().BeTrue();
@@ -1011,12 +979,12 @@ public class ApiHandlerBaseTest
             StrategyId = "1",
             Id = "1"
         };
-        _commandExecutor.Raise(x => x.TcpStreamingConnector.TradeRecordReceived += null, position1);
+        _commandExecutor.Raise(x => x.TradeRecordReceived += null, position1);
         
         
         
         // Act
-        _commandExecutor.Raise(x => x.TcpStreamingConnector.TradeRecordReceived += null, position);
+        _commandExecutor.Raise(x => x.TradeRecordReceived += null, position);
 
         // Assert
         caller.Should().BeTrue();

@@ -6,24 +6,23 @@ using Serilog;
 
 namespace RobotAppLibraryV2.ApiHandler.Handlers;
 
-public abstract class ApiHandlerBase : IApiHandler, IDisposable
+public abstract class ApiHandlerBase : IApiHandler
 {
     protected readonly List<Position?> CachePosition = new();
     protected readonly ILogger Logger;
     public DateTime LastPing;
-    private Timer pingTimer;
+    private Timer _pingTimer;
 
     public ApiHandlerBase(ICommandExecutor commandExecutor, ILogger logger)
     {
         CommandExecutor = commandExecutor;
         Logger = logger.ForContext<ApiHandlerBase>();
-        CommandExecutor.TcpStreamingConnector.BalanceRecordReceived += TcpStreamingConnectorOnBalanceRecordReceived;
-        CommandExecutor.TcpStreamingConnector.NewsRecordReceived += news => NewsEvent?.Invoke(this, news);
-        CommandExecutor.TcpStreamingConnector.TickRecordReceived += tick => TickEvent?.Invoke(this, tick);
-        CommandExecutor.TcpStreamingConnector.TradeRecordReceived += TcpStreamingConnectorOnTradeRecordReceived;
-        CommandExecutor.TcpStreamingConnector.ProfitRecordReceived += TcpStreamingConnectorOnProfitRecordReceived;
-        CommandExecutor.TcpConnector.Disconnected += TcpConnectorOnDisconnected;
-        CommandExecutor.TcpStreamingConnector.Disconnected += TcpStreamingConnectorOnDisconnected;
+        CommandExecutor.BalanceRecordReceived += TcpStreamingConnectorOnBalanceRecordReceived;
+        CommandExecutor.NewsRecordReceived += news => NewsEvent?.Invoke(this, news);
+        CommandExecutor.TickRecordReceived += tick => TickEvent?.Invoke(this, tick);
+        CommandExecutor.TradeRecordReceived += TcpStreamingConnectorOnTradeRecordReceived;
+        CommandExecutor.ProfitRecordReceived += TcpStreamingConnectorOnProfitRecordReceived;
+        CommandExecutor.Disconnected += TcpConnectorOnDisconnected;
     }
 
     protected virtual TimeSpan PingInterval => TimeSpan.FromMinutes(1);
@@ -49,9 +48,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
         try
         {
             Logger.Information("Connecting to handler.");
-            await CommandExecutor.TcpConnector.ConnectAsync();
             await CommandExecutor.ExecuteLoginCommand(credentials);
-            await CommandExecutor.TcpStreamingConnector.ConnectAsync();
             CommandExecutor.ExecuteSubscribeBalanceCommandStreaming();
             CommandExecutor.ExecuteTradesCommandStreaming();
             CommandExecutor.ExecuteTradeStatusCommandStreaming();
@@ -59,7 +56,7 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
             CommandExecutor.ExecuteSubscribeNewsCommandStreaming();
             CommandExecutor.ExecuteSubscribeKeepAliveCommandStreaming();
             TimerCallback timerCallback = state => PingAsync().GetAwaiter().GetResult();
-            pingTimer = new Timer(timerCallback, null, 0, PingInterval.Ticks / TimeSpan.TicksPerMillisecond);
+            _pingTimer = new Timer(timerCallback, null, 0, PingInterval.Ticks / TimeSpan.TicksPerMillisecond);
         }
         catch (System.Exception e)
         {
@@ -111,7 +108,6 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
         catch (System.Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(PingAsync)}");
-            throw new ApiHandlerException($"Error on  {nameof(PingAsync)}");
         }
     }
 
@@ -335,19 +331,13 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
 
     public void Dispose()
     {
-        CommandExecutor.Dispose();
-        pingTimer.Dispose();
-    }
-
-    private void TcpStreamingConnectorOnDisconnected(object? sender, EventArgs e)
-    {
-        Logger.Information("Tcp streaming connector disconnected");
-        Disconnected?.Invoke(this, EventArgs.Empty);
+        CommandExecutor?.Dispose();
+        _pingTimer?.Dispose();
     }
 
     private void TcpConnectorOnDisconnected(object? sender, EventArgs e)
     {
-        Logger.Information("Tcp connector disconnected");
+        Logger.Information("Disconnected from {Connector}", sender);
         Disconnected?.Invoke(this, EventArgs.Empty);
     }
 
@@ -400,8 +390,8 @@ public abstract class ApiHandlerBase : IApiHandler, IDisposable
         if (posSelected is not null)
         {
             posSelected.Profit = e.Profit;
-            posSelected.StopLoss = e.StopLoss ?? posSelected.StopLoss;
-            posSelected.TakeProfit = e.TakeProfit ?? posSelected.TakeProfit;
+            posSelected.StopLoss = e.StopLoss != posSelected.StopLoss ? e.StopLoss : posSelected.StopLoss;
+            posSelected.TakeProfit = e.TakeProfit != posSelected.TakeProfit ? e.TakeProfit : posSelected.TakeProfit;
             PositionUpdatedEvent?.Invoke(this, posSelected);
         }
     }

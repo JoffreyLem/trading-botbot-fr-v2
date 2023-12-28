@@ -1,6 +1,5 @@
 using System.Text.Json;
 using RobotAppLibraryV2.Api.Xtb.Assembler;
-using RobotAppLibraryV2.Api.Xtb.Response;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using RobotAppLibraryV2.ApiConnector.Interfaces;
 using RobotAppLibraryV2.ApiHandler.Xtb.errors;
@@ -91,7 +90,8 @@ public class XtbAdapter : IReponseAdapter
             foreach (var recordElement in returnData.Value.GetProperty("rateInfos").EnumerateArray())
                 dataRecordsList.Add(MapCandle(recordElement, digits));
 
-
+        dataRecordsList.Sort((c1, c2) => c1.Date.CompareTo(c2.Date));
+        
         return dataRecordsList;
     }
 
@@ -442,7 +442,7 @@ public class XtbAdapter : IReponseAdapter
         return TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(time);
     }
 
-    public LoginResponseXtb AdaptLoginResponse(string jsonResponse)
+    public LoginResponse AdaptLoginResponse(string jsonResponse)
     {
         using var doc = JsonDocument.Parse(jsonResponse);
 
@@ -452,7 +452,7 @@ public class XtbAdapter : IReponseAdapter
 
         var streamSessionId = root.GetProperty("streamSessionId").GetString();
 
-        return new LoginResponseXtb
+        return new LoginResponse()
         {
             StreamingSessionId = streamSessionId
         };

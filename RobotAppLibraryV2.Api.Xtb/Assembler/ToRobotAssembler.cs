@@ -25,16 +25,16 @@ public static class FromXtbToRobotAssembler
                 return TypeOperation.Buy;
             case 1:
                 return TypeOperation.Sell;
-            case 2:
-                return TypeOperation.BuyLimit;
-            case 3:
-                return TypeOperation.SellLimit;
-            case 4:
-                return TypeOperation.BuyStop;
-            case 5:
-                return TypeOperation.SellStop;
-            case 6:
-                return TypeOperation.Balance;
+            // case 2:
+            //     return TypeOperation.BuyLimit;
+            // case 3:
+            //     return TypeOperation.SellLimit;
+            // case 4:
+            //     return TypeOperation.BuyStop;
+            // case 5:
+            //     return TypeOperation.SellStop;
+            // case 6:
+            //     return TypeOperation.Balance;
             default:
                 throw new ArgumentOutOfRangeException(nameof(code), code, "Invalid operation code.");
         }

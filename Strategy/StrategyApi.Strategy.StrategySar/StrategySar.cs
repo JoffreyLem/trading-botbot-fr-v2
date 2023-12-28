@@ -82,14 +82,14 @@ public class StrategySar : StrategyImplementationBase
         var sar = SarIndicator?.Last();
         if (position.TypePosition == TypeOperation.Buy)
         {
-            if (sar?.Sar < (double?)LastPrice.Bid) position.StopLoss = (decimal?)sar.Sar;
+            if (sar?.Sar < (double?)LastPrice.Bid) position.StopLoss = (decimal)sar.Sar;
 
             return true;
         }
 
         if (position.TypePosition == TypeOperation.Sell)
         {
-            if (sar?.Sar > (double?)LastPrice.Ask) position.StopLoss = (decimal?)sar.Sar;
+            if (sar?.Sar > (double?)LastPrice.Ask) position.StopLoss = (decimal)sar.Sar;
 
             return true;
         }
