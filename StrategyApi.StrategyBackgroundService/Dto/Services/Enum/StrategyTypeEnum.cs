@@ -7,5 +7,6 @@ public enum StrategyTypeEnum
 {
     Test,
     Main,
+    Main2,
     Sar
 }

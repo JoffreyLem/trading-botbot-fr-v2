@@ -39,12 +39,9 @@ public class BacktestComponentBase : StrategyIdComponentBase
         catch
         {
             ToastService.ShowToastError("Can't run backtest");
-        }
-        finally
-        {
             OnLoading = false;
-            this.StateHasChanged();
         }
-       
+        OnLoading = false;
+        this.StateHasChanged();
     }
 }

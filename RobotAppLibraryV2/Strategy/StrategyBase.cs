@@ -239,6 +239,8 @@ public sealed class StrategyBase : IDisposable
     private async Task HistoryOnOnTickEvent(Tick tick)
     {
         UpdateIndicator();
+        // TODO : Tester ce truc !!!!
+        StrategyImplementation.LastPrice = tick;
         try
         {
             if (CanRun && RunOnTick && !_positionHandler.PositionInProgress)

@@ -11,6 +11,7 @@ using RobotAppLibraryV2.Strategy;
 using Serilog;
 using StrategyApi.Mail;
 using StrategyApi.Strategy.Main;
+using StrategyApi.Strategy.NewMain;
 using StrategyApi.Strategy.StrategySar;
 using StrategyApi.Strategy.Test;
 using StrategyApi.StrategyBackgroundService.Command;
@@ -400,6 +401,7 @@ public class CommandHandler
             StrategyTypeEnum.Test => new TestStrategy(),
             StrategyTypeEnum.Main => new MainStrategy(),
             StrategyTypeEnum.Sar => new StrategySar(),
+            StrategyTypeEnum.Main2 => new NewMainStrategy(),
             _ => throw new CommandException($"Strategy {type} non gérer")
         };
     }
