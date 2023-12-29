@@ -2,7 +2,7 @@
 
 namespace StrategyApi.StrategyBackgroundService.Command.Strategy.Response;
 
-public class GetStrategyInfoCommandResponse : ServiceCommandResponse
+public class GetStrategyInfoCommandResponse : ServiceCommandResponseBase
 {
     public StrategyInfoDto StrategyInfoDto { get; set; }
 }

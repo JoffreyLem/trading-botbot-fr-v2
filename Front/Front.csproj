@@ -64,32 +64,14 @@
         <Compile Update="Composants\ToastCustomBase.cs">
             <DependentUpon>ToastCustomComponent.razor</DependentUpon>
         </Compile>
-        <Compile Update="Composants\Strategy\StrategiInitFormBase.cs">
-            <DependentUpon>StrategyInitFormComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\Strategy\StrategyDataBaseComponent.cs">
-            <DependentUpon>StrategyDataComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\Strategy\PositionClosedComponentBase.cs">
-            <DependentUpon>PositionClosedComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\Strategy\PositionOpenedComponentBase.cs">
-            <DependentUpon>PositionOpenedComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\Strategy\ResultComponentBase.cs">
-            <DependentUpon>ResultComponent.razor</DependentUpon>
-        </Compile>
         <Compile Update="Composants\HeathCheckComponentBase.cs">
             <DependentUpon>HealthCheckComponent.razor</DependentUpon>
         </Compile>
-        <Compile Update="Composants\Strategy\AllStrategyComponentBase.cs">
-            <DependentUpon>AllStrategyComponent.razor</DependentUpon>
+        <Compile Update="Pages\Api\ApiIndexBase.cs">
+            <DependentUpon>ApiIndex.razor</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Api\ApiComponentBase.cs">
-            <DependentUpon>ApiComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\Strategy\BacktestComponentBase.cs">
-          <DependentUpon>BacktestComponent.razor</DependentUpon>
+        <Compile Update="Pages\Backtest\BacktestIndexPageBase.cs">
+          <DependentUpon>BacktestIndex.razor</DependentUpon>
         </Compile>
     </ItemGroup>
 

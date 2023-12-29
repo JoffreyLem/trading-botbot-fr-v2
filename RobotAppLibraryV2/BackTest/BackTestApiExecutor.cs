@@ -19,6 +19,8 @@ public class BackTestApiExecutor : ICommandExecutor
 
     private LotValueCalculator LotValueCalculator;
 
+    private SymbolInfo SymbolInfo;
+
   
 
     public BackTestApiExecutor(IApiHandler apiHandlerProxy, ILogger logger, BacktestParameters backtestParameters)
@@ -36,6 +38,8 @@ public class BackTestApiExecutor : ICommandExecutor
             Equity = backtestParameters.Balance
         };
         LotValueCalculator = new LotValueCalculator(apiHandlerProxy, logger, backtestParameters.Symbol);
+        SymbolInfo =  _apiHandlerProxy.GetSymbolInformationAsync(backtestParameters.Symbol).GetAwaiter()
+            .GetResult();
     }
 
     public AccountBalance AccountBalance { get; set; }
@@ -54,6 +58,7 @@ public class BackTestApiExecutor : ICommandExecutor
 
     public Task ExecuteLoginCommand(Credentials credentials)
     {
+      
         return Task.CompletedTask;
     }
 
@@ -144,9 +149,12 @@ public class BackTestApiExecutor : ICommandExecutor
     public Task<Position> ExecuteOpenTradeCommand(Position position, decimal price)
     {
         var newPos = position.Clone();
-
+        newPos.DateOpen = _currentTick.Date;
+        newPos.StatusPosition = StatusPosition.Open;
         newPos.Order = Guid.NewGuid().ToString();
+        newPos.OpenPrice = _currentTick.Bid.GetValueOrDefault();
         this._positionsCache.Add(newPos);
+        HandleProfitPositions(newPos);
         return Task.FromResult(newPos);
     }
 
@@ -161,6 +169,7 @@ public class BackTestApiExecutor : ICommandExecutor
 
         positionCache.StopLoss = position.StopLoss;
         positionCache.TakeProfit = position.TakeProfit;
+        HandleProfitPositions(positionCache);
         return Task.FromResult(positionCache);
     }
 
@@ -169,10 +178,14 @@ public class BackTestApiExecutor : ICommandExecutor
         var positionCache = _positionsCache.FirstOrDefault(x => x.Order == position.Order);
         if (positionCache is null)
         {
-            _logger.Fatal("Position order {Position} not found for update", position.Order);
+            _logger.Fatal("Position order {Position} not found for close", position.Order);
             Disconnected?.Invoke(this, EventArgs.Empty);
         }
-
+        positionCache.DateClose = _currentTick.Date;
+        positionCache.ClosePrice = _currentTick.Bid;
+        positionCache.StatusPosition = StatusPosition.Close;
+        positionCache.ReasonClosed = ReasonClosed.Closed;
+        HandleProfitPositions(positionCache);
         return Task.FromResult(positionCache);
     }
 
@@ -308,8 +321,17 @@ public class BackTestApiExecutor : ICommandExecutor
         decimal pips = position.TypePosition == TypeOperation.Buy
             ? closePrice - openPrice
             : openPrice - closePrice;
+        decimal pipsSpread = _currentTick.Spread.GetValueOrDefault();
+        
+        if (SymbolInfo.Category == Category.Forex)
+        {
+            var tickPrecision = SymbolInfo.Symbol.Contains("JPY") ? 2 : 4;
+            pips *=(decimal)Math.Pow(10,tickPrecision);
+            pipsSpread *=(decimal)Math.Pow(10,tickPrecision);
+        }
+        decimal spreadValue = pipsSpread * (decimal)LotValueCalculator.PipValueStandard;
 
-        var profitValue = (decimal)LotValueCalculator.PipValueStandard * pips;
+        var profitValue = ((decimal)LotValueCalculator.PipValueStandard * pips)  - spreadValue;
         position.Profit = profitValue;
     }
 
@@ -318,6 +340,7 @@ public class BackTestApiExecutor : ICommandExecutor
         if (position.ClosePrice is not null)
         {
             position.StatusPosition = StatusPosition.Close;
+            position.DateClose = _currentTick.Date;
             TradeRecordReceived?.Invoke(position);
         }
         else
@@ -334,10 +357,12 @@ public class BackTestApiExecutor : ICommandExecutor
         if (currentPrice <= position.StopLoss)
         {
             position.ClosePrice = position.StopLoss;
+            position.ReasonClosed = ReasonClosed.Sl;
         }
         else if (currentPrice >= position.TakeProfit)
         {
             position.ClosePrice = position.TakeProfit;
+            position.ReasonClosed = ReasonClosed.Tp;
         }
 
         HandleProfitPositions(position);
@@ -351,10 +376,12 @@ public class BackTestApiExecutor : ICommandExecutor
         if (currentPrice >= position.StopLoss)
         {
             position.ClosePrice = position.StopLoss;
+            position.ReasonClosed = ReasonClosed.Sl;
         }
         else if (currentPrice <= position.TakeProfit)
         {
             position.ClosePrice = position.TakeProfit;
+            position.ReasonClosed = ReasonClosed.Tp;
         }
 
         HandleProfitPositions(position);

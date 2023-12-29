@@ -9,7 +9,7 @@ using Syncfusion.Blazor.DropDowns;
 
 namespace Front.Pages.Api;
 
-public class ApiComponentBase : ComponentBase, IDisposable
+public class ApiIndexBase : ComponentBase, IDisposable
 {
     protected bool IsConnected { get; set; }
     protected bool OnLoading { get; set; }

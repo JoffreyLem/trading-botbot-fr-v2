@@ -7,7 +7,7 @@ using StrategyApi.StrategyBackgroundService.Events;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.Grids;
 
-namespace Front.Composants.Strategy;
+namespace Front.Pages.Strategy.Composants;
 
 public class PositionOpenedComponentBase : StrategyIdComponentBase, IDisposable
 {
@@ -17,6 +17,7 @@ public class PositionOpenedComponentBase : StrategyIdComponentBase, IDisposable
 
     public void Dispose()
     {
+        Positions.Clear();
         ((IDisposable)Grid).Dispose();
         CommandHandler.PositionChangeEvent -= CommandHandlerOnPositionChangeEvent;
     }

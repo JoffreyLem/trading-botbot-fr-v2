@@ -2,7 +2,7 @@ using Front.Services;
 using Microsoft.AspNetCore.Components;
 using Syncfusion.Blazor.Notifications;
 
-namespace Front.Composants;
+namespace Front.ComposantsCommuns;
 
 public abstract class ToastCustomComponentBase : ComponentBase
 {

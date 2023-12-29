@@ -1,8 +1,8 @@
 using System.Text.Json;
 using RobotAppLibraryV2.Api.Xtb.Assembler;
+using RobotAppLibraryV2.Api.Xtb.Code;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using RobotAppLibraryV2.ApiConnector.Interfaces;
-using RobotAppLibraryV2.ApiHandler.Xtb.errors;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Utils;
 

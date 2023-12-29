@@ -99,12 +99,11 @@ public class StrategyHandlerService : IStrategyHandlerService
         return result.PositionDtos;
     }
 
-    public async Task<ResultDto> GetResult(string id, bool isBackTest = false)
+    public async Task<ResultDto> GetResult(string id)
     {
         var resultCommand = new GetStrategyResultRequestCommand
         {
             Id = id,
-            IsBacktest = isBackTest,
         };
 
         await _channelStrategyWriter.WriteAsync(resultCommand);
@@ -159,6 +158,28 @@ public class StrategyHandlerService : IStrategyHandlerService
         var result = await command.ResponseSource.Task;
 
         return result.BackTestDto;
+    }
+
+    public async Task<BackTestDto> RunBacktestExternal(StrategyInitDto strategyInitDto, double balance,
+        decimal minspread, decimal maxspread)
+    {
+        var command = new RunStrategyBacktestExternalCommand()
+        {
+            StrategyType = strategyInitDto.StrategyType,
+            Symbol = strategyInitDto.Symbol,
+            Timeframe = strategyInitDto.Timeframe,
+            Timeframe2 = strategyInitDto.Timeframe2,
+            Balance = balance,
+            MinSpread = minspread,
+            MaxSpread = maxspread
+        };
+        
+        await _channelStrategyWriter.WriteAsync(command);
+
+        var result = await command.ResponseSource.Task;
+
+        return result.BackTestDto;
+        
     }
 
     public async Task<BackTestDto> GetBacktestInfo(string id)

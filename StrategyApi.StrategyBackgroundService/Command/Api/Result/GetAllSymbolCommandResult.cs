@@ -2,7 +2,7 @@
 
 namespace StrategyApi.StrategyBackgroundService.Command.Api.Result;
 
-public class GetAllSymbolCommandResultCommand : ServiceCommandResponse
+public class GetAllSymbolCommandResultCommand : ServiceCommandResponseBase
 {
     public List<SymbolInfo> SymbolInfos { get; set; }
 }

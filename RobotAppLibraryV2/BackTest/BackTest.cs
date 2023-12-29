@@ -14,7 +14,7 @@ public class BackTest
 
     public DateTime? LastBacktestExecution;
 
-    public Modeles.Result Result = new();
+    public Modeles.Result? Result;
 
     public BackTest(StrategyImplementationBase strategyImplementationBase, IApiHandler apihandlerProxy, ILogger logger,
         string symbol, Timeframe timeframe, Timeframe? timeframe2)

@@ -68,9 +68,7 @@ public sealed class StrategyBase : IDisposable
     }
 
     public string StrategyName => StrategyImplementation.Name;
-    public string Version => GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ?? "NotDefined";
-
-
+    public string Version => StrategyImplementation.GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ?? "NotDefined";
     
     /// <summary>
     ///     Used for position definition comment.
@@ -157,7 +155,7 @@ public sealed class StrategyBase : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public event EventHandler<RobotEvent<StrategyReasonDisabled>>? StrategyDisabledEvent;
+    public event EventHandler<RobotEvent<string>>? StrategyDisabledEvent;
     public event EventHandler<RobotEvent<Tick>>? TickEvent;
     public event EventHandler<RobotEvent<Candle>>? CandleEvent;
     public event EventHandler<RobotEvent<Position>>? PositionOpenedEvent;
@@ -381,7 +379,9 @@ public sealed class StrategyBase : IDisposable
         }
         finally
         {
-            StrategyDisabledEvent?.Invoke(this, new RobotEvent<StrategyReasonDisabled>(strategyReasonDisabled, Id));
+            var disableMessage =
+                $"The strategy {StrategyName}-{Symbol}-{Timeframe} have been disabled, cause of {strategyReasonDisabled}";
+            StrategyDisabledEvent?.Invoke(this, new RobotEvent<string>(disableMessage, Id));
         }
     }
 

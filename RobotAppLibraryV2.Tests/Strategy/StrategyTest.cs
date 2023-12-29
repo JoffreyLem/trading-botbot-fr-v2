@@ -84,7 +84,7 @@ public class StrategyTest
         strategyBase.StrategyDisabledEvent += (sender, treshold) =>
         {
             caller = true;
-            treshold.EventField.Should().NotBe(StrategyReasonDisabled.User);
+            treshold.EventField.Should().NotContain(StrategyReasonDisabled.User.ToString());
         };
 
         strategyResultMock.Raise(x => x.ResultTresholdEvent += null, this, eventTreshold);

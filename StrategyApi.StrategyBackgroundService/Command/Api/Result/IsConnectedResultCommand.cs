@@ -2,7 +2,7 @@
 
 namespace StrategyApi.StrategyBackgroundService.Command.Api.Result;
 
-public class IsConnectedResultCommand : ServiceCommandResponse
+public class IsConnectedResultCommand : ServiceCommandResponseBase
 {
     public ConnexionStateEnum ConnexionStateEnum { get; set; }
 }

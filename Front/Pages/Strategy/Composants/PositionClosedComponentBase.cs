@@ -4,7 +4,7 @@ using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.Grids;
 
-namespace Front.Composants.Strategy;
+namespace Front.Pages.Strategy.Composants;
 
 public class PositionClosedComponentBase : StrategyIdComponentBase
 {

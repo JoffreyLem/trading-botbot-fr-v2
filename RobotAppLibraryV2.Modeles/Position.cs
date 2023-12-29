@@ -12,7 +12,7 @@ public class Position
     public string? Order { get; set; }
     public string Symbol { get; set; }
     public TypeOperation TypePosition { get; set; }
-    public double? Spread { get; set; }
+    public decimal? Spread { get; set; }
     public decimal Profit { get; set; }
     public decimal OpenPrice { get; set; }
     public DateTime DateOpen { get; set; }
@@ -46,7 +46,7 @@ public class Position
         return this;
     }
 
-    public Position SetSpread(double? spread)
+    public Position SetSpread(decimal? spread)
     {
         Spread = spread;
         return this;

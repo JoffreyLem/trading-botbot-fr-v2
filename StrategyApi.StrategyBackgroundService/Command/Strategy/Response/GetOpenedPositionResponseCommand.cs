@@ -2,7 +2,7 @@
 
 namespace StrategyApi.StrategyBackgroundService.Command.Strategy.Response;
 
-public class GetOpenedPositionResponseCommand : ServiceCommandResponse
+public class GetOpenedPositionResponseCommand : ServiceCommandResponseBase
 {
     public ListPositionsDto ListPositionsDto { get; set; }
 }

@@ -54,7 +54,7 @@ public class PositionHandler : IPositionHandler
                 .SetSymbol(symbol)
                 .SetId(Guid.NewGuid().ToString())
                 .SetTypePosition(typePosition)
-                .SetSpread((double?)LastPrice.Spread)
+                .SetSpread(LastPrice.Spread)
                 .SetOpenPrice(priceData)
                 .SetStopLoss(sl)
                 .SetTakeProfit(tp)
@@ -180,7 +180,7 @@ public class PositionHandler : IPositionHandler
             PositionOpened = e;
             e.StatusPosition = StatusPosition.Open;
             PositionPending = null;
-            _logger.Information("Position opened : {EId}", e.Id);
+            _logger.Information("Position opened : {EId}", e);
             PositionOpenedEvent?.Invoke(this, e);
         }
     }
@@ -204,7 +204,7 @@ public class PositionHandler : IPositionHandler
             PositionOpened.Profit = e.Profit;
             PositionOpened.StopLoss = e.StopLoss;
             PositionOpened.TakeProfit = e.TakeProfit;
-            PositionUpdatedEvent?.Invoke(this, PositionOpened);
+            PositionUpdatedEvent?.Invoke(this, e);
         }
     }
 
@@ -213,8 +213,8 @@ public class PositionHandler : IPositionHandler
     {
         if (PositionOpened is not null && PositionOpened?.PositionStrategyReferenceId == e.PositionStrategyReferenceId)
         {
-            _logger.Information("Position Closed : {@EId}", PositionOpened);
-            PositionClosedEvent?.Invoke(this, PositionOpened);
+            _logger.Information("Position Closed : {@EId}", e);
+            PositionClosedEvent?.Invoke(this, e);
             PositionOpened = null;
         }
     }

@@ -1,10 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using Front.Services;
+﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Services;
 
-namespace Front.Composants.Strategy;
+namespace Front.Pages.Strategy.Composants;
 
 public class BacktestComponentBase : StrategyIdComponentBase
 {
@@ -33,8 +32,10 @@ public class BacktestComponentBase : StrategyIdComponentBase
     {
         try
         {
+            // TODO : Refacto pour harmoniser avec l'autre backtest
             OnLoading = true;
-            BackTestDto = await _apiStrategyService.RunBackTest(base.StrategyId, 1000, 1, 1);
+            BackTestDto = await _apiStrategyService.RunBackTest(StrategyId, 1000, 1, 1);
+            ToastService.ShowToastSuccess("BacktestEnd");
         }
         catch
         {
@@ -42,6 +43,6 @@ public class BacktestComponentBase : StrategyIdComponentBase
             OnLoading = false;
         }
         OnLoading = false;
-        this.StateHasChanged();
+        StateHasChanged();
     }
 }

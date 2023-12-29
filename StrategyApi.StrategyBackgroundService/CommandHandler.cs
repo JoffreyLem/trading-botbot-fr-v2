@@ -4,6 +4,7 @@ using RobotAppLibraryV2.ApiHandler;
 using RobotAppLibraryV2.ApiHandler.Handlers;
 using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
 using RobotAppLibraryV2.ApiHandler.Interfaces;
+using RobotAppLibraryV2.BackTest;
 using RobotAppLibraryV2.Factory;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Modeles.events;
@@ -90,6 +91,11 @@ public class CommandHandler
                 CheckApiHandlerNotNull();
                 InitStrategy(initStrategyCommandDto);
                 _logger.Information("Strategy command processed {@Command}", initStrategyCommandDto);
+                break;
+            case RunStrategyBacktestExternalCommand runStrategyBacktestExternalCommand:
+                CheckApiHandlerNotNull();
+                RunBacktestExternal(runStrategyBacktestExternalCommand);
+                _logger.Information("Strategy command processed {@Command}", runStrategyBacktestExternalCommand);
                 break;
             case GetStrategyInfoCommand getStrategyInfoCommand:
                 GetStrategyInfo(getStrategyInfoCommand, GetStrategyById(getStrategyInfoCommand.Id));
@@ -215,6 +221,28 @@ public class CommandHandler
             throw;
         }
     }
+
+    private async Task RunBacktestExternal(RunStrategyBacktestExternalCommand runStrategyBacktestExternalCommand)
+    {
+        var strategyImplementation = GenerateStrategy(runStrategyBacktestExternalCommand.StrategyType);
+        var backtest = new BackTest(strategyImplementation, this._apiHandlerBase, this._logger,
+            runStrategyBacktestExternalCommand.Symbol, runStrategyBacktestExternalCommand.Timeframe,
+            runStrategyBacktestExternalCommand.Timeframe2);
+        await backtest.RunBackTest(runStrategyBacktestExternalCommand.Balance,
+            runStrategyBacktestExternalCommand.MinSpread, runStrategyBacktestExternalCommand.MaxSpread);
+        
+        BacktestCommandResponse backtestCommandResponse = new BacktestCommandResponse()
+        {
+            BackTestDto = new BackTestDto()
+            {
+                IsBackTestRunning = backtest.BacktestRunning,
+                LastBackTestExecution =backtest.LastBacktestExecution.GetValueOrDefault(),
+                ResultBacktest = _mapper.Map<ResultDto>(backtest.Result)
+            }
+        };
+        runStrategyBacktestExternalCommand.ResponseSource.SetResult(backtestCommandResponse);
+
+    }
     
     private async Task RunBackTest(RunStrategyBacktestCommand runStrategyBacktestCommand, StrategyBase strategy)
     {
@@ -224,7 +252,8 @@ public class CommandHandler
             BackTestDto = new BackTestDto()
             {
                 IsBackTestRunning = strategy.BackTest.BacktestRunning,
-                LastBackTestExecution = strategy.BackTest.LastBacktestExecution.GetValueOrDefault()
+                LastBackTestExecution = strategy.BackTest.LastBacktestExecution.GetValueOrDefault(),
+                ResultBacktest = _mapper.Map<ResultDto>(strategy.BackTest.Result)
             }
         };
         runStrategyBacktestCommand.ResponseSource.SetResult(backtestCommandResponse);
@@ -237,19 +266,19 @@ public class CommandHandler
             BackTestDto = new BackTestDto()
             {
                 IsBackTestRunning = strategy.BackTest.BacktestRunning,
-                LastBackTestExecution = strategy.BackTest.LastBacktestExecution.GetValueOrDefault()
+                LastBackTestExecution = strategy.BackTest.LastBacktestExecution.GetValueOrDefault(),
+                ResultBacktest = _mapper.Map<ResultDto>(strategy.BackTest.Result)
             }
         };
         
         getBacktestInfoCommand.ResponseSource.SetResult(backtestCommandResponse);
     }
 
-    private void StrategyBaseOnStrategyDisabled(object? sender, RobotEvent<StrategyReasonDisabled> e)
+    private void StrategyBaseOnStrategyDisabled(object? sender, RobotEvent<string> e)
     {
-        _logger.Warning("Strategy disabled : {Reason}, send email to user", e.EventField.ToString());
-        var message = $"Strategy disabled cause : {e.EventField.ToString()}";
-        _emailService.SendEmail("Strategy disabled", message).GetAwaiter().GetResult();
-        StrategyDisabled?.Invoke(this, new RobotEvent<string>(message, e.Id));
+        _logger.Warning("{Message}, send email to user", e.EventField);
+        _emailService.SendEmail("Strategy disabled", e.EventField).GetAwaiter().GetResult();
+        StrategyDisabled?.Invoke(this, new RobotEvent<string>(e.EventField, e.Id));
     }
 
     private void StrategyBaseOnStrategyEvent(object? sender, RobotEvent<string> e)
@@ -351,24 +380,12 @@ public class CommandHandler
 
     private void GetStrategyResult(GetStrategyResultRequestCommand strategyResultRequest,StrategyBase strategy)
     {
-    
-        if (strategyResultRequest.IsBacktest == false)
+        var data = _mapper.Map<ResultDto>(strategy.Results);
+        strategyResultRequest.ResponseSource.SetResult(new GetStrategyResultCommandResponse
         {
-            var data = _mapper.Map<ResultDto>(strategy.Results);
-            strategyResultRequest.ResponseSource.SetResult(new GetStrategyResultCommandResponse
-            {
-                ResultDto = data
-            });
-        }
-        else
-        {
-            var data = _mapper.Map<ResultDto>(strategy.BackTest.Result);
-            strategyResultRequest.ResponseSource.SetResult(new GetStrategyResultCommandResponse
-            {
-                ResultDto = data
-            });
-        }
-      
+            ResultDto = data
+        });
+        
     }
 
     private void GetOpenedPosition(GetOpenedPositionRequestCommand command,StrategyBase strategy)

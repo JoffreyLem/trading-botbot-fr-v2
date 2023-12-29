@@ -5,7 +5,7 @@ using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.MoneyManagement;
 using Serilog;
 
-namespace RobotAppLibraryV2.Tests;
+namespace RobotAppLibraryV2.Tests.MoneyManagement;
 
 public class LotValueCalculatorTest
 {

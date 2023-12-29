@@ -2,16 +2,16 @@
 
 <div>
     <div class="row">
-        <StrategyInitFormComponent StrategyFormUpdateRequested="@InitializeStrategy"/>
+        <CreateStrategyComponent StrategyFormUpdateRequested="@InitializeStrategy"/>
     </div>
     <div class="row">
-        <SfTab LoadOn="ContentLoad.Dynamic">
+        <SfTab LoadOn="ContentLoad.Demand"  SelectedItemChanged="Callback">
             <TabItems>
                 @foreach (var strategy in StrategyList)
                 {
                     <TabItem>
                         <HeaderTemplate>
-                            <div>@(strategy.StrategyName)</div>
+                            <div>@(strategy.StrategyName) @(strategy.Symbol)</div>
                         </HeaderTemplate>
                         <ContentTemplate>
                             <CascadingValue Value="strategy.Id">
@@ -27,5 +27,8 @@
 
 
 @code {
+
+
+   
 
 }
