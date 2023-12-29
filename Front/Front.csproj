@@ -73,6 +73,27 @@
         <Compile Update="Pages\Backtest\BacktestIndexPageBase.cs">
             <DependentUpon>BacktestIndex.razor</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Strategy\Composants\AllStrategyComponentBase.cs">
+            <DependentUpon>AllStrategyComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\BacktestComponentBase.cs">
+            <DependentUpon>BacktestComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\CreateStrategyComponentBase.cs">
+            <DependentUpon>CreateStrategyComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\PositionClosedComponentBase.cs">
+            <DependentUpon>PositionClosedComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\PositionOpenedComponentBase.cs">
+            <DependentUpon>PositionOpenedComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\ResultComponentBase.cs">
+            <DependentUpon>ResultComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\StrategyDataBaseComponent.cs">
+            <DependentUpon>StrategyDataComponent.razor</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 
