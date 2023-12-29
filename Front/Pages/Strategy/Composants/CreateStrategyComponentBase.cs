@@ -8,13 +8,13 @@ namespace Front.Pages.Strategy.Composants;
 
 public class CreateStrategyComponentBase : ComponentBase, IDisposable
 {
+    protected readonly StrategyInitDto StrategyInitDto = new();
     private bool _disposed;
     private string actionType;
-    protected readonly StrategyInitDto StrategyInitDto = new();
+
+    protected bool ShowForm;
     protected bool OnLoading { get; set; }
-    
-    protected bool ShowForm = false;
-    
+
     protected ResultDto? BacktestResult { get; set; }
 
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
@@ -68,13 +68,8 @@ public class CreateStrategyComponentBase : ComponentBase, IDisposable
     protected async Task ValidateForm()
     {
         if (actionType == "submit")
-        {
             await InitStrategy();
-        }
-        else if (actionType == "backtest")
-        {
-            await RunBacktest();
-        }
+        else if (actionType == "backtest") await RunBacktest();
     }
 
     private async Task RunBacktest()
@@ -83,16 +78,18 @@ public class CreateStrategyComponentBase : ComponentBase, IDisposable
         {
             // TODO : Refacto pour harmoniser avec l'autre backtest
             OnLoading = true;
-            BacktestResult = (await _apiStrategyService.RunBacktestExternal(StrategyInitDto, 1000, 1, 1)).ResultBacktest;
+            BacktestResult = (await _apiStrategyService.RunBacktestExternal(StrategyInitDto, 1000, 1, 1))
+                .ResultBacktest;
         }
         catch
         {
             ToastService.ShowToastError("Can't run backtest");
         }
+
         OnLoading = false;
         StateHasChanged();
     }
-    
+
     private async Task InitStrategy()
     {
         try

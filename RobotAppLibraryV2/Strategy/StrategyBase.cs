@@ -24,8 +24,8 @@ public sealed class StrategyBase : IDisposable
     private readonly IMoneyManagement _moneyManagement;
     private readonly IPositionHandler _positionHandler;
     private readonly IStrategyResult _strategyResult;
-    public readonly ICandleList History;
     public readonly BackTest.BackTest BackTest;
+    public readonly ICandleList History;
 
     public StrategyBase(
         StrategyImplementationBase strategyImplementationBase,
@@ -68,8 +68,10 @@ public sealed class StrategyBase : IDisposable
     }
 
     public string StrategyName => StrategyImplementation.Name;
-    public string Version => StrategyImplementation.GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ?? "NotDefined";
-    
+
+    public string Version => StrategyImplementation.GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ??
+                             "NotDefined";
+
     /// <summary>
     ///     Used for position definition comment.
     /// </summary>
@@ -106,7 +108,7 @@ public sealed class StrategyBase : IDisposable
         get => StrategyImplementation.CloseOnTick;
         set => StrategyImplementation.CloseOnTick = value;
     }
-    
+
     public IReadOnlyCollection<Position> PositionsClosed => _strategyResult.Positions;
 
     public bool SecureControlPosition

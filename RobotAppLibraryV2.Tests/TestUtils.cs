@@ -26,24 +26,14 @@ public static class TestUtils
 
         if (timeframe == Timeframe.Weekly)
         {
-            int daysUntilMonday = (int)DayOfWeek.Monday - (int)dateDebut.DayOfWeek;
-            if (daysUntilMonday > 0)
-            {
-      
-                daysUntilMonday -= 7;
-            }
-            
+            var daysUntilMonday = (int)DayOfWeek.Monday - (int)dateDebut.DayOfWeek;
+            if (daysUntilMonday > 0) daysUntilMonday -= 7;
+
             dateDebut = dateDebut.AddDays(daysUntilMonday);
         }
 
-        if (timeframe == Timeframe.Daily || timeframe < Timeframe.Daily)
-        {
-            dateDebut = dateDebut.AddDays(1);
-        }
-        if (timeframe < Timeframe.FourHour)
-        {
-            dateDebut = dateDebut.AddHours(1);
-        }
+        if (timeframe == Timeframe.Daily || timeframe < Timeframe.Daily) dateDebut = dateDebut.AddDays(1);
+        if (timeframe < Timeframe.FourHour) dateDebut = dateDebut.AddHours(1);
 
         for (var i = 0; i < nombre; i++)
         {
@@ -64,11 +54,9 @@ public static class TestUtils
                     dateDebut += interval;
                 else
                     dateDebut -= interval;
-            }
-            while (dateDebut.DayOfWeek == DayOfWeek.Saturday || dateDebut.DayOfWeek == DayOfWeek.Sunday);
+            } while (dateDebut.DayOfWeek == DayOfWeek.Saturday || dateDebut.DayOfWeek == DayOfWeek.Sunday);
         }
 
         return candles.Distinct().OrderBy(candle => candle.Date).ToList();
     }
-
 }

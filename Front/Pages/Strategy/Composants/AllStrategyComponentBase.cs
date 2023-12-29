@@ -2,7 +2,6 @@ using Front.Services;
 using Microsoft.AspNetCore.Components;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Services;
-using Syncfusion.Blazor.Navigations;
 
 namespace Front.Pages.Strategy.Composants;
 
@@ -13,6 +12,7 @@ public class AllStrategyComponentBase : ComponentBase
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
 
     [Inject] private ShowToastService ToastService { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -38,9 +38,8 @@ public class AllStrategyComponentBase : ComponentBase
             ToastService.ShowToastError("Error on initialization");
         }
     }
-    
+
     protected async Task Callback()
     {
-       
     }
 }

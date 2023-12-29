@@ -8,8 +8,8 @@ namespace RobotAppLibraryV2.ApiConnector.Executor;
 public abstract class
     TcpCommandExecutorBase : ICommandExecutor
 {
-    protected readonly IReponseAdapter ResponseAdapter;
     protected readonly ICommandCreator CommandCreator;
+    protected readonly IReponseAdapter ResponseAdapter;
     protected readonly TcpConnector TcpClient;
     protected readonly TcpStreamingConnector TcpStreamingClient;
 
@@ -17,9 +17,9 @@ public abstract class
     protected TcpCommandExecutorBase(TcpConnector tcpClient, TcpStreamingConnector tcpStreamingClient,
         ICommandCreator commandCreator, IReponseAdapter responseAdapter)
     {
-        this.TcpClient = tcpClient;
-        this.TcpStreamingClient = tcpStreamingClient;
-        this.CommandCreator = commandCreator;
+        TcpClient = tcpClient;
+        TcpStreamingClient = tcpStreamingClient;
+        CommandCreator = commandCreator;
         ResponseAdapter = responseAdapter;
         tcpClient.Connected += (sender, args) => Connected?.Invoke(sender, args);
         tcpClient.Disconnected += (sender, args) => Disconnected?.Invoke(sender, args);
@@ -33,7 +33,11 @@ public abstract class
         tcpStreamingClient.KeepAliveRecordReceived += () => KeepAliveRecordReceived?.Invoke();
         tcpStreamingClient.CandleRecordReceived += candle => CandleRecordReceived?.Invoke(candle);
     }
-    
+
+
+    public ITcpStreamingEvent TcpStreamingConnector => TcpStreamingClient;
+    public ITcpConnectorSynchronisation TcpConnector => TcpClient;
+
     public event Action<Tick>? TickRecordReceived;
     public event Action<Position?>? TradeRecordReceived;
     public event Action<AccountBalance?>? BalanceRecordReceived;
@@ -288,14 +292,9 @@ public abstract class
         await TcpStreamingClient.SendAsync(command);
     }
 
-
-    public ITcpStreamingEvent TcpStreamingConnector => TcpStreamingClient;
-    public ITcpConnectorSynchronisation TcpConnector => TcpClient;
-
     public void Dispose()
     {
         TcpStreamingClient.Close();
         TcpClient.Close();
     }
-
 }

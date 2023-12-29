@@ -8,24 +8,23 @@ namespace Front.Pages.Strategy.Composants;
 public class BacktestComponentBase : StrategyIdComponentBase
 {
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
-    
+
     [Inject] private ShowToastService ToastService { get; set; }
-    
+
     protected BackTestDto BackTestDto { get; set; }
-    
+
     protected bool OnLoading { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            BackTestDto = await _apiStrategyService.GetBacktestInfo(base.StrategyId);
+            BackTestDto = await _apiStrategyService.GetBacktestInfo(StrategyId);
         }
         catch (Exception)
         {
             ToastService.ShowToastError("Can't get backtest data");
         }
-       
     }
 
     protected async Task RunBacktest()
@@ -42,6 +41,7 @@ public class BacktestComponentBase : StrategyIdComponentBase
             ToastService.ShowToastError("Can't run backtest");
             OnLoading = false;
         }
+
         OnLoading = false;
         StateHasChanged();
     }

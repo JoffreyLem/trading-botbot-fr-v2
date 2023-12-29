@@ -91,7 +91,7 @@ public class XtbAdapter : IReponseAdapter
                 dataRecordsList.Add(MapCandle(recordElement, digits));
 
         dataRecordsList.Sort((c1, c2) => c1.Date.CompareTo(c2.Date));
-        
+
         return dataRecordsList;
     }
 
@@ -427,6 +427,22 @@ public class XtbAdapter : IReponseAdapter
         throw new NotImplementedException();
     }
 
+    public LoginResponse AdaptLoginResponse(string jsonResponse)
+    {
+        using var doc = JsonDocument.Parse(jsonResponse);
+
+        CheckApiStatus(doc);
+
+        var root = doc.RootElement;
+
+        var streamSessionId = root.GetProperty("streamSessionId").GetString();
+
+        return new LoginResponse
+        {
+            StreamingSessionId = streamSessionId
+        };
+    }
+
     private TimeSpan ParseFromDatTradeHour(long time)
     {
         if (time is 0) return TimeSpan.FromMilliseconds(0);
@@ -440,22 +456,6 @@ public class XtbAdapter : IReponseAdapter
         if (time is 86400000) return TimeSpan.FromMilliseconds(dateRefLimitDay);
 
         return TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(time);
-    }
-
-    public LoginResponse AdaptLoginResponse(string jsonResponse)
-    {
-        using var doc = JsonDocument.Parse(jsonResponse);
-
-        CheckApiStatus(doc);
-
-        var root = doc.RootElement;
-
-        var streamSessionId = root.GetProperty("streamSessionId").GetString();
-
-        return new LoginResponse()
-        {
-            StreamingSessionId = streamSessionId
-        };
     }
 
     private Position? MapPosition(JsonElement recordElement)

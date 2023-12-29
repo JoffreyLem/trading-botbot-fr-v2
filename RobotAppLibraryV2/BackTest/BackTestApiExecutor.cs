@@ -11,24 +11,23 @@ public class BackTestApiExecutor : ICommandExecutor
     private readonly IApiHandler _apiHandlerProxy;
     private readonly ILogger _logger;
 
-    private readonly List<Position> _positionsCache = new List<Position>();
+    private readonly List<Position> _positionsCache = new();
+
+    private readonly LotValueCalculator LotValueCalculator;
+
+    private readonly SymbolInfo SymbolInfo;
 
     private List<Candle> _candles = new();
 
-    private Tick _currentTick = new Tick();
+    private Tick _currentTick = new();
 
-    private LotValueCalculator LotValueCalculator;
-
-    private SymbolInfo SymbolInfo;
-
-  
 
     public BackTestApiExecutor(IApiHandler apiHandlerProxy, ILogger logger, BacktestParameters backtestParameters)
     {
         _apiHandlerProxy = apiHandlerProxy;
         _logger = logger;
         BacktestParameters = backtestParameters;
-        AccountBalance = new AccountBalance()
+        AccountBalance = new AccountBalance
         {
             Balance = backtestParameters.Balance,
             Credit = backtestParameters.Balance,
@@ -38,7 +37,7 @@ public class BackTestApiExecutor : ICommandExecutor
             Equity = backtestParameters.Balance
         };
         LotValueCalculator = new LotValueCalculator(apiHandlerProxy, logger, backtestParameters.Symbol);
-        SymbolInfo =  _apiHandlerProxy.GetSymbolInformationAsync(backtestParameters.Symbol).GetAwaiter()
+        SymbolInfo = _apiHandlerProxy.GetSymbolInformationAsync(backtestParameters.Symbol).GetAwaiter()
             .GetResult();
     }
 
@@ -58,7 +57,6 @@ public class BackTestApiExecutor : ICommandExecutor
 
     public Task ExecuteLoginCommand(Credentials credentials)
     {
-      
         return Task.CompletedTask;
     }
 
@@ -82,7 +80,7 @@ public class BackTestApiExecutor : ICommandExecutor
         var candles = _apiHandlerProxy.GetChartAsync(BacktestParameters.Symbol, BacktestParameters.Timeframe).Result;
         var dataToReturn = candles.GetRange(0, 2000);
         candles.RemoveRange(0, 2000);
-        this._candles = candles;
+        _candles = candles;
         return Task.FromResult(dataToReturn);
     }
 
@@ -134,13 +132,13 @@ public class BackTestApiExecutor : ICommandExecutor
 
     public Task<TradeHourRecord> ExecuteTradingHoursCommand(string symbol)
     {
-        TradeHourRecord tradeHourRecord = new TradeHourRecord();
+        var tradeHourRecord = new TradeHourRecord();
         var dateRefLimitDay = DateTime.UtcNow.Date.AddHours(23).AddMinutes(59).AddSeconds(59).TimeOfDay;
-        tradeHourRecord.HoursRecords.Add(new TradeHourRecord.HoursRecordData()
+        tradeHourRecord.HoursRecords.Add(new TradeHourRecord.HoursRecordData
         {
             Day = DateTime.UtcNow.Date.DayOfWeek,
             From = TimeSpan.Zero,
-            To = dateRefLimitDay,
+            To = dateRefLimitDay
         });
 
         return Task.FromResult(tradeHourRecord);
@@ -153,7 +151,7 @@ public class BackTestApiExecutor : ICommandExecutor
         newPos.StatusPosition = StatusPosition.Open;
         newPos.Order = Guid.NewGuid().ToString();
         newPos.OpenPrice = _currentTick.Bid.GetValueOrDefault();
-        this._positionsCache.Add(newPos);
+        _positionsCache.Add(newPos);
         HandleProfitPositions(newPos);
         return Task.FromResult(newPos);
     }
@@ -181,6 +179,7 @@ public class BackTestApiExecutor : ICommandExecutor
             _logger.Fatal("Position order {Position} not found for close", position.Order);
             Disconnected?.Invoke(this, EventArgs.Empty);
         }
+
         positionCache.DateClose = _currentTick.Date;
         positionCache.ClosePrice = _currentTick.Bid;
         positionCache.StatusPosition = StatusPosition.Close;
@@ -275,9 +274,8 @@ public class BackTestApiExecutor : ICommandExecutor
 
     public async Task StartBackTest()
     {
-
         var symbolInfo = await _apiHandlerProxy.GetSymbolInformationAsync(BacktestParameters.Symbol);
-        
+
         await Task.Run(() =>
         {
             var allTicks = _candles.SelectMany(candle =>
@@ -301,16 +299,10 @@ public class BackTestApiExecutor : ICommandExecutor
         var positionOpened = _positionsCache.Where(x => x.StatusPosition != StatusPosition.Close).ToList();
         if (positionOpened is not { Count: > 0 }) return;
         foreach (var position in positionOpened)
-        {
             if (position.TypePosition == TypeOperation.Buy)
-            {
                 HandlePositionBuy(position);
-            }
             else
-            {
                 HandlePositionSell(position);
-            }
-        }
     }
 
     private void HandleProfitPositions(Position position)
@@ -318,20 +310,21 @@ public class BackTestApiExecutor : ICommandExecutor
         var openPrice = position.OpenPrice;
         var closePrice = position.ClosePrice ?? _currentTick.Bid.GetValueOrDefault();
 
-        decimal pips = position.TypePosition == TypeOperation.Buy
+        var pips = position.TypePosition == TypeOperation.Buy
             ? closePrice - openPrice
             : openPrice - closePrice;
-        decimal pipsSpread = _currentTick.Spread.GetValueOrDefault();
-        
+        var pipsSpread = _currentTick.Spread.GetValueOrDefault();
+
         if (SymbolInfo.Category == Category.Forex)
         {
             var tickPrecision = SymbolInfo.Symbol.Contains("JPY") ? 2 : 4;
-            pips *=(decimal)Math.Pow(10,tickPrecision);
-            pipsSpread *=(decimal)Math.Pow(10,tickPrecision);
+            pips *= (decimal)Math.Pow(10, tickPrecision);
+            pipsSpread *= (decimal)Math.Pow(10, tickPrecision);
         }
-        decimal spreadValue = pipsSpread * (decimal)LotValueCalculator.PipValueStandard;
 
-        var profitValue = ((decimal)LotValueCalculator.PipValueStandard * pips)  - spreadValue;
+        var spreadValue = pipsSpread * (decimal)LotValueCalculator.PipValueStandard;
+
+        var profitValue = (decimal)LotValueCalculator.PipValueStandard * pips - spreadValue;
         position.Profit = profitValue;
     }
 

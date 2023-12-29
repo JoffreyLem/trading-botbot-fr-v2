@@ -103,7 +103,7 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var resultCommand = new GetStrategyResultRequestCommand
         {
-            Id = id,
+            Id = id
         };
 
         await _channelStrategyWriter.WriteAsync(resultCommand);
@@ -145,12 +145,12 @@ public class StrategyHandlerService : IStrategyHandlerService
 
     public async Task<BackTestDto> RunBackTest(string id, double balance, decimal minspread, decimal maxspread)
     {
-        var command = new RunStrategyBacktestCommand()
+        var command = new RunStrategyBacktestCommand
         {
             Id = id,
             Balance = balance,
             MinSpread = minspread,
-            MaxSpread = maxspread,
+            MaxSpread = maxspread
         };
 
         await _channelStrategyWriter.WriteAsync(command);
@@ -163,7 +163,7 @@ public class StrategyHandlerService : IStrategyHandlerService
     public async Task<BackTestDto> RunBacktestExternal(StrategyInitDto strategyInitDto, double balance,
         decimal minspread, decimal maxspread)
     {
-        var command = new RunStrategyBacktestExternalCommand()
+        var command = new RunStrategyBacktestExternalCommand
         {
             StrategyType = strategyInitDto.StrategyType,
             Symbol = strategyInitDto.Symbol,
@@ -173,22 +173,21 @@ public class StrategyHandlerService : IStrategyHandlerService
             MinSpread = minspread,
             MaxSpread = maxspread
         };
-        
+
         await _channelStrategyWriter.WriteAsync(command);
 
         var result = await command.ResponseSource.Task;
 
         return result.BackTestDto;
-        
     }
 
     public async Task<BackTestDto> GetBacktestInfo(string id)
     {
-        var command = new GetBacktestInfoCommand()
+        var command = new GetBacktestInfoCommand
         {
             Id = id
         };
-        
+
         await _channelStrategyWriter.WriteAsync(command);
 
         var result = await command.ResponseSource.Task;

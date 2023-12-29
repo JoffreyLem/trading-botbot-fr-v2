@@ -17,6 +17,9 @@ public interface IStrategyHandlerService
     Task SetCanRun(string id, bool value);
     Task<ListPositionsDto> GetOpenedPositions(string id);
     Task<BackTestDto> RunBackTest(string id, double balance, decimal minspread, decimal maxspread);
-    Task<BackTestDto> RunBacktestExternal(StrategyInitDto StrategyInitDto, double balance, decimal minspread, decimal maxspread);
+
+    Task<BackTestDto> RunBacktestExternal(StrategyInitDto StrategyInitDto, double balance, decimal minspread,
+        decimal maxspread);
+
     Task<BackTestDto> GetBacktestInfo(string id);
 }

@@ -81,7 +81,6 @@ public class CommandHandler
         }
     }
 
-  
 
     public async Task HandleStrategyCommand(ServiceCommandeBaseStrategyAbstract command)
     {
@@ -106,7 +105,8 @@ public class CommandHandler
                 _logger.Information("Strategy command processed {@Command}", closeStrategyCommand);
                 break;
             case GetStrategyPositionClosedCommand getStrategyPositionClosedCommand:
-                GetStrategyPositionClosed(getStrategyPositionClosedCommand, GetStrategyById(getStrategyPositionClosedCommand.Id));
+                GetStrategyPositionClosed(getStrategyPositionClosedCommand,
+                    GetStrategyById(getStrategyPositionClosedCommand.Id));
                 _logger.Information("Strategy command processed {@Command}", nameof(getStrategyPositionClosedCommand));
                 break;
             case GetStrategyResultRequestCommand getStrategyResultRequestCommand:
@@ -143,7 +143,6 @@ public class CommandHandler
         }
     }
 
-  
 
     private void GetAllStrategy(GetAllStrategyCommandRequest getAllStrategyCommandRequest)
     {
@@ -225,31 +224,31 @@ public class CommandHandler
     private async Task RunBacktestExternal(RunStrategyBacktestExternalCommand runStrategyBacktestExternalCommand)
     {
         var strategyImplementation = GenerateStrategy(runStrategyBacktestExternalCommand.StrategyType);
-        var backtest = new BackTest(strategyImplementation, this._apiHandlerBase, this._logger,
+        var backtest = new BackTest(strategyImplementation, _apiHandlerBase, _logger,
             runStrategyBacktestExternalCommand.Symbol, runStrategyBacktestExternalCommand.Timeframe,
             runStrategyBacktestExternalCommand.Timeframe2);
         await backtest.RunBackTest(runStrategyBacktestExternalCommand.Balance,
             runStrategyBacktestExternalCommand.MinSpread, runStrategyBacktestExternalCommand.MaxSpread);
-        
-        BacktestCommandResponse backtestCommandResponse = new BacktestCommandResponse()
+
+        var backtestCommandResponse = new BacktestCommandResponse
         {
-            BackTestDto = new BackTestDto()
+            BackTestDto = new BackTestDto
             {
                 IsBackTestRunning = backtest.BacktestRunning,
-                LastBackTestExecution =backtest.LastBacktestExecution.GetValueOrDefault(),
+                LastBackTestExecution = backtest.LastBacktestExecution.GetValueOrDefault(),
                 ResultBacktest = _mapper.Map<ResultDto>(backtest.Result)
             }
         };
         runStrategyBacktestExternalCommand.ResponseSource.SetResult(backtestCommandResponse);
-
     }
-    
+
     private async Task RunBackTest(RunStrategyBacktestCommand runStrategyBacktestCommand, StrategyBase strategy)
     {
-        await strategy.RunBackTest(runStrategyBacktestCommand.Balance,runStrategyBacktestCommand.MinSpread,runStrategyBacktestCommand.MaxSpread);
-        BacktestCommandResponse backtestCommandResponse = new BacktestCommandResponse()
+        await strategy.RunBackTest(runStrategyBacktestCommand.Balance, runStrategyBacktestCommand.MinSpread,
+            runStrategyBacktestCommand.MaxSpread);
+        var backtestCommandResponse = new BacktestCommandResponse
         {
-            BackTestDto = new BackTestDto()
+            BackTestDto = new BackTestDto
             {
                 IsBackTestRunning = strategy.BackTest.BacktestRunning,
                 LastBackTestExecution = strategy.BackTest.LastBacktestExecution.GetValueOrDefault(),
@@ -258,19 +257,19 @@ public class CommandHandler
         };
         runStrategyBacktestCommand.ResponseSource.SetResult(backtestCommandResponse);
     }
-    
+
     private async Task GetBacktestInfo(GetBacktestInfoCommand getBacktestInfoCommand, StrategyBase strategy)
     {
-        BacktestCommandResponse backtestCommandResponse = new BacktestCommandResponse()
+        var backtestCommandResponse = new BacktestCommandResponse
         {
-            BackTestDto = new BackTestDto()
+            BackTestDto = new BackTestDto
             {
                 IsBackTestRunning = strategy.BackTest.BacktestRunning,
                 LastBackTestExecution = strategy.BackTest.LastBacktestExecution.GetValueOrDefault(),
                 ResultBacktest = _mapper.Map<ResultDto>(strategy.BackTest.Result)
             }
         };
-        
+
         getBacktestInfoCommand.ResponseSource.SetResult(backtestCommandResponse);
     }
 
@@ -289,7 +288,6 @@ public class CommandHandler
 
     private void GetChart(GetChartCommandRequest chartCommandRequest, StrategyBase strategy)
     {
- 
         var candles = strategy.History.Select(x => new CandleDto
         {
             Open = (double)x.Open,
@@ -350,7 +348,6 @@ public class CommandHandler
 
     private void GetStrategyInfo(GetStrategyInfoCommand getStrategyInfoCommand, StrategyBase strategy)
     {
-     
         var strategyInfoDto = _mapper.Map<StrategyInfoDto>(strategy);
         getStrategyInfoCommand.ResponseSource.SetResult(new GetStrategyInfoCommandResponse
         {
@@ -378,17 +375,16 @@ public class CommandHandler
         });
     }
 
-    private void GetStrategyResult(GetStrategyResultRequestCommand strategyResultRequest,StrategyBase strategy)
+    private void GetStrategyResult(GetStrategyResultRequestCommand strategyResultRequest, StrategyBase strategy)
     {
         var data = _mapper.Map<ResultDto>(strategy.Results);
         strategyResultRequest.ResponseSource.SetResult(new GetStrategyResultCommandResponse
         {
             ResultDto = data
         });
-        
     }
 
-    private void GetOpenedPosition(GetOpenedPositionRequestCommand command,StrategyBase strategy)
+    private void GetOpenedPosition(GetOpenedPositionRequestCommand command, StrategyBase strategy)
     {
         var listPositionsDto = new ListPositionsDto();
 

@@ -10,7 +10,7 @@ public class BackTest
 {
     private StrategyBase? _strategyBase;
 
-    public bool BacktestRunning = false;
+    public bool BacktestRunning;
 
     public DateTime? LastBacktestExecution;
 
@@ -28,11 +28,11 @@ public class BackTest
     }
 
     private StrategyImplementationBase StrategyImplementationBase { get; }
-    private IApiHandler ApihandlerProxy { get; set; }
-    private ILogger Logger { get; set; }
-    private string Symbol { get; set; }
-    private Timeframe Timeframe { get; set; }
-    private Timeframe? Timeframe2 { get; set; }
+    private IApiHandler ApihandlerProxy { get; }
+    private ILogger Logger { get; }
+    private string Symbol { get; }
+    private Timeframe Timeframe { get; }
+    private Timeframe? Timeframe2 { get; }
 
     public async Task RunBackTest(double balance, decimal minSpread, decimal maxSpread)
     {
@@ -61,7 +61,7 @@ public class BackTest
     private void BackTestEnd(object? sender, EventArgs e)
     {
         BacktestRunning = false;
-        Result = new()
+        Result = new Modeles.Result
         {
             DrawndownMax = _strategyBase.Results.DrawndownMax,
             Drawndown = _strategyBase.Results.Drawndown,

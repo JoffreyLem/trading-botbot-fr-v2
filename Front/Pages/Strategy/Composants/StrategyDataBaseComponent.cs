@@ -35,7 +35,7 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
         {
             StrategyInfo = await _strategyService.GetStrategyInfo(StrategyId);
             Result = await _strategyService.GetResult(StrategyId);
-     
+
             CommandHandler.CandleEvent += CommandHandlerOnCandleEvent;
             CommandHandler.TickEvent += CommandHandlerOnTickEvent;
             CommandHandler.StrategyDisabled += CommandHandlerOnStrategyDisabled;
