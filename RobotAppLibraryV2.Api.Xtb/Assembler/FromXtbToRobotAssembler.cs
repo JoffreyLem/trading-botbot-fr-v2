@@ -12,6 +12,14 @@ public static class FromXtbToRobotAssembler
                 return Category.Forex;
             case "IND":
                 return Category.Indices;
+            case "STC":
+                return Category.Stock;
+            case "CMD":
+                return Category.Commodities;
+            case "CRT":
+                return Category.Crypto;
+            case "ETF":
+                return Category.ExchangeTradedFund;
             default:
                 return Category.Unknow;
         }

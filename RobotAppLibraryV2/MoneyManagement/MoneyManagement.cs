@@ -55,7 +55,7 @@ public class MoneyManagement : IMoneyManagement
             // Ajustement. 
             positionSize -= 0.01;
         }
-        else if (SymbolInfo.Category == Category.Indices)
+        else
         {
             var stopLossPoints = Math.Abs(entryPrice - stopLossPrice);
 

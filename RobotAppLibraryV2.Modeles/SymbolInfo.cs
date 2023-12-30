@@ -104,5 +104,9 @@ public enum Category
 {
     Forex,
     Indices,
-    Unknow
+    Stock,
+    Commodities,
+    Unknow,
+    Crypto,
+    ExchangeTradedFund
 }
