@@ -4,6 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TargetFramework>net7.0</TargetFramework>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,7 +18,17 @@
 
         <ProjectReference Include="..\RobotAppLibraryV2.ApiConnector\RobotAppLibraryV2.ApiConnector.csproj"/>
 
-        <ProjectReference Include="..\RobotAppLibraryV2.Modeles\RobotAppLibraryV2.Modeles.csproj"/>
+        <ProjectReference Include="..\RobotAppLibraryV2.ApiHandler\RobotAppLibraryV2.ApiHandler.csproj"/>
+
+        <ProjectReference Include="..\RobotAppLibraryV2.Exposition\RobotAppLibraryV2.Exposition.csproj"/>
+
+        <ProjectReference Include="..\RobotAppLibraryV2.Indicators\RobotAppLibraryV2.Indicators.csproj"/>
+
+        <ProjectReference Include="..\RobotAppLibraryV2.MoneyManagement\RobotAppLibraryV2.MoneyManagement.csproj"/>
+
+        <ProjectReference Include="..\RobotAppLibraryV2.PositionHandler\RobotAppLibraryV2.PositionHandler.csproj"/>
+
+        <ProjectReference Include="..\RobotAppLibraryV2.Results\RobotAppLibraryV2.Results.csproj"/>
 
         <ProjectReference Include="..\RobotAppLibraryV2.Utils\RobotAppLibraryV2.Utils.csproj"/>
 

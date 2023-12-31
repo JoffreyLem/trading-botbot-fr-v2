@@ -1,16 +1,16 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using RobotAppLibraryV2.ApiHandler.Interfaces;
-using RobotAppLibraryV2.Attributes;
+using RobotAppLibraryV2.ApiHandler;
 using RobotAppLibraryV2.CandleList;
+using RobotAppLibraryV2.Exposition;
 using RobotAppLibraryV2.Factory;
 using RobotAppLibraryV2.Indicators;
 using RobotAppLibraryV2.Indicators.Attributes;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Modeles.events;
 using RobotAppLibraryV2.MoneyManagement;
-using RobotAppLibraryV2.Positions;
-using RobotAppLibraryV2.Result;
+using RobotAppLibraryV2.PositionHandler;
+using RobotAppLibraryV2.Results;
 using Serilog;
 
 namespace RobotAppLibraryV2.Strategy;
@@ -68,9 +68,7 @@ public sealed class StrategyBase : IDisposable
     }
 
     public string StrategyName => StrategyImplementation.Name;
-
-    public string Version => StrategyImplementation.GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ??
-                             "NotDefined";
+    public string Version => StrategyImplementation.Version ?? "NotDefined";
 
     /// <summary>
     ///     Used for position definition comment.
@@ -118,7 +116,7 @@ public sealed class StrategyBase : IDisposable
     }
 
     public Position? PositionOpened => _positionHandler.PositionOpened;
-    public Modeles.Result Results => _strategyResult.Results;
+    public Result Results => _strategyResult.Results;
     public Tick LastPrice => History.LastPrice.GetValueOrDefault();
     public Candle? LastCandle => History.Count >= 2 ? History[^2] : null;
 
@@ -153,7 +151,6 @@ public sealed class StrategyBase : IDisposable
     public void Dispose()
     {
         _moneyManagement.Dispose();
-        History.Dispose();
         GC.SuppressFinalize(this);
     }
 

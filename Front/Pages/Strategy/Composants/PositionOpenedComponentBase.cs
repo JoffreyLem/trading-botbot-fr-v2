@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Components;
 using StrategyApi.StrategyBackgroundService;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Enum;
 using StrategyApi.StrategyBackgroundService.Events;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.Grids;

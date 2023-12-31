@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Dto.Enum;
 using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Pages;

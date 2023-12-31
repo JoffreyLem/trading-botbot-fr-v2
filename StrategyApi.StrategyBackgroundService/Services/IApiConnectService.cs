@@ -1,6 +1,6 @@
 using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
 using RobotAppLibraryV2.Modeles;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Dto.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 

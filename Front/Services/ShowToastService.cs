@@ -1,5 +1,5 @@
 using Front.Modeles;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Dto.Enum;
 
 namespace Front.Services;
 

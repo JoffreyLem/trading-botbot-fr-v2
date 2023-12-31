@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.Json;
 using RobotAppLibraryV2.Api.Xtb.Assembler;
 using RobotAppLibraryV2.Api.Xtb.Code;
@@ -17,32 +18,32 @@ public class XtbAdapter : IReponseAdapter
         CheckApiStatus(doc);
         var returnData = ReturnData(doc);
 
-        var symbolRecords = new List<SymbolInfo>();
+        var symbolRecords = new ConcurrentBag<SymbolInfo>();
 
-        if (returnData.HasValue && returnData.Value.ValueKind == JsonValueKind.Array)
-            foreach (var symbolElement in returnData.Value.EnumerateArray())
+        Parallel.ForEach(returnData.Value.EnumerateArray(), symbolElement =>
+        {
+            var symbolRecord = new SymbolInfo();
+            var categoryName = symbolElement.GetProperty("categoryName").GetString();
+
+            symbolRecord
+                .WithCategory(
+                    FromXtbToRobotAssembler.GetCategory(categoryName))
+                .WithContractSize(symbolElement.GetProperty("contractSize").GetInt64())
+                .WithCurrencyPair(symbolElement.GetProperty("currencyPair").GetBoolean())
+                .WithCurrency(symbolElement.GetProperty("currency").GetString())
+                .WithCurrencyProfit(symbolElement.GetProperty("currencyProfit").GetString())
+                .WithLotMax(symbolElement.GetProperty("lotMax").GetDouble())
+                .WithLotMin(symbolElement.GetProperty("lotMin").GetDouble())
+                .WithPrecision(symbolElement.GetProperty("precision").GetInt64())
+                .WithSymbol(symbolElement.GetProperty("symbol").GetString())
+                .WithTickSize(symbolElement.GetProperty("tickSize").GetDouble())
+                .WithLeverage(symbolElement.GetProperty("leverage").GetDouble());
+            lock (symbolRecords)
             {
-                var symbolRecord = new SymbolInfo();
-
-                symbolRecord
-                    .WithCategory(
-                        FromXtbToRobotAssembler.GetCategory(symbolElement.GetProperty("categoryName").GetString()))
-                    .WithContractSize(symbolElement.GetProperty("contractSize").GetInt64())
-                    .WithCurrencyPair(symbolElement.GetProperty("currencyPair").GetBoolean())
-                    .WithCurrency(symbolElement.GetProperty("currency").GetString())
-                    .WithCurrencyProfit(symbolElement.GetProperty("currencyProfit").GetString())
-                    .WithLotMax(symbolElement.GetProperty("lotMax").GetDouble())
-                    .WithLotMin(symbolElement.GetProperty("lotMin").GetDouble())
-                    .WithPrecision(symbolElement.GetProperty("precision").GetInt64())
-                    .WithSymbol(symbolElement.GetProperty("symbol").GetString())
-                    .WithTickSize(symbolElement.GetProperty("tickSize").GetDouble())
-                    .WithLeverage(symbolElement.GetProperty("leverage").GetDouble());
-
-
                 symbolRecords.Add(symbolRecord);
             }
-
-        return symbolRecords;
+        });
+        return symbolRecords.ToList();
     }
 
 

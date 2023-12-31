@@ -1,8 +1,7 @@
 using FluentAssertions;
 using Moq;
-using RobotAppLibraryV2.ApiHandler.Interfaces;
+using RobotAppLibraryV2.ApiHandler;
 using RobotAppLibraryV2.Modeles;
-using RobotAppLibraryV2.Positions;
 using Serilog;
 
 namespace RobotAppLibraryV2.Tests.Positions;
@@ -11,12 +10,12 @@ public class PositionsCommandTest
 {
     private readonly Mock<IApiHandler> _apiHandlerMock = new();
     private readonly Mock<ILogger> _logger = new();
-    private readonly PositionHandler _positionHandler;
+    private readonly PositionHandler.PositionHandler _positionHandler;
     private readonly Tick tickRef = new() { Bid = (decimal?)1.11247, Ask = (decimal?)1.112450 };
 
     public PositionsCommandTest()
     {
-        _logger.Setup(x => x.ForContext<PositionHandler>())
+        _logger.Setup(x => x.ForContext<PositionHandler.PositionHandler>())
             .Returns(_logger.Object);
 
         var symbolInfo = new SymbolInfo()
@@ -34,7 +33,8 @@ public class PositionsCommandTest
         _apiHandlerMock.Setup(api => api.GetTickPriceAsync(It.IsAny<string>()))
             .ReturnsAsync(tickRef);
 
-        _positionHandler = new PositionHandler(_logger.Object, _apiHandlerMock.Object, "EURUSD", "idTest");
+        _positionHandler =
+            new PositionHandler.PositionHandler(_logger.Object, _apiHandlerMock.Object, "EURUSD", "idTest");
     }
 
 
@@ -504,7 +504,7 @@ public class PositionsCommandTest
         apiHandlerMock.Setup(api => api.GetTickPriceAsync(It.IsAny<string>()))
             .ReturnsAsync(new Tick { Ask = 15924.1m, Bid = 15921.9m });
 
-        var positionHandler = new PositionHandler(_logger.Object, apiHandlerMock.Object, "DE30", "");
+        var positionHandler = new PositionHandler.PositionHandler(_logger.Object, apiHandlerMock.Object, "DE30", "");
 
 
         // act
@@ -541,7 +541,7 @@ public class PositionsCommandTest
         apiHandlerMock.Setup(api => api.GetTickPriceAsync(It.IsAny<string>()))
             .ReturnsAsync(new Tick { Ask = 15924.1m, Bid = 15921.9m });
 
-        var positionHandler = new PositionHandler(_logger.Object, apiHandlerMock.Object, "DE30", "");
+        var positionHandler = new PositionHandler.PositionHandler(_logger.Object, apiHandlerMock.Object, "DE30", "");
 
 
         // act
@@ -607,7 +607,7 @@ public class PositionsCommandTest
         apiHandlerMock.Setup(api => api.GetTickPriceAsync(It.IsAny<string>()))
             .ReturnsAsync(new Tick { Ask = 15924.1m, Bid = 15921.9m });
 
-        var positionHandler = new PositionHandler(_logger.Object, apiHandlerMock.Object, "DE30", "");
+        var positionHandler = new PositionHandler.PositionHandler(_logger.Object, apiHandlerMock.Object, "DE30", "");
 
 
         // act
@@ -644,7 +644,7 @@ public class PositionsCommandTest
         apiHandlerMock.Setup(api => api.GetTickPriceAsync(It.IsAny<string>()))
             .ReturnsAsync(new Tick { Ask = 15924.1m, Bid = 15921.9m });
 
-        var positionHandler = new PositionHandler(_logger.Object, apiHandlerMock.Object, "DE30", "");
+        var positionHandler = new PositionHandler.PositionHandler(_logger.Object, apiHandlerMock.Object, "DE30", "");
 
 
         // act

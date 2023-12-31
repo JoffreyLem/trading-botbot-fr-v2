@@ -3,18 +3,15 @@ using RobotAppLibraryV2.Api.Xtb;
 using RobotAppLibraryV2.ApiHandler;
 using RobotAppLibraryV2.ApiHandler.Handlers;
 using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
-using RobotAppLibraryV2.ApiHandler.Interfaces;
 using RobotAppLibraryV2.BackTest;
+using RobotAppLibraryV2.Exposition;
 using RobotAppLibraryV2.Factory;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Modeles.events;
 using RobotAppLibraryV2.Strategy;
+using RobotAppLibraryV2.StrategyDynamiqCompiler;
 using Serilog;
 using StrategyApi.Mail;
-using StrategyApi.Strategy.Main;
-using StrategyApi.Strategy.NewMain;
-using StrategyApi.Strategy.StrategySar;
-using StrategyApi.Strategy.Test;
 using StrategyApi.StrategyBackgroundService.Command;
 using StrategyApi.StrategyBackgroundService.Command.Api;
 using StrategyApi.StrategyBackgroundService.Command.Api.Request;
@@ -22,8 +19,8 @@ using StrategyApi.StrategyBackgroundService.Command.Api.Result;
 using StrategyApi.StrategyBackgroundService.Command.Strategy;
 using StrategyApi.StrategyBackgroundService.Command.Strategy.Request;
 using StrategyApi.StrategyBackgroundService.Command.Strategy.Response;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Enum;
 using StrategyApi.StrategyBackgroundService.Events;
 using StrategyApi.StrategyBackgroundService.Exception;
 
@@ -36,6 +33,8 @@ public class CommandHandler
     private readonly IMapper _mapper;
 
     private readonly Dictionary<string, StrategyBase> _strategyList = new();
+    private readonly Dictionary<string, CustomLoadContext> _strategyListContext = new();
+
     private IApiHandler? _apiHandlerBase;
 
     public CommandHandler(ILogger logger, IMapper mapper, IEmailService emailService)
@@ -196,9 +195,9 @@ public class CommandHandler
     {
         try
         {
-            var strategyImplementation = GenerateStrategy(initStrategyCommandDto.StrategyType);
+            var strategyImplementation = GenerateStrategy(initStrategyCommandDto.StrategyFileDto);
             var istrategySerrvice = new StrategyServiceFactory();
-            var strategyBase = new StrategyBase(strategyImplementation, initStrategyCommandDto.Symbol,
+            var strategyBase = new StrategyBase(strategyImplementation.Item1, initStrategyCommandDto.Symbol,
                 initStrategyCommandDto.Timeframe, initStrategyCommandDto.timeframe2, _apiHandlerBase, _logger,
                 istrategySerrvice);
 
@@ -212,6 +211,7 @@ public class CommandHandler
             strategyBase.StrategyEvent += StrategyBaseOnStrategyEvent;
 
             _strategyList.Add(strategyBase.Id, strategyBase);
+            _strategyListContext.Add(strategyBase.Id, strategyImplementation.Item2);
 
             initStrategyCommandDto.ResponseSource.SetResult(new AcknowledgementResponse());
         }
@@ -223,8 +223,8 @@ public class CommandHandler
 
     private async Task RunBacktestExternal(RunStrategyBacktestExternalCommand runStrategyBacktestExternalCommand)
     {
-        var strategyImplementation = GenerateStrategy(runStrategyBacktestExternalCommand.StrategyType);
-        var backtest = new BackTest(strategyImplementation, _apiHandlerBase, _logger,
+        var strategyImplementation = GenerateStrategy(runStrategyBacktestExternalCommand.StrategyFileDto);
+        var backtest = new BackTest(strategyImplementation.Item1, _apiHandlerBase, _logger,
             runStrategyBacktestExternalCommand.Symbol, runStrategyBacktestExternalCommand.Timeframe,
             runStrategyBacktestExternalCommand.Timeframe2);
         await backtest.RunBackTest(runStrategyBacktestExternalCommand.Balance,
@@ -239,6 +239,7 @@ public class CommandHandler
                 ResultBacktest = _mapper.Map<ResultDto>(backtest.Result)
             }
         };
+        strategyImplementation.Item2.Unload();
         runStrategyBacktestExternalCommand.ResponseSource.SetResult(backtestCommandResponse);
     }
 
@@ -360,6 +361,10 @@ public class CommandHandler
         await strategy.DisableStrategy(StrategyReasonDisabled.User);
         strategy.Dispose();
         _strategyList.Remove(closeStrategyCommand.Id);
+        _strategyListContext[closeStrategyCommand.Id].Unload();
+        _strategyListContext.Remove(closeStrategyCommand.Id);
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
         closeStrategyCommand.ResponseSource.SetResult(new AcknowledgementResponse());
     }
 
@@ -407,16 +412,25 @@ public class CommandHandler
     }
 
 
-    private StrategyImplementationBase GenerateStrategy(StrategyTypeEnum? type)
+    private (StrategyImplementationBase, CustomLoadContext) GenerateStrategy(StrategyFileDto strategyFileDto)
     {
-        return type switch
+        var sourceCode = StrategyDynamiqCompiler.ConvertByteToString(strategyFileDto.Data);
+        if (StrategyDynamiqCompiler.TryCompileSourceCode(sourceCode, out var compileResult, out var compiledBytes,
+                out var compileErrors))
         {
-            StrategyTypeEnum.Test => new TestStrategy(),
-            StrategyTypeEnum.Main => new MainStrategy(),
-            StrategyTypeEnum.Sar => new StrategySar(),
-            StrategyTypeEnum.Main2 => new NewMainStrategy(),
-            _ => throw new CommandException($"Strategy {type} non gérer")
-        };
+            var context = new CustomLoadContext();
+            using var stream = new MemoryStream(compiledBytes);
+            var assembly = context.LoadFromStream(stream);
+
+            var className = StrategyDynamiqCompiler.GetFirstClassName(sourceCode);
+
+            var type = assembly.GetType(className);
+            var instance = Activator.CreateInstance(type);
+
+            return ((StrategyImplementationBase)instance, context);
+        }
+
+        throw new System.Exception("");
     }
 
     #endregion

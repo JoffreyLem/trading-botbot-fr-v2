@@ -1,4 +1,4 @@
-using StrategyApi.StrategyBackgroundService.Dto.Services;
+using StrategyApi.StrategyBackgroundService.Dto;
 
 namespace StrategyApi.StrategyBackgroundService.Command.Strategy.Response;
 

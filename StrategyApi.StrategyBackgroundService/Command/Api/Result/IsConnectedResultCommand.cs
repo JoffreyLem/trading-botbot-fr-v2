@@ -1,4 +1,4 @@
-﻿using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+﻿using StrategyApi.StrategyBackgroundService.Dto.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Command.Api.Result;
 

@@ -1,7 +1,7 @@
 ﻿using Front.Services;
 using Microsoft.AspNetCore.Components;
 using RobotAppLibraryV2.Modeles;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
+using StrategyApi.StrategyBackgroundService.Dto;
 using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Pages.Strategy.Composants;
@@ -23,9 +23,11 @@ public class CreateStrategyComponentBase : ComponentBase, IDisposable
 
     [Inject] private ShowToastService ToastService { get; set; }
 
+    [Inject] private IStrategyGeneratorService StrategyGenerator { get; set; }
+
     [Parameter] public EventCallback StrategyFormUpdateRequested { get; set; }
 
-    protected List<string>? StrategyTypes { get; set; }
+    protected List<StrategyFileDto> StrategyTypes { get; set; }
     protected List<string>? TimeFrames { get; set; }
     protected List<SymbolInfo> Symbols { get; set; }
 
@@ -44,11 +46,11 @@ public class CreateStrategyComponentBase : ComponentBase, IDisposable
     {
         try
         {
-            StrategyTypes = await _apiStrategyService.GetListStrategy();
+            StrategyTypes = await StrategyGenerator.GetAllStrategyFile();
             TimeFrames = await _apiStrategyService.GetListTimeframes();
             Symbols = await _apiConnectService.GetAllSymbol();
         }
-        catch (Exception e)
+        catch
         {
             ToastService.ShowToastError("Can't initialize strategy form.");
         }
@@ -95,8 +97,7 @@ public class CreateStrategyComponentBase : ComponentBase, IDisposable
         try
         {
             OnLoading = true;
-            await _apiStrategyService.InitStrategy(StrategyInitDto.StrategyType, StrategyInitDto.Symbol,
-                StrategyInitDto.Timeframe, StrategyInitDto.Timeframe2);
+            await _apiStrategyService.InitStrategy(StrategyInitDto);
             ToastService.ShowToastSuccess("Strategy initialisée");
             await NotifyParentToUpdate();
         }

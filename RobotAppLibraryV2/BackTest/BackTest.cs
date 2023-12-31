@@ -1,4 +1,5 @@
-using RobotAppLibraryV2.ApiHandler.Interfaces;
+using RobotAppLibraryV2.ApiHandler;
+using RobotAppLibraryV2.Exposition;
 using RobotAppLibraryV2.Factory;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Strategy;
@@ -14,7 +15,7 @@ public class BackTest
 
     public DateTime? LastBacktestExecution;
 
-    public Modeles.Result? Result;
+    public Result? Result;
 
     public BackTest(StrategyImplementationBase strategyImplementationBase, IApiHandler apihandlerProxy, ILogger logger,
         string symbol, Timeframe timeframe, Timeframe? timeframe2)
@@ -61,7 +62,7 @@ public class BackTest
     private void BackTestEnd(object? sender, EventArgs e)
     {
         BacktestRunning = false;
-        Result = new Modeles.Result
+        Result = new Result
         {
             DrawndownMax = _strategyBase.Results.DrawndownMax,
             Drawndown = _strategyBase.Results.Drawndown,

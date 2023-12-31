@@ -1,9 +1,9 @@
-using RobotAppLibraryV2.ApiHandler.Interfaces;
+using RobotAppLibraryV2.ApiHandler;
 using RobotAppLibraryV2.CandleList;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.MoneyManagement;
-using RobotAppLibraryV2.Positions;
-using RobotAppLibraryV2.Result;
+using RobotAppLibraryV2.PositionHandler;
+using RobotAppLibraryV2.Results;
 using Serilog;
 
 namespace RobotAppLibraryV2.Factory;
@@ -39,7 +39,7 @@ public class StrategyServiceFactory : IStrategyServiceFactory
     public IPositionHandler GetPositionHandler(ILogger logger, IApiHandler handler, string symbol,
         string positionReferene)
     {
-        return new PositionHandler(logger, handler, symbol, positionReferene);
+        return new PositionHandler.PositionHandler(logger, handler, symbol, positionReferene);
     }
 
     public ICandleList GetHistory(ILogger logger, IApiHandler apiHandler, string symbol, Timeframe timeframe)

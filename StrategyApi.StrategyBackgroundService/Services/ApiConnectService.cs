@@ -4,7 +4,7 @@ using RobotAppLibraryV2.Modeles;
 using Serilog;
 using StrategyApi.StrategyBackgroundService.Command.Api;
 using StrategyApi.StrategyBackgroundService.Command.Api.Request;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Dto.Enum;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 

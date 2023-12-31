@@ -1,13 +1,11 @@
-using RobotAppLibraryV2.Modeles;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Dto;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 
 public interface IStrategyHandlerService
 {
-    Task InitStrategy(StrategyTypeEnum strategyType, string symbol, Timeframe timeframe, Timeframe? timeframe2);
-    Task<List<string>> GetListStrategy();
+    Task InitStrategy(StrategyInitDto strategyInitDto);
+
     Task<List<string>> GetListTimeframes();
     Task<List<StrategyInfoDto>> GetAllStrategy();
     Task CloseStrategy(string id);

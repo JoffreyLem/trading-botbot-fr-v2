@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
+using StrategyApi.StrategyBackgroundService.Dto;
 
 namespace Front.Pages.Strategy.Composants;
 

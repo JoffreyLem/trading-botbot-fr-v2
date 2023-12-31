@@ -1,11 +1,9 @@
-﻿using RobotAppLibraryV2.Attributes;
+﻿using RobotAppLibraryV2.Exposition;
 using RobotAppLibraryV2.Indicators.Indicator;
 using RobotAppLibraryV2.Modeles;
-using RobotAppLibraryV2.Strategy;
 
 namespace StrategyApi.Strategy.StrategySar;
 
-[VersionStrategy("pre-1")]
 public class StrategySar : StrategyImplementationBase
 {
     public bool CanOpen;
@@ -31,7 +29,9 @@ public class StrategySar : StrategyImplementationBase
     public ForceIndex ForceIndex { get; set; } = new();
 
 
-    protected override async void Run()
+    public override string? Version => "pre-1";
+
+    public override async void Run()
     {
         Logger.Information("Can Open : {canOpen}", CanOpen);
         var beforesar = SarIndicator?[^2];
@@ -77,7 +77,7 @@ public class StrategySar : StrategyImplementationBase
     }
 
 
-    protected override bool ShouldUpdatePosition(Position position)
+    public override bool ShouldUpdatePosition(Position position)
     {
         var sar = SarIndicator?.Last();
         if (position.TypePosition == TypeOperation.Buy)
@@ -98,7 +98,7 @@ public class StrategySar : StrategyImplementationBase
     }
 
 
-    protected override bool ShouldClosePosition(Position position)
+    public override bool ShouldClosePosition(Position position)
     {
         var sar = SarIndicator.Last();
         var heiki = HeikiAshi?[^2];

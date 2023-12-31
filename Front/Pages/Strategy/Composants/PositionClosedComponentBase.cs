@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Components;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
+using StrategyApi.StrategyBackgroundService.Dto;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.Grids;
 
