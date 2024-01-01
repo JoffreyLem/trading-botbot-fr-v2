@@ -1,4 +1,4 @@
-namespace RobotAppLibraryV2.ApiHandler.Xtb.errors;
+namespace RobotAppLibraryV2.Api.Xtb.Code;
 
 public class ERR_CODE
 {

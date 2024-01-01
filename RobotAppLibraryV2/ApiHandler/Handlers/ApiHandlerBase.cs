@@ -10,8 +10,8 @@ public abstract class ApiHandlerBase : IApiHandler
 {
     protected readonly List<Position?> CachePosition = new();
     protected readonly ILogger Logger;
-    public DateTime LastPing;
     private Timer _pingTimer;
+    public DateTime LastPing;
 
     public ApiHandlerBase(ICommandExecutor commandExecutor, ILogger logger)
     {

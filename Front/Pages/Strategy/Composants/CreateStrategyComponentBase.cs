@@ -4,16 +4,18 @@ using RobotAppLibraryV2.Modeles;
 using StrategyApi.StrategyBackgroundService.Dto.Services;
 using StrategyApi.StrategyBackgroundService.Services;
 
-namespace Front.Composants.Strategy;
+namespace Front.Pages.Strategy.Composants;
 
-public class StrategiInitFormBase : ComponentBase, IDisposable
+public class CreateStrategyComponentBase : ComponentBase, IDisposable
 {
+    protected readonly StrategyInitDto StrategyInitDto = new();
     private bool _disposed;
+    private string actionType;
 
-    protected StrategyInitDto _strategyInitDto = new();
-    protected bool Visibility { get; set; }
-
+    protected bool ShowForm;
     protected bool OnLoading { get; set; }
+
+    protected ResultDto? BacktestResult { get; set; }
 
     [Inject] private IStrategyHandlerService _apiStrategyService { get; set; }
 
@@ -52,13 +54,49 @@ public class StrategiInitFormBase : ComponentBase, IDisposable
         }
     }
 
-    protected async Task InitStrategy()
+
+    protected void OnSubmitClicked()
+    {
+        actionType = "submit";
+    }
+
+    protected void OnBacktestClicked()
+    {
+        actionType = "backtest";
+    }
+
+    protected async Task ValidateForm()
+    {
+        if (actionType == "submit")
+            await InitStrategy();
+        else if (actionType == "backtest") await RunBacktest();
+    }
+
+    private async Task RunBacktest()
+    {
+        try
+        {
+            // TODO : Refacto pour harmoniser avec l'autre backtest
+            OnLoading = true;
+            BacktestResult = (await _apiStrategyService.RunBacktestExternal(StrategyInitDto, 1000, 1, 1))
+                .ResultBacktest;
+        }
+        catch
+        {
+            ToastService.ShowToastError("Can't run backtest");
+        }
+
+        OnLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task InitStrategy()
     {
         try
         {
             OnLoading = true;
-            await _apiStrategyService.InitStrategy(_strategyInitDto.StrategyType, _strategyInitDto.Symbol,
-                _strategyInitDto.Timeframe, _strategyInitDto.Timeframe2);
+            await _apiStrategyService.InitStrategy(StrategyInitDto.StrategyType, StrategyInitDto.Symbol,
+                StrategyInitDto.Timeframe, StrategyInitDto.Timeframe2);
             ToastService.ShowToastSuccess("Strategy initialisée");
             await NotifyParentToUpdate();
         }
@@ -69,7 +107,8 @@ public class StrategiInitFormBase : ComponentBase, IDisposable
         finally
         {
             OnLoading = false;
-            Visibility = false;
+            ShowForm = false;
+            StateHasChanged();
         }
     }
 
@@ -89,6 +128,6 @@ public class StrategiInitFormBase : ComponentBase, IDisposable
 
     protected void CreateStrategy()
     {
-        Visibility = true;
+        ShowForm = !ShowForm;
     }
 }

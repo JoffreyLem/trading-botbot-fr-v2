@@ -24,8 +24,8 @@ public sealed class StrategyBase : IDisposable
     private readonly IMoneyManagement _moneyManagement;
     private readonly IPositionHandler _positionHandler;
     private readonly IStrategyResult _strategyResult;
-    public readonly ICandleList History;
     public readonly BackTest.BackTest BackTest;
+    public readonly ICandleList History;
 
     public StrategyBase(
         StrategyImplementationBase strategyImplementationBase,
@@ -68,10 +68,10 @@ public sealed class StrategyBase : IDisposable
     }
 
     public string StrategyName => StrategyImplementation.Name;
-    public string Version => GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ?? "NotDefined";
 
+    public string Version => StrategyImplementation.GetType().GetCustomAttribute<VersionStrategyAttribute>()?.Version ??
+                             "NotDefined";
 
-    
     /// <summary>
     ///     Used for position definition comment.
     /// </summary>
@@ -108,7 +108,7 @@ public sealed class StrategyBase : IDisposable
         get => StrategyImplementation.CloseOnTick;
         set => StrategyImplementation.CloseOnTick = value;
     }
-    
+
     public IReadOnlyCollection<Position> PositionsClosed => _strategyResult.Positions;
 
     public bool SecureControlPosition
@@ -157,7 +157,7 @@ public sealed class StrategyBase : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public event EventHandler<RobotEvent<StrategyReasonDisabled>>? StrategyDisabledEvent;
+    public event EventHandler<RobotEvent<string>>? StrategyDisabledEvent;
     public event EventHandler<RobotEvent<Tick>>? TickEvent;
     public event EventHandler<RobotEvent<Candle>>? CandleEvent;
     public event EventHandler<RobotEvent<Position>>? PositionOpenedEvent;
@@ -381,7 +381,9 @@ public sealed class StrategyBase : IDisposable
         }
         finally
         {
-            StrategyDisabledEvent?.Invoke(this, new RobotEvent<StrategyReasonDisabled>(strategyReasonDisabled, Id));
+            var disableMessage =
+                $"The strategy {StrategyName}-{Symbol}-{Timeframe} have been disabled, cause of {strategyReasonDisabled}";
+            StrategyDisabledEvent?.Invoke(this, new RobotEvent<string>(disableMessage, Id));
         }
     }
 

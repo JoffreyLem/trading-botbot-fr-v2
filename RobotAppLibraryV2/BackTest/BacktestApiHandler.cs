@@ -13,7 +13,7 @@ public class BacktestApiHandler : ApiHandlerBase
 
     public async Task StartBacktest()
     {
-        await (base.CommandExecutor as BackTestApiExecutor)?.StartBackTest();
+        await (CommandExecutor as BackTestApiExecutor)?.StartBackTest()!;
     }
 
     public override async Task<Position> OpenPositionAsync(Position position, decimal price)
@@ -22,8 +22,8 @@ public class BacktestApiHandler : ApiHandlerBase
         {
             var pos = await CommandExecutor.ExecuteOpenTradeCommand(position, price);
             position.Order = pos.Order;
-            CachePosition.Add(position);
-            OnPositionOpenedEvent(position);
+            CachePosition.Add(pos);
+            OnPositionOpenedEvent(pos);
             return pos;
         }
         catch (Exception e)
@@ -51,8 +51,8 @@ public class BacktestApiHandler : ApiHandlerBase
     {
         try
         {
-            await CommandExecutor.ExecuteCloseTradeCommand(position, price);
-            OnPositionClosedEvent(position);
+            var pos = await CommandExecutor.ExecuteCloseTradeCommand(position, price);
+            OnPositionClosedEvent(pos);
         }
         catch (Exception e)
         {

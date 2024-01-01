@@ -1,7 +1,6 @@
 using FluentAssertions;
 using RobotAppLibraryV2.Indicators.Indicator;
 using RobotAppLibraryV2.Modeles;
-using RobotAppLibraryV2.Utils;
 
 namespace RobotAppLibraryV2.Tests.Indicators;
 

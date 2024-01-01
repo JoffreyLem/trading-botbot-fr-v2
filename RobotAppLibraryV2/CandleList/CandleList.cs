@@ -79,7 +79,7 @@ public class CandleList : List<Candle>, ICandleList, IDisposable
             LastPrice = tick;
             var candleStartTimeTick = CalculateCandleStartTime(tick.Date);
             var minutes = timeframe.GetMinuteFromTimeframe();
-            
+
             var lastDateToVerify = candleStartTimeTick.Date.AddMinutes(minutes);
 
             if (Count == 0 || this.Last().Date != candleStartTimeTick)
@@ -91,7 +91,6 @@ public class CandleList : List<Candle>, ICandleList, IDisposable
             }
             else
             {
-                
                 UpdateLast(tick);
                 OnOnTickEvent(tick);
             }
@@ -150,34 +149,28 @@ public class CandleList : List<Candle>, ICandleList, IDisposable
 
     private DateTime CalculateCandleStartTime(DateTime tickTime)
     {
-        int totalMinutesTimeframe = timeframe.GetMinuteFromTimeframe();
-        
-        if (timeframe == Timeframe.Monthly) 
+        var totalMinutesTimeframe = timeframe.GetMinuteFromTimeframe();
+
+        if (timeframe == Timeframe.Monthly) return new DateTime(tickTime.Year, tickTime.Month, 1, 0, 0, 0);
+
+        if (timeframe == Timeframe.Weekly)
         {
-            return new DateTime(tickTime.Year, tickTime.Month, 1, 0, 0, 0);
-        }
-        
-        if (timeframe == Timeframe.Weekly) 
-        {
-            int dayOfWeek = (int)tickTime.DayOfWeek;
-            int daysToSubtract = (dayOfWeek == 0) ? 6 : dayOfWeek - 1; 
-            DateTime startOfWeek = tickTime.Date.AddDays(-daysToSubtract);
+            var dayOfWeek = (int)tickTime.DayOfWeek;
+            var daysToSubtract = dayOfWeek == 0 ? 6 : dayOfWeek - 1;
+            var startOfWeek = tickTime.Date.AddDays(-daysToSubtract);
             return new DateTime(startOfWeek.Year, startOfWeek.Month, startOfWeek.Day, 0, 0, 0);
         }
-        
-        if (timeframe == Timeframe.Daily) 
-        {
-            return new DateTime(tickTime.Year, tickTime.Month, tickTime.Day, 0, 0, 0,DateTimeKind.Utc);
-        }
 
-        int tickTimeTotalMinutes = tickTime.Hour * 60 + tickTime.Minute;
+        if (timeframe == Timeframe.Daily)
+            return new DateTime(tickTime.Year, tickTime.Month, tickTime.Day, 0, 0, 0, DateTimeKind.Utc);
 
-        int candleStartTotalMinutes = (tickTimeTotalMinutes / totalMinutesTimeframe) * totalMinutesTimeframe;
+        var tickTimeTotalMinutes = tickTime.Hour * 60 + tickTime.Minute;
 
-        int candleStartHour = candleStartTotalMinutes / 60;
-        int candleStartMinute = candleStartTotalMinutes % 60;
+        var candleStartTotalMinutes = tickTimeTotalMinutes / totalMinutesTimeframe * totalMinutesTimeframe;
+
+        var candleStartHour = candleStartTotalMinutes / 60;
+        var candleStartMinute = candleStartTotalMinutes % 60;
 
         return new DateTime(tickTime.Year, tickTime.Month, tickTime.Day, candleStartHour, candleStartMinute, 0);
     }
-
 }

@@ -1,8 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
 using RobotAppLibraryV2.ApiConnector.Interfaces;
-using RobotAppLibraryV2.ApiConnector.Tcp;
-using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 using RobotAppLibraryV2.ApiHandler.Exception;
 using RobotAppLibraryV2.ApiHandler.Handlers;
 using RobotAppLibraryV2.Modeles;
@@ -23,7 +21,7 @@ public class ApiHandlerBaseTest
         _logger.Setup(x => x.ForContext<ApiHandlerBase>())
             .Returns(_logger.Object);
 
-     
+
         apiHandlerBase = new Mock<ApiHandlerBase>(MockBehavior.Default, _commandExecutor.Object, _logger.Object)
         {
             CallBase = true
@@ -77,7 +75,7 @@ public class ApiHandlerBaseTest
         await apiHandlerBase.Object.ConnectAsync(new Credentials());
 
         // Assert
-        
+
         _commandExecutor.Verify(x => x.ExecuteLoginCommand(It.IsAny<Credentials>()), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteSubscribeBalanceCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteTradesCommandStreaming(), Times.Once);
@@ -85,6 +83,22 @@ public class ApiHandlerBaseTest
         _commandExecutor.Verify(x => x.ExecuteSubscribeProfitsCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteSubscribeNewsCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecutePingCommand(), Times.Between(0, 1, Range.Inclusive));
+    }
+
+    #endregion
+
+
+    #region OnDisconnected
+
+    [Fact]
+    public void Test_OnDisconnectedEvent()
+    {
+        var caller = false;
+        apiHandlerBase.Object.Disconnected += (sender, args) => caller = true;
+
+        _commandExecutor.Raise(x => x.Disconnected += null, this, EventArgs.Empty);
+
+        caller.Should().BeTrue();
     }
 
     #endregion
@@ -188,7 +202,7 @@ public class ApiHandlerBaseTest
         await apiHandlerBase.Object.PingAsync();
 
         // Assert
-        _logger.Verify(x=>x.Error(It.IsAny<Exception>(),It.IsAny<string>()),Times.Exactly(1));
+        _logger.Verify(x => x.Error(It.IsAny<Exception>(), It.IsAny<string>()), Times.Exactly(1));
     }
 
     #endregion
@@ -824,23 +838,6 @@ public class ApiHandlerBaseTest
 
     #endregion
 
-
-    #region OnDisconnected
-
-    [Fact]
-    public void Test_OnDisconnectedEvent()
-    {
-        var caller = false;
-        apiHandlerBase.Object.Disconnected += (sender, args) => caller = true;
-
-        _commandExecutor.Raise(x => x.Disconnected += null, this, EventArgs.Empty);
-
-        caller.Should().BeTrue();
-    }
-
-
-    #endregion
-
     #region Position state event
 
     // [Fact]
@@ -898,14 +895,14 @@ public class ApiHandlerBaseTest
             StrategyId = "1",
             Id = "1"
         };
-        
+
         _commandExecutor.Setup(x => x.ExecuteOpenTradeCommand(It.IsAny<Position>(), It.IsAny<decimal>()))
-            .ReturnsAsync(new Position()
+            .ReturnsAsync(new Position
             {
                 StrategyId = "1",
                 Id = "1"
             });
-        
+
         await apiHandlerBase.Object.OpenPositionAsync(new Position(), 1);
 
 
@@ -962,12 +959,12 @@ public class ApiHandlerBaseTest
         };
 
         _commandExecutor.Setup(x => x.ExecuteOpenTradeCommand(It.IsAny<Position>(), It.IsAny<decimal>()))
-            .ReturnsAsync(new Position()
+            .ReturnsAsync(new Position
             {
                 StrategyId = "1",
                 Id = "1"
             });
-        
+
         await apiHandlerBase.Object.OpenPositionAsync(new Position(), 1);
 
 
@@ -980,9 +977,8 @@ public class ApiHandlerBaseTest
             Id = "1"
         };
         _commandExecutor.Raise(x => x.TradeRecordReceived += null, position1);
-        
-        
-        
+
+
         // Act
         _commandExecutor.Raise(x => x.TradeRecordReceived += null, position);
 

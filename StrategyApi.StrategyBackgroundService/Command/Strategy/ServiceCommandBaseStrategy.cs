@@ -1,6 +1,6 @@
 namespace StrategyApi.StrategyBackgroundService.Command.Strategy;
 
-public class ServiceCommandBaseStrategy<T> : ServiceCommandeBaseStrategyAbstract where T : ServiceCommandResponse
+public class ServiceCommandBaseStrategy<T> : ServiceCommandeBaseStrategyAbstract where T : ServiceCommandResponseBase
 {
     public TaskCompletionSource<T> ResponseSource { get; } = new();
 

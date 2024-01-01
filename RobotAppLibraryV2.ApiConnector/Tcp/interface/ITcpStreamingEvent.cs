@@ -2,7 +2,7 @@
 
 namespace RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 
-public interface ITcpStreamingEvent 
+public interface ITcpStreamingEvent
 {
     public event Action<Tick>? TickRecordReceived;
 

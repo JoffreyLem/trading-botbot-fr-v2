@@ -4,5 +4,4 @@ namespace StrategyApi.StrategyBackgroundService.Command.Strategy.Request;
 
 public class GetStrategyResultRequestCommand : ServiceCommandBaseStrategy<GetStrategyResultCommandResponse>
 {
-    public bool IsBacktest { get; set; }
 }

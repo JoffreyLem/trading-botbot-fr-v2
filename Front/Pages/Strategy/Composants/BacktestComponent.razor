@@ -9,9 +9,9 @@
         <SfTextBox ID="BacktestRun" Value="@BackTestDto?.LastBackTestExecution.ToString()" Readonly="true"/>
     </div>
     <div>
-        <ResultComponent BacktestResultComponent="true"></ResultComponent>
+        <ResultComponent ResultData="BackTestDto.ResultBacktest"></ResultComponent>
     </div>
-        <div id="container">
-                            <SfSpinner @bind-Visible="@OnLoading"/>
-                        </div>
+    <div id="container">
+        <SfSpinner @bind-Visible="@OnLoading"/>
+    </div>
 </div>

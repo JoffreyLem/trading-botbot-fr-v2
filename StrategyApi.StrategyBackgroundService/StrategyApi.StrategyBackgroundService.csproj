@@ -19,7 +19,7 @@
         <ProjectReference Include="..\RobotAppLibraryV2\RobotAppLibraryV2.csproj"/>
         <ProjectReference Include="..\StrategyApi.Mail\StrategyApi.Mail.csproj"/>
         <ProjectReference Include="..\Strategy\StrategyApi.Strategy.Main\StrategyApi.Strategy.Main.csproj"/>
-        <ProjectReference Include="..\Strategy\StrategyApi.Strategy.NewMain\StrategyApi.Strategy.NewMain.csproj" />
+        <ProjectReference Include="..\Strategy\StrategyApi.Strategy.NewMain\StrategyApi.Strategy.NewMain.csproj"/>
         <ProjectReference Include="..\Strategy\StrategyApi.Strategy.StrategySar\StrategyApi.Strategy.StrategySar.csproj"/>
         <ProjectReference Include="..\Strategy\StrategyApi.Strategy.Test\StrategyApi.Strategy.Test.csproj"/>
     </ItemGroup>

@@ -7,18 +7,18 @@ using StrategyApi.StrategyBackgroundService.Events;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.Buttons;
 
-namespace Front.Composants.Strategy;
+namespace Front.Pages.Strategy.Composants;
 
 public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
 {
     protected bool OnLoading;
 
     protected StrategyInfoDto StrategyInfo = new();
-    protected CandleDto LastCandle { get; set; } = new();
-    protected TickDto LastTick { get; set; }
     [Inject] protected IStrategyHandlerService _strategyService { get; set; }
     [Inject] private ShowToastService ToastService { get; set; }
     [Parameter] public EventCallback StrategyCloseRequested { get; set; }
+    protected ResultDto Result { get; set; } = new();
+
     protected int SelectedTab { get; set; } = 0;
 
     public void Dispose()
@@ -34,12 +34,12 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
         try
         {
             StrategyInfo = await _strategyService.GetStrategyInfo(StrategyId);
-            LastTick = StrategyInfo.LastTick;
-            LastCandle = StrategyInfo.LastCandle;
+            Result = await _strategyService.GetResult(StrategyId);
 
             CommandHandler.CandleEvent += CommandHandlerOnCandleEvent;
             CommandHandler.TickEvent += CommandHandlerOnTickEvent;
             CommandHandler.StrategyDisabled += CommandHandlerOnStrategyDisabled;
+            StateHasChanged();
         }
         catch (Exception)
         {
@@ -61,21 +61,13 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
     private void CommandHandlerOnTickEvent(object? sender, BackGroundServiceEvent<TickDto> e)
     {
         if (e.Id == StrategyId)
-            InvokeAsync(() =>
-            {
-                LastTick = e.EventField;
-                StateHasChanged();
-            });
+            InvokeAsync(StateHasChanged);
     }
 
     private void CommandHandlerOnCandleEvent(object? sender, BackGroundServiceEvent<CandleDto> e)
     {
         if (e.Id == StrategyId)
-            InvokeAsync(() =>
-            {
-                LastCandle = e.EventField;
-                StateHasChanged();
-            });
+            InvokeAsync(StateHasChanged);
     }
 
 

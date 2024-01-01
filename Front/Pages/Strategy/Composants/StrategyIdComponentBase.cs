@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace Front.Composants.Strategy;
+namespace Front.Pages.Strategy.Composants;
 
 public class StrategyIdComponentBase : ComponentBase
 {

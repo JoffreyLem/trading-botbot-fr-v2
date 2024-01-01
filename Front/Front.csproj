@@ -23,14 +23,14 @@
         <PackageReference Include="AutoMapper" Version="12.0.1"/>
         <PackageReference Include="DotNetEnv" Version="2.5.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.11"/>
-        <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="24.1.41" />
-        <PackageReference Include="Syncfusion.Blazor.Grid" Version="24.1.41" />
-        <PackageReference Include="Syncfusion.Blazor.Inputs" Version="24.1.41" />
-        <PackageReference Include="Syncfusion.Blazor.Notifications" Version="24.1.41" />
-        <PackageReference Include="Syncfusion.Blazor.Buttons" Version="24.1.41" />
-        <PackageReference Include="Syncfusion.Blazor.Navigations" Version="24.1.41" />
-        <PackageReference Include="Syncfusion.Blazor.Popups" Version="24.1.41" />
-        <PackageReference Include="Syncfusion.Blazor.Themes" Version="24.1.41" />
+        <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="24.1.41"/>
+        <PackageReference Include="Syncfusion.Blazor.Grid" Version="24.1.41"/>
+        <PackageReference Include="Syncfusion.Blazor.Inputs" Version="24.1.41"/>
+        <PackageReference Include="Syncfusion.Blazor.Notifications" Version="24.1.41"/>
+        <PackageReference Include="Syncfusion.Blazor.Buttons" Version="24.1.41"/>
+        <PackageReference Include="Syncfusion.Blazor.Navigations" Version="24.1.41"/>
+        <PackageReference Include="Syncfusion.Blazor.Popups" Version="24.1.41"/>
+        <PackageReference Include="Syncfusion.Blazor.Themes" Version="24.1.41"/>
         <PackageReference Include="Serilog" Version="3.0.1"/>
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0"/>
         <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0"/>
@@ -64,32 +64,35 @@
         <Compile Update="Composants\ToastCustomBase.cs">
             <DependentUpon>ToastCustomComponent.razor</DependentUpon>
         </Compile>
-        <Compile Update="Composants\Strategy\StrategiInitFormBase.cs">
-            <DependentUpon>StrategyInitFormComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\Strategy\StrategyDataBaseComponent.cs">
-            <DependentUpon>StrategyDataComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\Strategy\PositionClosedComponentBase.cs">
-            <DependentUpon>PositionClosedComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\Strategy\PositionOpenedComponentBase.cs">
-            <DependentUpon>PositionOpenedComponent.razor</DependentUpon>
-        </Compile>
-        <Compile Update="Composants\Strategy\ResultComponentBase.cs">
-            <DependentUpon>ResultComponent.razor</DependentUpon>
-        </Compile>
         <Compile Update="Composants\HeathCheckComponentBase.cs">
             <DependentUpon>HealthCheckComponent.razor</DependentUpon>
         </Compile>
-        <Compile Update="Composants\Strategy\AllStrategyComponentBase.cs">
+        <Compile Update="Pages\Api\ApiIndexBase.cs">
+            <DependentUpon>ApiIndex.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Backtest\BacktestIndexPageBase.cs">
+            <DependentUpon>BacktestIndex.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\AllStrategyComponentBase.cs">
             <DependentUpon>AllStrategyComponent.razor</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Api\ApiComponentBase.cs">
-            <DependentUpon>ApiComponent.razor</DependentUpon>
+        <Compile Update="Pages\Strategy\Composants\BacktestComponentBase.cs">
+            <DependentUpon>BacktestComponent.razor</DependentUpon>
         </Compile>
-        <Compile Update="Composants\Strategy\BacktestComponentBase.cs">
-          <DependentUpon>BacktestComponent.razor</DependentUpon>
+        <Compile Update="Pages\Strategy\Composants\CreateStrategyComponentBase.cs">
+            <DependentUpon>CreateStrategyComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\PositionClosedComponentBase.cs">
+            <DependentUpon>PositionClosedComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\PositionOpenedComponentBase.cs">
+            <DependentUpon>PositionOpenedComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\ResultComponentBase.cs">
+            <DependentUpon>ResultComponent.razor</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Strategy\Composants\StrategyDataBaseComponent.cs">
+            <DependentUpon>StrategyDataComponent.razor</DependentUpon>
         </Compile>
     </ItemGroup>
 

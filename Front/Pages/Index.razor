@@ -1,11 +1,12 @@
 ﻿@page "/"
 @inherits IndexBase
+@inject NavigationManager NavigationManager
 
 
 <div class="container-fluid">
     @if (IsConnected)
     {
-        <AllStrategyComponent/>
+        NavigationManager.NavigateTo("/Strategy");
     }
     else
     {

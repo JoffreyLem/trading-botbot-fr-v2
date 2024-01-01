@@ -2,7 +2,7 @@
 
 namespace StrategyApi.StrategyBackgroundService.Command.Strategy.Response;
 
-public class GetChartCommandResponse : ServiceCommandResponse
+public class GetChartCommandResponse : ServiceCommandResponseBase
 {
     public List<CandleDto> CandleDtos { get; set; }
 }

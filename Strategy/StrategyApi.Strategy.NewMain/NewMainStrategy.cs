@@ -8,7 +8,12 @@ namespace StrategyApi.Strategy.NewMain;
 
 public class NewMainStrategy : StrategyImplementationBase
 {
-    
+    public NewMainStrategy()
+    {
+        UpdateOnTick = false;
+        CloseOnTick = false;
+    }
+
     public PivotPoint PivotPoint { get; set; } = new(PeriodSize.Day);
 
     public BollingerBand BollingerBand { get; set; } = new();
@@ -16,52 +21,31 @@ public class NewMainStrategy : StrategyImplementationBase
     public SuperTrend SuperTrend { get; set; } = new();
     [IndicatorLongerTerm] public SuperTrend B_SuperTrend { get; set; } = new();
 
-    public Rsi Rsi { get; set; } = new Rsi();
+    public Rsi Rsi { get; set; } = new();
 
-    public NewMainStrategy()
-    {
-        UpdateOnTick = false;
-        CloseOnTick = false;
-    }
-    
-    
+
     protected override void Run()
     {
         var spt2 = B_SuperTrend.LastOrDefault();
         var rsi = Rsi.LastOrDefault().Rsi;
         if (LastPrice.Bid > spt2.SuperTrend && rsi < 70)
-        {
             TryOpenBuy();
-        }
-        else if (LastPrice.Bid < spt2.SuperTrend && rsi > 30)
-        {
-            TryOpenSell();
-        }
+        else if (LastPrice.Bid < spt2.SuperTrend && rsi > 30) TryOpenSell();
     }
 
     protected override bool ShouldUpdatePosition(Position position)
     {
         if (position.TypePosition == TypeOperation.Buy)
-        {
             UpdatePositionBuyStopLoss(position);
-        }
-        else if (position.TypePosition == TypeOperation.Sell)
-        {
-            UpdatePositionSellStopLoss(position);
-        }
+        else if (position.TypePosition == TypeOperation.Sell) UpdatePositionSellStopLoss(position);
         return true;
     }
 
     protected override bool ShouldClosePosition(Position position)
     {
         if (position.TypePosition == TypeOperation.Buy)
-        {
             return ClosePositionBuy(position);
-        }
-        else
-        {
-            return ClosePositionSell(position);
-        }
+        return ClosePositionSell(position);
         return base.ShouldClosePosition(position);
     }
 
@@ -70,23 +54,17 @@ public class NewMainStrategy : StrategyImplementationBase
         var rsi3 = Rsi[^3];
         var rsi2 = Rsi[^2];
 
-        if (rsi3.Rsi > 70 && rsi2.Rsi <= 70)
-        {
-            return true;
-        }
+        if (rsi3.Rsi > 70 && rsi2.Rsi <= 70) return true;
 
         return false;
     }
-    
+
     private bool ClosePositionSell(Position position)
     {
         var rsi3 = Rsi[^3];
         var rsi2 = Rsi[^2];
 
-        if (rsi3.Rsi < 30 && rsi2.Rsi >= 30)
-        {
-            return true;
-        }
+        if (rsi3.Rsi < 30 && rsi2.Rsi >= 30) return true;
 
         return false;
     }
@@ -98,15 +76,13 @@ public class NewMainStrategy : StrategyImplementationBase
         var levels = new[] { lastPivotPoint.PP, lastPivotPoint.R1, lastPivotPoint.R2, lastPivotPoint.R3 };
 
         foreach (var level in levels)
-        {
             if (LastCandle.Close > level)
             {
                 position.StopLoss = Math.Max(spt.SuperTrend.GetValueOrDefault(), level.GetValueOrDefault());
-                break; 
+                break;
             }
-        }
     }
-    
+
     private void UpdatePositionSellStopLoss(Position position)
     {
         var lastPivotPoint = PivotPoint.LastOrDefault();
@@ -114,13 +90,11 @@ public class NewMainStrategy : StrategyImplementationBase
         var levels = new[] { lastPivotPoint.PP, lastPivotPoint.R1, lastPivotPoint.R2, lastPivotPoint.R3 };
 
         foreach (var level in levels)
-        {
             if (LastCandle.Close < level)
             {
                 position.StopLoss = Math.Min(spt.SuperTrend.GetValueOrDefault(), level.GetValueOrDefault());
-                break; 
+                break;
             }
-        }
     }
 
 
@@ -137,11 +111,9 @@ public class NewMainStrategy : StrategyImplementationBase
 
         if ((LastPrice.Bid > lastPivotPoint.PP && crossConditionSpt) ||
             (LastPrice.Bid > spt.SuperTrend && crossConditionPivot))
-        {
             OpenPosition(TypeOperation.Buy,
                 lastPivotPoint.PP.GetValueOrDefault(),
                 lastPivotPoint.R3.GetValueOrDefault());
-        }
     }
 
     private void TryOpenSell()
@@ -157,10 +129,8 @@ public class NewMainStrategy : StrategyImplementationBase
 
         if ((LastPrice.Bid < lastPivotPoint.PP && crossConditionSpt) ||
             (LastPrice.Bid < spt.SuperTrend && crossConditionPivot))
-        {
             OpenPosition(TypeOperation.Sell,
                 lastPivotPoint.PP.GetValueOrDefault(),
                 lastPivotPoint.S3.GetValueOrDefault());
-        }
     }
 }

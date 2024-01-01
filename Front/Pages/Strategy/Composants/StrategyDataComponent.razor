@@ -13,19 +13,19 @@
     <div class="row">
         <div class="col-md-4">
             <label for="Strategy">Strategy</label>
-            <SfTextBox ID="Strategy" Value="@StrategyInfo?.StrategyName" Readonly="true"/>
+            <SfTextBox ID="Strategy" Value="@StrategyInfo?.StrategyName" Enabled="false"/>
         </div>
         <div class="col-md-4">
             <label for="Symbol">Symbol</label>
-            <SfTextBox ID="Symbol" Value="@StrategyInfo?.Symbol" Readonly="true"/>
+            <SfTextBox ID="Symbol" Value="@StrategyInfo?.Symbol" Enabled="false"/>
         </div>
         <div class="col-md-4">
             <label for="Timeframe">Timeframe</label>
-            <SfTextBox ID="Timeframe" Value="@StrategyInfo?.Timeframe" Readonly="true"/>
+            <SfTextBox ID="Timeframe" Value="@StrategyInfo?.Timeframe" Enabled="false"/>
         </div>
         <div class="col-md-4">
             <label for="Timeframe2">Timeframe</label>
-            <SfTextBox ID="Timeframe2" Value="@StrategyInfo?.Timeframe2" Readonly="true"/>
+            <SfTextBox ID="Timeframe2" Value="@StrategyInfo?.Timeframe2" Enabled="false"/>
         </div>
 
         <div class="col-md-4">
@@ -35,10 +35,10 @@
     </div>
     <div class="row" style="margin: 20px;">
         <div class="col" style="padding-right: 10px;">
-            <CandleComponent Candle="@LastCandle"/>
+            <CandleComponent Candle="@StrategyInfo.LastCandle"/>
         </div>
         <div class="col" style="padding-left: 10px;">
-            <TickComponent Tick="@LastTick"/>
+            <TickComponent Tick="@StrategyInfo.LastTick"/>
         </div>
     </div>
 
@@ -66,7 +66,7 @@
                         <TabHeader Text="Result"></TabHeader>
                     </ChildContent>
                     <ContentTemplate>
-                        <ResultComponent/>
+                        <ResultComponent ResultData="Result"/>
                     </ContentTemplate>
                 </TabItem>
                 <TabItem>

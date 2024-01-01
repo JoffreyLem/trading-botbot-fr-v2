@@ -23,5 +23,4 @@ public class StrategyInfoDto
     public TickDto LastTick { get; set; } = new();
 
     public CandleDto LastCandle { get; set; } = new();
-    
 }

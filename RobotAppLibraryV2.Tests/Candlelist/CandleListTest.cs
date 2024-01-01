@@ -34,6 +34,27 @@ public class CandleListTest
         return tradeHoursRecord;
     }
 
+    #region Trading Hours tests in
+
+    [Fact]
+    public void Test_CurrentHoursRecord_Boucle()
+    {
+        // Arrange
+
+        _apiHandlerMock.Setup(x => x.GetChartAsync(It.IsAny<string>(), It.IsAny<Timeframe>()))
+            .ReturnsAsync(TestUtils.GenerateCandle(Timeframe.FifteenMinutes, 100));
+        _apiHandlerMock.Setup(x => x.GetTradingHoursAsync(It.IsAny<string>()))
+            .ReturnsAsync(GetTradeHoursMock);
+        // Act
+        var candleList = new CandleList.CandleList(_apiHandlerMock.Object, _loggerMock.Object, Timeframe.FifteenMinutes,
+            "EURUSD");
+
+        // Assert
+        candleList.Count.Should().Be(100);
+    }
+
+    #endregion
+
     #region Init
 
     [Fact]
@@ -258,7 +279,6 @@ public class CandleListTest
     [InlineData(Timeframe.Daily)]
     [InlineData(Timeframe.Monthly)]
     [InlineData(Timeframe.Weekly)]
-    
     public void Test_NewTick_AddNewCandle(Timeframe timeframe)
     {
         // Arrange
@@ -278,13 +298,9 @@ public class CandleListTest
         var lastDate = new DateTime();
 
         if (timeframe == Timeframe.Monthly)
-        {
             lastDate = candleList.Last().Date.AddMonths(1);
-        }
         else
-        {
             lastDate = candleList.Last().Date.AddMinutes(timeframeMinute);
-        }
         var tick = new Tick(1, 1, lastDate, "EURUSD")
             .SetAskVolume(1)
             .SetBidVolume(1);
@@ -340,15 +356,11 @@ public class CandleListTest
         var lastDate = new DateTime();
 
         if (timeframe == Timeframe.Monthly)
-        {
             lastDate = candleList.Last().Date.AddMonths(1);
-        }
         else
-        {
             lastDate = candleList.Last().Date.AddMinutes(timeframeMinute);
-        }
 
-      
+
         var tick = new Tick(1, 1, lastDate, "EURUSD")
             .SetAskVolume(1)
             .SetBidVolume(1);
@@ -376,8 +388,8 @@ public class CandleListTest
         candleList.Last().BidVolume.Should().Be(1);
         candleList.Last().Volume.Should().Be(2);
     }
-    
-    
+
+
     [Theory]
     [InlineData(Timeframe.OneMinute)]
     [InlineData(Timeframe.FiveMinutes)]
@@ -424,8 +436,8 @@ public class CandleListTest
         callerTick.Should().BeFalse();
         candleList.Count.Should().Be(1);
     }
-    
-    
+
+
     [Theory]
     [InlineData(Timeframe.OneMinute)]
     [InlineData(Timeframe.FiveMinutes)]
@@ -453,13 +465,9 @@ public class CandleListTest
         var lastDate = new DateTime();
 
         if (timeframe == Timeframe.Monthly)
-        {
             lastDate = candleList.Last().Date.AddMonths(1);
-        }
         else
-        {
             lastDate = candleList.Last().Date.AddMinutes(timeframeMinute);
-        }
         var tick = new Tick(1, 1, lastDate, "EURUSD")
             .SetAskVolume(1)
             .SetBidVolume(1);
@@ -482,33 +490,7 @@ public class CandleListTest
         callerTick.Should().BeFalse();
         candleList.Last().Date.Should().Be(lastDate);
         candleList.Last().Ticks.Last().Should().Be(tick);
-
     }
 
-
     #endregion
-
-    #region Trading Hours tests in
-
-    [Fact]
-    public void Test_CurrentHoursRecord_Boucle()
-    {
-        // Arrange
-
-        _apiHandlerMock.Setup(x => x.GetChartAsync(It.IsAny<string>(), It.IsAny<Timeframe>()))
-            .ReturnsAsync(TestUtils.GenerateCandle(Timeframe.FifteenMinutes, 100));
-        _apiHandlerMock.Setup(x => x.GetTradingHoursAsync(It.IsAny<string>()))
-            .ReturnsAsync(GetTradeHoursMock);
-        // Act
-        var candleList = new CandleList.CandleList(_apiHandlerMock.Object, _loggerMock.Object, Timeframe.FifteenMinutes,
-            "EURUSD");
-
-        // Assert
-        candleList.Count.Should().Be(100);
-    }
-
-    
-    #endregion
-
-    
 }

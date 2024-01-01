@@ -1,5 +1,5 @@
 ﻿namespace StrategyApi.StrategyBackgroundService.Command;
 
-public class AcknowledgementResponse : ServiceCommandResponse
+public class AcknowledgementResponse : ServiceCommandResponseBase
 {
 }

@@ -1,4 +1,6 @@
-﻿@inherits ApiComponentBase;
+﻿@page "/Api"
+
+@inherits ApiIndexBase;
 
 
 <SfDropDownList Enabled="ApiHandlerListEnabled" @ref="_dropDownList" @bind-Value="@ApiSelected" Placeholder="Choisir une api" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@ApiProviders" TValue="string" TItem="string">

@@ -49,7 +49,7 @@ public class LotValueCalculator : ILotValueCalculator, IDisposable
 
         if (SymbolInfo.Category == Category.Forex && !SymbolInfo.Symbol.Contains(BaseSymbolAccount))
             SubscribeSecondaryPrice();
-        else if (SymbolInfo.Category == Category.Indices && SymbolInfo.CurrencyProfit != BaseSymbolAccount)
+        else if (SymbolInfo.Category != Category.Forex && SymbolInfo.CurrencyProfit != BaseSymbolAccount)
             SubscribeSecondaryPrice();
 
         SymbolSwitch();
@@ -72,26 +72,31 @@ public class LotValueCalculator : ILotValueCalculator, IDisposable
             case Category.Forex:
                 HandleForex();
                 break;
-            case Category.Indices:
-                HandleIndices();
-                break;
             default:
-                throw new ArgumentException($"Symbol type {SymbolInfo.Category} non gerer");
+                HandleOtherSymbols();
+                break;
         }
     }
 
     private void ApiHandlerOnTickEvent(object? sender, Tick e)
     {
-        if (e.Symbol == SymbolInfo.Symbol)
+        try
         {
-            _tickPriceMain = e;
-            SymbolSwitch();
-        }
+            if (e.Symbol == SymbolInfo.Symbol)
+            {
+                _tickPriceMain = e;
+                SymbolSwitch();
+            }
 
-        if (e.Symbol == _secondarySymbolAccount)
+            if (e.Symbol == _secondarySymbolAccount)
+            {
+                TickPriceSecondary = e;
+                SymbolSwitch();
+            }
+        }
+        catch (Exception ex)
         {
-            TickPriceSecondary = e;
-            SymbolSwitch();
+            _logger?.Error(ex, "Error when updating lot value");
         }
     }
 
@@ -125,7 +130,7 @@ public class LotValueCalculator : ILotValueCalculator, IDisposable
     }
 
 
-    private void HandleIndices()
+    private void HandleOtherSymbols()
     {
         if (SymbolInfo.CurrencyProfit == BaseSymbolAccount)
             PipValueStandard = SymbolInfo.ContractSize.GetValueOrDefault();
