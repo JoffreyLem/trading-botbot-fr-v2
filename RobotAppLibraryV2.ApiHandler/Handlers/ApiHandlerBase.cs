@@ -53,10 +53,9 @@ public abstract class ApiHandlerBase : IApiHandler
             CommandExecutor.ExecuteSubscribeProfitsCommandStreaming();
             CommandExecutor.ExecuteSubscribeNewsCommandStreaming();
             CommandExecutor.ExecuteSubscribeKeepAliveCommandStreaming();
-            TimerCallback timerCallback = state => PingAsync().GetAwaiter().GetResult();
-            _pingTimer = new Timer(timerCallback, null, 0, PingInterval.Ticks / TimeSpan.TicksPerMillisecond);
+            CommandExecutor.ExecutePingCommandStreaming();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(ConnectAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(ConnectAsync)}");
@@ -69,7 +68,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             await CommandExecutor.ExecuteLogoutCommand();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(DisconnectAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(DisconnectAsync)}");
@@ -82,7 +81,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             return CommandExecutor.ExecuteIsConnected();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(IsConnected)}");
             throw new ApiHandlerException($"Error on  {nameof(IsConnected)}");
@@ -103,7 +102,7 @@ public abstract class ApiHandlerBase : IApiHandler
                 Logger.Warning("API not connected");
             }
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(PingAsync)}");
         }
@@ -115,7 +114,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             return await CommandExecutor.ExecuteBalanceAccountCommand();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetBalanceAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetBalanceAsync)}");
@@ -129,7 +128,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             return await CommandExecutor.ExecuteCalendarCommand();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetCalendarAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetCalendarAsync)}");
@@ -144,7 +143,7 @@ public abstract class ApiHandlerBase : IApiHandler
 
             return AllSymbols.ToList();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetAllSymbolsAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetAllSymbolsAsync)}");
@@ -157,7 +156,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             return await CommandExecutor.ExecuteTradesOpenedTradesCommand(comment);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetCurrentTradeAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetCurrentTradeAsync)}");
@@ -170,7 +169,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             return await CommandExecutor.ExecuteTradesHistoryCommand(comment);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetAllPositionsByCommentAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetAllPositionsByCommentAsync)}");
@@ -189,7 +188,7 @@ public abstract class ApiHandlerBase : IApiHandler
 
             return await CommandExecutor.ExecuteSymbolCommand(symbol);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetSymbolInformationAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetSymbolInformationAsync)}");
@@ -202,7 +201,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             return await CommandExecutor.ExecuteTradingHoursCommand(symbol);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetTradingHoursAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetTradingHoursAsync)}");
@@ -215,7 +214,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             return await CommandExecutor.ExecuteFullChartCommand(timeframe, new DateTime(), symbol);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetChartAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetChartAsync)}");
@@ -229,7 +228,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             return await CommandExecutor.ExecuteRangeChartCommand(periodCodeStr, start, end, symbol);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetChartByDateAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetChartByDateAsync)}");
@@ -242,7 +241,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             return await CommandExecutor.ExecuteTickCommand(symbol);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(GetTickPriceAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(GetTickPriceAsync)}");
@@ -258,7 +257,7 @@ public abstract class ApiHandlerBase : IApiHandler
             CachePosition.Add(position);
             return pos;
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(OpenPositionAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(OpenPositionAsync)}");
@@ -271,7 +270,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             await CommandExecutor.ExecuteUpdateTradeCommand(position, price);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(UpdatePositionAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(UpdatePositionAsync)}");
@@ -284,7 +283,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             await CommandExecutor.ExecuteCloseTradeCommand(position, price);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(ClosePositionAsync)}");
             throw new ApiHandlerException($"Error on  {nameof(ClosePositionAsync)}");
@@ -302,7 +301,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             CommandExecutor.ExecuteTickPricesCommandStreaming(symbol);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(SubscribePrice)}");
             throw new ApiHandlerException($"Error on  {nameof(SubscribePrice)}");
@@ -315,7 +314,7 @@ public abstract class ApiHandlerBase : IApiHandler
         {
             CommandExecutor.ExecuteStopTickPriceCommandStreaming(symbol);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Logger.Error(e, $"Error on  {nameof(UnsubscribePrice)}");
             throw new ApiHandlerException($"Error on  {nameof(UnsubscribePrice)}");

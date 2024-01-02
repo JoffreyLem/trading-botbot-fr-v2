@@ -232,7 +232,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateSubscribeBalanceCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -249,7 +249,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateStopBalanceCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -265,7 +265,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateSubscribeCandleCommandStreaming(string symbol)
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -283,7 +283,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateStopCandleCommandStreaming(string symbol)
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -301,7 +301,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateSubscribeKeepAliveCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -319,7 +319,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateStopKeepAliveCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -336,7 +336,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateSubscribeNewsCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -354,7 +354,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateStopNewsCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -370,7 +370,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateSubscribeProfitsCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -388,7 +388,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateStopProfitsCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -406,7 +406,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateTickPricesCommandStreaming(string symbol)
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -427,7 +427,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateStopTickPriceCommandStreaming(string symbol)
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -445,7 +445,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateTradesCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -462,7 +462,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateStopTradesCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -478,7 +478,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateTradeStatusCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -495,7 +495,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreateStopTradeStatusCommandStreaming()
     {
-        var memoryStream = new MemoryStream();
+        using var memoryStream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(memoryStream))
         {
             writer.WriteStartObject();
@@ -511,7 +511,18 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreatePingCommandStreaming()
     {
-        throw new NotImplementedException();
+        using var memoryStream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(memoryStream))
+        {
+            writer.WriteStartObject();
+
+            writer.WriteString("command", "ping");
+
+            writer.WriteEndObject();
+            writer.Flush();
+        }
+
+        return Encoding.UTF8.GetString(memoryStream.ToArray());
     }
 
     public string CreateStopPingCommandStreaming()

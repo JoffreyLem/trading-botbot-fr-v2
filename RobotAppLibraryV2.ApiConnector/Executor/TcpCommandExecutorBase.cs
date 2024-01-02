@@ -282,7 +282,7 @@ public abstract class
 
     public virtual async void ExecutePingCommandStreaming()
     {
-        var command = CommandCreator.CreatePingCommand();
+        var command = CommandCreator.CreatePingCommandStreaming();
         await TcpStreamingClient.SendAsync(command);
     }
 

@@ -97,8 +97,8 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
         try
         {
-            await ApiWriteStream.WriteAsync(messageToSend);
-            await ApiWriteStream.FlushAsync();
+            await ApiWriteStream.WriteAsync(messageToSend).ConfigureAwait(false);
+            await ApiWriteStream.FlushAsync().ConfigureAwait(false);
         }
         catch (IOException ex)
         {
@@ -109,7 +109,7 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
     public async Task<string> ReceiveAsync(CancellationToken cancellationToken = default)
     {
-        var result = new StringBuilder(client.ReceiveBufferSize); // Taille initiale estimée
+        var result = new StringBuilder(client.ReceiveBufferSize);
         var lastChar = ' ';
 
         try
@@ -117,10 +117,8 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             string? line;
             while ((line = await ApiReadStream.ReadLineAsync(cancellationToken).ConfigureAwait(false)) != null)
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 result.Append(line);
 
-                // Last line is always empty
                 if (string.IsNullOrEmpty(line) && lastChar == '}')
                     break;
 
