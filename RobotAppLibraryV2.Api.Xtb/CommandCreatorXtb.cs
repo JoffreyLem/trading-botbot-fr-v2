@@ -511,7 +511,18 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
     public string CreatePingCommandStreaming()
     {
-        throw new NotImplementedException();
+        var memoryStream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(memoryStream))
+        {
+            writer.WriteStartObject();
+
+            writer.WriteString("command", "ping");
+
+            writer.WriteEndObject();
+            writer.Flush();
+        }
+
+        return Encoding.UTF8.GetString(memoryStream.ToArray());
     }
 
     public string CreateStopPingCommandStreaming()
