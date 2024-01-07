@@ -14,7 +14,7 @@ public static class ServiceDatabaseExtension
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         services.AddDbContext<StrategyContext>(options =>
-            options.UseNpgsql(connectionString), ServiceLifetime.Singleton);
+            options.UseMySql(connectionString, new MariaDbServerVersion(new Version())), ServiceLifetime.Singleton);
 
         services.AddSingleton<IStrategyFileRepository, StrategyFileRepository>();
 
