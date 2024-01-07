@@ -146,8 +146,9 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             ApiReadStream?.Close();
             ApiWriteStream?.Close();
             client.Close();
-            OnDisconnected();
         }
+
+        OnDisconnected();
     }
 
     protected void OnConnectedEvent()

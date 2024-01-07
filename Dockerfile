@@ -1,6 +1,4 @@
-﻿ARG DATABASE_CA_CERTIFICATE
-
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
@@ -20,6 +18,5 @@ ENV ASPNETCORE_URLS="http://*:7000;"
 EXPOSE 7000
 WORKDIR /app
 COPY --from=publish /app/publish .
-# Copie du certificat CA Database
-COPY ${DATABASE_CA_CERTIFICATE} /app/database_ca_certificate.crt
+
 ENTRYPOINT ["dotnet", "Front.dll"]
