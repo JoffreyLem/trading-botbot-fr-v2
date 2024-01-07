@@ -2,8 +2,6 @@
 using RobotAppLibraryV2.Indicators.Indicator;
 using RobotAppLibraryV2.Modeles;
 
-namespace StrategyApi.Strategy.StrategySar;
-
 public class StrategySar : StrategyImplementationBase
 {
     public bool CanOpen;

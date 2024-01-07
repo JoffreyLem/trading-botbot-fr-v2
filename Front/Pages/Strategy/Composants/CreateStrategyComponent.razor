@@ -40,7 +40,7 @@
                 <div style="flex: 1;">
                     @if (BacktestResult is not null)
                     {
-                        <p>Resultats backtest @StrategyInitDto.StrategyFileDto @StrategyInitDto.Symbol @StrategyInitDto.Timeframe</p>
+                        <p>Resultats backtest @StrategyInitDto.StrategyFileDto.Name @StrategyInitDto.Symbol @StrategyInitDto.Timeframe</p>
                         <ResultComponent ResultData="BacktestResult"/>
                     }
                 </div>

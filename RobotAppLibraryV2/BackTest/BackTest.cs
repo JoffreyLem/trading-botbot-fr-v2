@@ -7,7 +7,7 @@ using Serilog;
 
 namespace RobotAppLibraryV2.BackTest;
 
-public class BackTest
+public class BackTest : IDisposable
 {
     private StrategyBase? _strategyBase;
 
@@ -34,6 +34,13 @@ public class BackTest
     private string Symbol { get; }
     private Timeframe Timeframe { get; }
     private Timeframe? Timeframe2 { get; }
+
+    public void Dispose()
+    {
+        _strategyBase?.Dispose();
+        _strategyBase = null;
+        GC.Collect();
+    }
 
     public async Task RunBackTest(double balance, decimal minSpread, decimal maxSpread)
     {
@@ -81,7 +88,6 @@ public class BackTest
             TotalPositionPositive = _strategyBase.Results.TotalPositionPositive,
             TotalPositions = _strategyBase.Results.TotalPositions
         };
-        _strategyBase.Dispose();
-        _strategyBase = null;
+        Dispose();
     }
 }
