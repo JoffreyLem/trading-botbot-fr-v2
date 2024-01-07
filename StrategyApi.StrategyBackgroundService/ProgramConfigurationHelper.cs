@@ -29,7 +29,7 @@ public static class ProgramConfigurationHelper
             .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
             .MinimumLevel.Override("System", LogEventLevel.Error)
             .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-            .WriteTo.Console();
+            .WriteTo.Async(writeTo => writeTo.Console());
 
 
         var logger = loggerConfig.CreateLogger();

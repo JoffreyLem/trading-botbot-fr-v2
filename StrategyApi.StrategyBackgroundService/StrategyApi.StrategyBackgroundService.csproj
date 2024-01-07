@@ -24,6 +24,7 @@
         <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0"/>
         <PackageReference Include="Serilog.Formatting.Elasticsearch" Version="9.0.0"/>
         <PackageReference Include="Serilog.Settings.Configuration" Version="7.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0"/>
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
         <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1"/>
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
@@ -34,10 +35,6 @@
         <ProjectReference Include="..\RobotAppLibraryV2\RobotAppLibraryV2.csproj"/>
         <ProjectReference Include="..\StrategyApi.DataBase\StrategyApi.DataBase.csproj"/>
         <ProjectReference Include="..\StrategyApi.Mail\StrategyApi.Mail.csproj"/>
-        <ProjectReference Include="..\Strategy\StrategyApi.Strategy.Main\StrategyApi.Strategy.Main.csproj"/>
-        <ProjectReference Include="..\Strategy\StrategyApi.Strategy.NewMain\StrategyApi.Strategy.NewMain.csproj"/>
-        <ProjectReference Include="..\Strategy\StrategyApi.Strategy.StrategySar\StrategyApi.Strategy.StrategySar.csproj"/>
-        <ProjectReference Include="..\Strategy\StrategyApi.Strategy.Test\StrategyApi.Strategy.Test.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

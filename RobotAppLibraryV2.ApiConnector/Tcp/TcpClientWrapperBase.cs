@@ -21,6 +21,8 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
     protected TimeSpan CommandTimeSpanmeSpace = TimeSpan.FromMilliseconds(200);
 
+    public volatile bool IsConnected;
+
     protected int Port;
 
     protected string ServerAddress;
@@ -36,8 +38,6 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
         ServerAddress = serverAddress;
         Port = port;
     }
-
-    public bool IsConnected => client.Connected;
 
     public void Dispose()
     {
@@ -146,19 +146,20 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             ApiReadStream?.Close();
             ApiWriteStream?.Close();
             client.Close();
+            OnDisconnected();
         }
-
-        OnDisconnected();
     }
 
     protected void OnConnectedEvent()
     {
+        IsConnected = true;
         Logger.Information("{Connector} Connected to {server}:{port}", GetType().Name, ServerAddress, Port);
         Connected?.Invoke(this, EventArgs.Empty);
     }
 
     protected void OnDisconnected()
     {
+        IsConnected = false;
         Logger.Information("{Connector} Disconnected from {server}:{port}", GetType().Name, ServerAddress, Port);
         Disconnected?.Invoke(this, EventArgs.Empty);
     }
