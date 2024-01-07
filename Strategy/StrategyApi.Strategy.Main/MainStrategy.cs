@@ -1,13 +1,11 @@
-using RobotAppLibraryV2.Attributes;
+using RobotAppLibraryV2.Exposition;
 using RobotAppLibraryV2.Indicators.Attributes;
 using RobotAppLibraryV2.Indicators.Indicator;
 using RobotAppLibraryV2.Modeles;
-using RobotAppLibraryV2.Strategy;
 using Skender.Stock.Indicators;
 
 namespace StrategyApi.Strategy.Main;
 
-[VersionStrategy("prod-test-2")]
 public class MainStrategy : StrategyImplementationBase
 {
     public MainStrategy()
@@ -34,7 +32,9 @@ public class MainStrategy : StrategyImplementationBase
     [IndicatorLongerTerm] public SarIndicator B_SarIndicator { get; set; } = new();
 
 
-    protected override void Run()
+    public override string? Version => "prod-test-2";
+
+    public override void Run()
     {
         var lastPivotPoint = PivotPoint.LastOrDefault();
         var tp = PivotPoint.LastOrDefault();
@@ -96,7 +96,7 @@ public class MainStrategy : StrategyImplementationBase
     }
 
 
-    protected override bool ShouldUpdatePosition(Position position)
+    public override bool ShouldUpdatePosition(Position position)
     {
         var lastPivot = PivotPoint.LastOrDefault();
         var lastSar = SarIndicator.LastOrDefault();
@@ -139,7 +139,7 @@ public class MainStrategy : StrategyImplementationBase
     }
 
 
-    protected override bool ShouldClosePosition(Position position)
+    public override bool ShouldClosePosition(Position position)
     {
         var sarToCheck = SarIndicator[^2];
         if (sarToCheck.IsReversal is true) return true;

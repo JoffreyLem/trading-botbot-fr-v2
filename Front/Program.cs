@@ -1,5 +1,4 @@
 using DotNetEnv;
-using Front;
 using Front.Services;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +7,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using StrategyApi.DataBase;
+using StrategyApi.StrategyBackgroundService;
 using StrategyApi.StrategyBackgroundService.Mapper;
+using Syncfusion.Blazor;
+using Syncfusion.Licensing;
 
 var builder = WebApplication.CreateBuilder(args);
 Env.Load();
@@ -33,8 +36,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 builder.Services.AddSignalR();
 
+SyncfusionLicenseProvider.RegisterLicense(
+    "Ngo9BigBOggjHTQxAR8/V1NAaF5cWWJCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdgWH1ccnRUQ2BZVkNzX0Q=");
+builder.Services.AddSyncfusionBlazor();
 
-builder.AddSyncFusion();
 builder.AddBotDependency();
 
 builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfilesBackgroundServices>(); },
@@ -45,7 +50,7 @@ builder.Services.AddSignalR();
 builder.AddLogger();
 builder.Services.AddSingleton<ShowToastService>();
 builder.Services.AddHealthChecks();
-
+builder.Services.AddStrategyDbContext(builder.Configuration);
 
 builder.WebHost.ConfigureAppConfiguration((ctx, cb) =>
     {

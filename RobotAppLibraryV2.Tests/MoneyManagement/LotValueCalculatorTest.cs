@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
-using RobotAppLibraryV2.ApiHandler.Interfaces;
+using RobotAppLibraryV2.ApiHandler;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.MoneyManagement;
 using Serilog;

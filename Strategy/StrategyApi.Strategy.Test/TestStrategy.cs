@@ -1,11 +1,9 @@
-using RobotAppLibraryV2.Attributes;
+using RobotAppLibraryV2.Exposition;
 using RobotAppLibraryV2.Indicators.Indicator;
 using RobotAppLibraryV2.Modeles;
-using RobotAppLibraryV2.Strategy;
 
 namespace StrategyApi.Strategy.Test;
 
-[VersionStrategy("2")]
 public class TestStrategy : StrategyImplementationBase
 {
     public TestStrategy()
@@ -17,7 +15,9 @@ public class TestStrategy : StrategyImplementationBase
 
     public SarIndicator SarIndicator { get; set; } = new();
 
-    protected override void Run()
+    public override string? Version => "1";
+
+    public override void Run()
     {
         var type = SarIndicator.IsBuy() ? TypeOperation.Buy : TypeOperation.Sell;
         var sl = SarIndicator.Last().Sar;
@@ -26,7 +26,7 @@ public class TestStrategy : StrategyImplementationBase
     }
 
 
-    protected override bool ShouldClosePosition(Position position)
+    public override bool ShouldClosePosition(Position position)
     {
         return true;
     }

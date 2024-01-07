@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Dto;
+using StrategyApi.StrategyBackgroundService.Dto.Enum;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.DropDowns;
 

@@ -1,11 +1,10 @@
 ﻿using FluentAssertions;
 using Moq;
 using RobotAppLibraryV2.ApiConnector.Interfaces;
-using RobotAppLibraryV2.ApiHandler.Exception;
+using RobotAppLibraryV2.ApiHandler;
 using RobotAppLibraryV2.ApiHandler.Handlers;
 using RobotAppLibraryV2.Modeles;
 using Serilog;
-using Range = Moq.Range;
 
 namespace RobotAppLibraryV2.Tests.ApiHandler;
 
@@ -82,7 +81,8 @@ public class ApiHandlerBaseTest
         _commandExecutor.Verify(x => x.ExecuteTradeStatusCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteSubscribeProfitsCommandStreaming(), Times.Once);
         _commandExecutor.Verify(x => x.ExecuteSubscribeNewsCommandStreaming(), Times.Once);
-        _commandExecutor.Verify(x => x.ExecutePingCommand(), Times.Between(0, 1, Range.Inclusive));
+        _commandExecutor.Verify(x => x.ExecutePingCommand(), Times.Never);
+        _commandExecutor.Verify(x => x.ExecutePingCommandStreaming(), Times.Once);
     }
 
     #endregion

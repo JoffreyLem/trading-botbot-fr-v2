@@ -1,6 +1,6 @@
 using Front.Services;
 using Microsoft.AspNetCore.Components;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
+using StrategyApi.StrategyBackgroundService.Dto;
 using StrategyApi.StrategyBackgroundService.Services;
 
 namespace Front.Pages.Strategy.Composants;

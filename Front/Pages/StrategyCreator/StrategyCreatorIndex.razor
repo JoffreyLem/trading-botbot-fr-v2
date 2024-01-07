@@ -1,0 +1,70 @@
+﻿@page "/strategy-creator"
+@using Front.Pages.StrategyCreator.Composants
+@inherits StrategyCreatorIndexBase
+<div>
+    <div>
+        <SfUploader @ref="UploadObj" AllowMultiple="false" AllowedExtensions=".cs" AutoUpload="false">
+            <UploaderEvents ValueChange="@OnChange" OnClear="OnClear"></UploaderEvents>
+        </SfUploader>
+
+    </div>
+    @if (CreationStrategyError)
+    {
+        <div>
+            <ul>
+                @foreach (var error in ErrorCreationList)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+    }
+    <div>
+        <FileUploadModal @ref="fileUploadModal" CurrentStrategyFile="currentStrategyFile" OnClose="HandleModalClose"/>
+    </div>
+
+    @if (StrategyFiles != null && StrategyFiles.Any())
+    {
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Version</th>
+                <th>Last update</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var strategyFile in StrategyFiles)
+            {
+                <tr>
+                    <td>@strategyFile.Id</td>
+                    <td>@strategyFile.Name</td>
+                    <td>@strategyFile.Version</td>
+                    <td>@strategyFile.LastDateUpdate</td>
+                    <td>
+                        <button class="btn btn-secondary" @onclick="() => OpenModal(strategyFile)">Modifier</button>
+
+                        <button class="btn btn-primary" @onclick="() => DownloadStrategyFile(strategyFile)">Télécharger</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteStrategyFile(strategyFile.Id)">Supprimer</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Aucun fichier de stratégie trouvé.</p>
+    }
+    <div id="container">
+        <SfSpinner @bind-Visible="@OnLoading"/>
+    </div>
+</div>
+
+
+@code {
+
+
+}

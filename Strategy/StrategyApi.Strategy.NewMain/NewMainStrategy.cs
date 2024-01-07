@@ -1,7 +1,7 @@
-﻿using RobotAppLibraryV2.Indicators.Attributes;
+﻿using RobotAppLibraryV2.Exposition;
+using RobotAppLibraryV2.Indicators.Attributes;
 using RobotAppLibraryV2.Indicators.Indicator;
 using RobotAppLibraryV2.Modeles;
-using RobotAppLibraryV2.Strategy;
 using Skender.Stock.Indicators;
 
 namespace StrategyApi.Strategy.NewMain;
@@ -24,7 +24,9 @@ public class NewMainStrategy : StrategyImplementationBase
     public Rsi Rsi { get; set; } = new();
 
 
-    protected override void Run()
+    public override string? Version => "1";
+
+    public override void Run()
     {
         var spt2 = B_SuperTrend.LastOrDefault();
         var rsi = Rsi.LastOrDefault().Rsi;
@@ -33,7 +35,7 @@ public class NewMainStrategy : StrategyImplementationBase
         else if (LastPrice.Bid < spt2.SuperTrend && rsi > 30) TryOpenSell();
     }
 
-    protected override bool ShouldUpdatePosition(Position position)
+    public override bool ShouldUpdatePosition(Position position)
     {
         if (position.TypePosition == TypeOperation.Buy)
             UpdatePositionBuyStopLoss(position);
@@ -41,7 +43,7 @@ public class NewMainStrategy : StrategyImplementationBase
         return true;
     }
 
-    protected override bool ShouldClosePosition(Position position)
+    public override bool ShouldClosePosition(Position position)
     {
         if (position.TypePosition == TypeOperation.Buy)
             return ClosePositionBuy(position);

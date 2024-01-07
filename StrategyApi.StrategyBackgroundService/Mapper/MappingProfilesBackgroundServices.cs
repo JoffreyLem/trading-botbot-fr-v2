@@ -1,7 +1,8 @@
 using AutoMapper;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Strategy;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
+using StrategyApi.DataBase.Modeles;
+using StrategyApi.StrategyBackgroundService.Dto;
 
 namespace StrategyApi.StrategyBackgroundService.Mapper;
 
@@ -26,6 +27,7 @@ public class MappingProfilesBackgroundServices : Profile
         CreateMap<Candle, CandleDto>();
         CreateMap<Tick, TickDto>();
 
+
         // Mapper position
         CreateMap<ReasonClosed, string>().ConvertUsing(src => src.ToString());
         CreateMap<StatusPosition, string>().ConvertUsing(src => src.ToString());
@@ -33,5 +35,7 @@ public class MappingProfilesBackgroundServices : Profile
 
         CreateMap<Timeframe, string>().ConvertUsing(src => src.ToString());
         CreateMap<Position, PositionDto>();
+
+        CreateMap<StrategyFile, StrategyFileDto>().ReverseMap();
     }
 }

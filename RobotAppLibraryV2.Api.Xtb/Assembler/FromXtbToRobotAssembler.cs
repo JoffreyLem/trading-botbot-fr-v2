@@ -1,28 +1,32 @@
+using System.Collections.Concurrent;
 using RobotAppLibraryV2.Modeles;
 
 namespace RobotAppLibraryV2.Api.Xtb.Assembler;
 
 public static class FromXtbToRobotAssembler
 {
+    private static readonly ConcurrentDictionary<string, Category> CategoryCache = new();
+
     public static Category GetCategory(string symbol)
     {
-        switch (symbol)
+        if (CategoryCache.TryGetValue(symbol, out var cachedCategory))
         {
-            case "FX":
-                return Category.Forex;
-            case "IND":
-                return Category.Indices;
-            case "STC":
-                return Category.Stock;
-            case "CMD":
-                return Category.Commodities;
-            case "CRT":
-                return Category.Crypto;
-            case "ETF":
-                return Category.ExchangeTradedFund;
-            default:
-                return Category.Unknow;
+            return cachedCategory;
         }
+
+        var category = symbol switch
+        {
+            "FX" => Category.Forex,
+            "IND" => Category.Indices,
+            "STC" => Category.Stock,
+            "CMD" => Category.Commodities,
+            "CRT" => Category.Crypto,
+            "ETF" => Category.ExchangeTradedFund,
+            _ => Category.Unknow
+        };
+
+        CategoryCache[symbol] = category;
+        return category;
     }
 
     public static TypeOperation GetTypeOperation(long code)

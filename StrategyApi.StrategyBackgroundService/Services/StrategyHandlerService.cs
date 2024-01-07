@@ -3,8 +3,7 @@ using RobotAppLibraryV2.Modeles;
 using Serilog;
 using StrategyApi.StrategyBackgroundService.Command.Strategy;
 using StrategyApi.StrategyBackgroundService.Command.Strategy.Request;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
-using StrategyApi.StrategyBackgroundService.Dto.Services.Enum;
+using StrategyApi.StrategyBackgroundService.Dto;
 
 namespace StrategyApi.StrategyBackgroundService.Services;
 
@@ -22,15 +21,14 @@ public class StrategyHandlerService : IStrategyHandlerService
         _logger = logger.ForContext<StrategyHandlerService>();
     }
 
-    public async Task InitStrategy(StrategyTypeEnum strategyType, string symbol, Timeframe timeframe,
-        Timeframe? timeframe2)
+    public async Task InitStrategy(StrategyInitDto strategyInitDto)
     {
         var initStrategyCommand = new InitStrategyCommand
         {
-            StrategyType = strategyType,
-            Symbol = symbol,
-            Timeframe = timeframe,
-            timeframe2 = timeframe2
+            StrategyFileDto = strategyInitDto.StrategyFileDto,
+            Symbol = strategyInitDto.Symbol,
+            Timeframe = strategyInitDto.Timeframe,
+            timeframe2 = strategyInitDto.Timeframe2
         };
 
 
@@ -38,6 +36,7 @@ public class StrategyHandlerService : IStrategyHandlerService
 
         await initStrategyCommand.ResponseSource.Task;
     }
+
 
     public async Task<StrategyInfoDto> GetStrategyInfo(string id)
     {
@@ -53,10 +52,6 @@ public class StrategyHandlerService : IStrategyHandlerService
         return result.StrategyInfoDto;
     }
 
-    public Task<List<string>> GetListStrategy()
-    {
-        return Task.FromResult(Enum.GetNames(typeof(StrategyTypeEnum)).ToList());
-    }
 
     public Task<List<string>> GetListTimeframes()
     {
@@ -165,7 +160,7 @@ public class StrategyHandlerService : IStrategyHandlerService
     {
         var command = new RunStrategyBacktestExternalCommand
         {
-            StrategyType = strategyInitDto.StrategyType,
+            StrategyFileDto = strategyInitDto.StrategyFileDto,
             Symbol = strategyInitDto.Symbol,
             Timeframe = strategyInitDto.Timeframe,
             Timeframe2 = strategyInitDto.Timeframe2,

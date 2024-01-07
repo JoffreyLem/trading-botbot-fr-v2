@@ -18,4 +18,6 @@ ENV ASPNETCORE_URLS="http://*:7000;"
 EXPOSE 7000
 WORKDIR /app
 COPY --from=publish /app/publish .
+# Copie du certificat CA Database
+COPY ${DATABASE_CA_CERTIFICATE} /app/database_ca_certificate.crt
 ENTRYPOINT ["dotnet", "Front.dll"]

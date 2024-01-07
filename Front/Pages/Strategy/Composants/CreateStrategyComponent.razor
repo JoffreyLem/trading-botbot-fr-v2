@@ -1,4 +1,4 @@
-﻿@using StrategyApi.StrategyBackgroundService.Dto.Services.Enum
+﻿@using StrategyApi.StrategyBackgroundService.Dto
 @using RobotAppLibraryV2.Modeles
 @inherits CreateStrategyComponentBase
 
@@ -16,7 +16,9 @@
                         <DataAnnotationsValidator/>
                         <ValidationSummary/>
                         <div class="form-group">
-                            <SfDropDownList ID="strategyType" @bind-Value="@StrategyInitDto.StrategyType" Placeholder="Strategy" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@StrategyTypes" TValue="StrategyTypeEnum" TItem="string"/>
+                            <SfDropDownList ID="strategyType" @bind-Value="@StrategyInitDto.StrategyFileDto" Placeholder="Strategy" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@StrategyTypes" TItem="StrategyFileDto" TValue="StrategyFileDto">
+                                <DropDownListFieldSettings Text="@nameof(StrategyFileDto.Name)"></DropDownListFieldSettings>
+                            </SfDropDownList>
                         </div>
                         <div class="form-group">
                             <SfAutoComplete EnableVirtualization="true" ID="symbolType" @bind-Value="@StrategyInitDto.Symbol" Placeholder="Select symbol" FloatLabelType="FloatLabelType.Auto" Width="300px" DataSource="@Symbols" TValue="string" TItem="SymbolInfo">
@@ -38,7 +40,7 @@
                 <div style="flex: 1;">
                     @if (BacktestResult is not null)
                     {
-                        <p>Resultats backtest @StrategyInitDto.StrategyType @StrategyInitDto.Symbol @StrategyInitDto.Timeframe</p>
+                        <p>Resultats backtest @StrategyInitDto.StrategyFileDto @StrategyInitDto.Symbol @StrategyInitDto.Timeframe</p>
                         <ResultComponent ResultData="BacktestResult"/>
                     }
                 </div>

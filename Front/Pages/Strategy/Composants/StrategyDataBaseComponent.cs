@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using RobotAppLibraryV2.Modeles.events;
 using StrategyApi.StrategyBackgroundService;
-using StrategyApi.StrategyBackgroundService.Dto.Services;
+using StrategyApi.StrategyBackgroundService.Dto;
 using StrategyApi.StrategyBackgroundService.Events;
 using StrategyApi.StrategyBackgroundService.Services;
 using Syncfusion.Blazor.Buttons;
@@ -61,13 +61,19 @@ public class StrategyDataBaseComponent : StrategyIdComponentBase, IDisposable
     private void CommandHandlerOnTickEvent(object? sender, BackGroundServiceEvent<TickDto> e)
     {
         if (e.Id == StrategyId)
+        {
+            StrategyInfo.LastTick = e.EventField;
             InvokeAsync(StateHasChanged);
+        }
     }
 
     private void CommandHandlerOnCandleEvent(object? sender, BackGroundServiceEvent<CandleDto> e)
     {
         if (e.Id == StrategyId)
+        {
+            StrategyInfo.LastCandle = e.EventField;
             InvokeAsync(StateHasChanged);
+        }
     }
 
 
