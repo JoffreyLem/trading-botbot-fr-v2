@@ -362,9 +362,9 @@ public sealed class StrategyBase : IDisposable
 
         try
         {
-            _apiHandler.UnsubscribePrice(Symbol);
             if (strategyReasonDisabled is StrategyReasonDisabled.User)
             {
+                _apiHandler.UnsubscribePrice(Symbol);
                 var trades = _apiHandler.GetCurrentTradeAsync(StrategyIdPosition).Result;
                 if (trades is not null) await _positionHandler.ClosePositionAsync(trades);
             }
