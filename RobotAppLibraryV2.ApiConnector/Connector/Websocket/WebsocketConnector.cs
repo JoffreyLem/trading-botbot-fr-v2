@@ -1,17 +1,15 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using RobotAppLibraryV2.ApiConnector.Modeles;
-using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 using Serilog;
 
-namespace RobotAppLibraryV2.ApiConnector.Tcp;
+namespace RobotAppLibraryV2.ApiConnector.Connector.Websocket;
 
-public class TcpConnector : TcpClientWrapperBase, ITcpConnectorSynchronisation
+public class WebsocketConnector : WebSocketConnectorBase
 {
     private readonly SemaphoreSlim _semaphore = new(1, 1);
-    private long lastCommandTimestamp;
 
-    public TcpConnector(Server server, ILogger logger) : base(server.Address, server.MainPort, logger)
+    public WebsocketConnector(string serverUri, ILogger logger) : base(serverUri, logger)
     {
     }
 

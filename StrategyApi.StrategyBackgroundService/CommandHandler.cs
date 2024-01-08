@@ -1,5 +1,4 @@
 using AutoMapper;
-using RobotAppLibraryV2.Api.Xtb;
 using RobotAppLibraryV2.ApiHandler;
 using RobotAppLibraryV2.ApiHandler.Handlers;
 using RobotAppLibraryV2.ApiHandler.Handlers.Enum;
@@ -454,7 +453,7 @@ public class CommandHandler
             throw new CommandException("Api handler already connected, disconnect first");
 
         _logger.Information("Init handler to type {Enum}", command.ApiHandlerEnum);
-        _apiHandlerBase = ApiHandlerFactory.GetApiHandler(command.ApiHandlerEnum, XtbServer.DEMO, _logger);
+        _apiHandlerBase = ApiHandlerFactory.GetApiHandler(command.ApiHandlerEnum, _logger);
 
         command.ResponseSource.SetResult(new AcknowledgementResponse());
     }

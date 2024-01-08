@@ -10,6 +10,12 @@ public class Server
         Description = description;
     }
 
+    public Server(string address, string description)
+    {
+        Address = address;
+        Description = description;
+    }
+
     public string Address { get; set; }
 
     public string Description { get; set; }

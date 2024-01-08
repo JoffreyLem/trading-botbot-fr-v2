@@ -32,7 +32,8 @@ public class CommandCreatorXtb : ICommandCreatorXtb
         writer.WriteStartObject();
         writer.WriteString("userId", credentials.User);
         writer.WriteString("password", credentials.Password);
-        writer.WriteString("type", "dotNET");
+        writer.WriteString("appId", "botbot");
+        writer.WriteString("appName", "botbot");
         writer.WriteEndObject();
         writer.Flush();
 
@@ -414,7 +415,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
             writer.WriteString("command", "getTickPrices");
             writer.WriteString("streamSessionId", StreamingSessionId);
             writer.WriteString("symbol", symbol);
-            writer.WriteNumber("minArrivalTime", 0);
+            writer.WriteNumber("minArrivalTime", 1);
             writer.WriteNumber("maxLevel", 0);
 
             writer.WriteEndObject();
@@ -434,6 +435,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
 
             writer.WriteString("command", "stopTickPrices");
             writer.WriteString("symbol", symbol);
+            writer.WriteString("streamSessionId", StreamingSessionId);
 
 
             writer.WriteEndObject();
@@ -517,7 +519,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
             writer.WriteStartObject();
 
             writer.WriteString("command", "ping");
-
+            writer.WriteString("streamSessionId", StreamingSessionId);
             writer.WriteEndObject();
             writer.Flush();
         }
