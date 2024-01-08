@@ -574,7 +574,7 @@ public class StrategyTest
         // Assert
         _apiHandlerMock.Verify(x => x.GetCurrentTradeAsync(It.IsAny<string>()), Times.Never);
         positionHandlerMock.Verify(x => x.ClosePositionAsync(It.IsAny<Position>()), Times.Never);
-        _apiHandlerMock.Verify(x => x.UnsubscribePrice(It.IsAny<string>()), Times.Once);
+        _apiHandlerMock.Verify(x => x.UnsubscribePrice(It.IsAny<string>()), Times.Never);
         strategyBase.StrategyDisabled.Should().BeTrue();
     }
 
