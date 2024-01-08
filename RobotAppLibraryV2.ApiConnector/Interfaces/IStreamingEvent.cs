@@ -1,8 +1,8 @@
 ﻿using RobotAppLibraryV2.Modeles;
 
-namespace RobotAppLibraryV2.ApiConnector.Tcp.@interface;
+namespace RobotAppLibraryV2.ApiConnector.Interfaces;
 
-public interface ITcpStreamingEvent
+public interface IStreamingEvent
 {
     public event Action<Tick>? TickRecordReceived;
 

@@ -1,9 +1,8 @@
-using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
 using RobotAppLibraryV2.Modeles;
 
 namespace RobotAppLibraryV2.ApiConnector.Interfaces;
 
-public interface ICommandExecutor : ITcpStreamingEvent, ITcpEvent, IDisposable
+public interface ICommandExecutor : IStreamingEvent, IConnectionEvent, IDisposable
 {
     Task ExecuteLoginCommand(Credentials credentials);
 

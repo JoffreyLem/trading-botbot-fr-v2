@@ -4,14 +4,15 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
-using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
+using RobotAppLibraryV2.ApiConnector.Interfaces;
 using Serilog;
 
-namespace RobotAppLibraryV2.ApiConnector.Tcp;
+namespace RobotAppLibraryV2.ApiConnector.Connector.Tcp;
 
-public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
+public abstract class TcpClientWrapperBase : IConnectorBase, IDisposable
 {
     private readonly TcpClient client = new();
+
 
     protected readonly ILogger Logger;
 
@@ -75,8 +76,8 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
             if (completedTask2 == delayTask) throw new TimeoutException("SSL handshake timed out.");
 
-            ApiWriteStream ??= new StreamWriter(stream, leaveOpen: true);
-            ApiReadStream ??= new StreamReader(stream, leaveOpen: true);
+            ApiWriteStream ??= new StreamWriter(stream, leaveOpen: false);
+            ApiReadStream ??= new StreamReader(stream, leaveOpen: false);
             OnConnectedEvent();
         }
         catch (Exception e)
@@ -97,8 +98,8 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
         try
         {
-            await ApiWriteStream.WriteAsync(messageToSend).ConfigureAwait(false);
-            await ApiWriteStream.FlushAsync().ConfigureAwait(false);
+            await ApiWriteStream.WriteAsync(messageToSend);
+            await ApiWriteStream.FlushAsync();
         }
         catch (IOException ex)
         {
@@ -109,20 +110,21 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
 
     public async Task<string> ReceiveAsync(CancellationToken cancellationToken = default)
     {
-        var result = new StringBuilder(client.ReceiveBufferSize);
-        var lastChar = ' ';
+        var result = new StringBuilder();
 
         try
         {
             string? line;
-            while ((line = await ApiReadStream.ReadLineAsync(cancellationToken).ConfigureAwait(false)) != null)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                result.Append(line);
-
-                if (string.IsNullOrEmpty(line) && lastChar == '}')
+                line = await ApiReadStream.ReadLineAsync(cancellationToken);
+                if (line == null) // Si ReadLineAsync retourne null, la fin du stream a été atteinte
                     break;
 
-                if (line.Length != 0) lastChar = line[^1];
+                result.Append(line);
+
+                if (string.IsNullOrEmpty(line) && result.Length > 0 && result[^1] == '}')
+                    break;
             }
 
             return result.ToString();
@@ -138,6 +140,7 @@ public abstract class TcpClientWrapperBase : ITcpConnectorBase, IDisposable
             throw new ApiCommunicationException("Disconnected from server: " + ex.Message, ex);
         }
     }
+
 
     public void Close()
     {

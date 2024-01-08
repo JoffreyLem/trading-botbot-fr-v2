@@ -1,6 +1,6 @@
-﻿namespace RobotAppLibraryV2.ApiConnector.Tcp.@interface;
+﻿namespace RobotAppLibraryV2.ApiConnector.Interfaces;
 
-public interface ITcpConnectorBase : ITcpEvent
+public interface IConnectorBase : IConnectionEvent
 {
     void Dispose();
     Task ConnectAsync();

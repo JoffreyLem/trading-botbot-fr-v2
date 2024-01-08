@@ -1,15 +1,12 @@
-using RobotAppLibraryV2.ApiConnector.Modeles;
-using RobotAppLibraryV2.ApiConnector.Tcp.@interface;
+﻿using RobotAppLibraryV2.ApiConnector.Interfaces;
 using RobotAppLibraryV2.Modeles;
 using Serilog;
 
-namespace RobotAppLibraryV2.ApiConnector.Tcp;
+namespace RobotAppLibraryV2.ApiConnector.Connector.Websocket;
 
-public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamingEvent
+public abstract class WebsocketStreamingConnector : WebSocketConnectorBase, IStreamingEvent
 {
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-
-    public TcpStreamingConnector(Server server, ILogger logger) : base(server.Address, server.StreamingPort, logger)
+    public WebsocketStreamingConnector(string serverUri, ILogger logger) : base(serverUri, logger)
     {
     }
 
@@ -20,6 +17,7 @@ public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamin
     public event Action<News>? NewsRecordReceived;
     public event Action? KeepAliveRecordReceived;
     public event Action<Candle>? CandleRecordReceived;
+
 
     public override async Task ConnectAsync()
     {
@@ -33,10 +31,17 @@ public abstract class TcpStreamingConnector : TcpClientWrapperBase, ITcpStreamin
         t.Start();
     }
 
-    public override Task SendAsync(string messageToSend)
+    public override async Task SendAsync(string messageToSend)
     {
+        var currentTimestamp = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
+        var interval = currentTimestamp - lastCommandTimestamp;
+
+        if (interval < CommandTimeSpanmeSpace.Ticks) await Task.Delay(CommandTimeSpanmeSpace);
+
+        lastCommandTimestamp = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         Logger.Information("Streaming message to send {Message}", messageToSend);
-        return base.SendAsync(messageToSend);
+        await base.SendAsync(messageToSend);
     }
 
     protected abstract void HandleMessage(string message);

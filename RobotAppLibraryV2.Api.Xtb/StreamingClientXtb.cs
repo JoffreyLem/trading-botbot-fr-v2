@@ -1,17 +1,16 @@
 using System.Text.Json;
+using RobotAppLibraryV2.ApiConnector.Connector.Websocket;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using RobotAppLibraryV2.ApiConnector.Interfaces;
-using RobotAppLibraryV2.ApiConnector.Modeles;
-using RobotAppLibraryV2.ApiConnector.Tcp;
 using Serilog;
 
 namespace RobotAppLibraryV2.Api.Xtb;
 
-public class StreamingClientXtb : TcpStreamingConnector
+public class StreamingClientXtb : WebsocketStreamingConnector
 {
     private readonly IReponseAdapter adapter;
 
-    public StreamingClientXtb(Server server, ILogger logger, XtbAdapter adapter) : base(server, logger)
+    public StreamingClientXtb(string serverUri, ILogger logger, IReponseAdapter adapter) : base(serverUri, logger)
     {
         this.adapter = adapter;
     }
