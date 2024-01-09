@@ -9,5 +9,5 @@ public class XtbApiHandler : ApiHandlerBase
     {
     }
 
-    protected override TimeSpan PingInterval => TimeSpan.FromMinutes(9);
+    protected override TimeSpan PingInterval => TimeSpan.FromMinutes(10);
 }

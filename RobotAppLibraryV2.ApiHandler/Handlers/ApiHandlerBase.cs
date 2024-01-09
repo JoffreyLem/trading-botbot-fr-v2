@@ -53,7 +53,8 @@ public abstract class ApiHandlerBase : IApiHandler
             CommandExecutor.ExecuteSubscribeProfitsCommandStreaming();
             CommandExecutor.ExecuteSubscribeNewsCommandStreaming();
             CommandExecutor.ExecuteSubscribeKeepAliveCommandStreaming();
-            CommandExecutor.ExecutePingCommandStreaming();
+            TimerCallback timerCallback = async state => await PingAsync();
+            _pingTimer = new Timer(timerCallback, null, 0, PingInterval.Ticks / TimeSpan.TicksPerMillisecond);
         }
         catch (Exception e)
         {
@@ -95,6 +96,7 @@ public abstract class ApiHandlerBase : IApiHandler
             if (IsConnected())
             {
                 await CommandExecutor.ExecutePingCommand();
+                CommandExecutor.ExecutePingCommandStreaming();
                 LastPing = DateTime.Now;
             }
             else

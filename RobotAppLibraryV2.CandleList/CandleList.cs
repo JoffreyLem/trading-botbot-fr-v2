@@ -74,9 +74,6 @@ public class CandleList : List<Candle>, ICandleList
         {
             LastPrice = tick;
             var candleStartTimeTick = CalculateCandleStartTime(tick.Date);
-            var minutes = timeframe.GetMinuteFromTimeframe();
-
-            var lastDateToVerify = candleStartTimeTick.Date.AddMinutes(minutes);
 
             if (Count == 0 || this.Last().Date != candleStartTimeTick)
             {
@@ -147,14 +144,15 @@ public class CandleList : List<Candle>, ICandleList
     {
         var totalMinutesTimeframe = timeframe.GetMinuteFromTimeframe();
 
-        if (timeframe == Timeframe.Monthly) return new DateTime(tickTime.Year, tickTime.Month, 1, 0, 0, 0);
+        if (timeframe == Timeframe.Monthly)
+            return new DateTime(tickTime.Year, tickTime.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
         if (timeframe == Timeframe.Weekly)
         {
             var dayOfWeek = (int)tickTime.DayOfWeek;
             var daysToSubtract = dayOfWeek == 0 ? 6 : dayOfWeek - 1;
             var startOfWeek = tickTime.Date.AddDays(-daysToSubtract);
-            return new DateTime(startOfWeek.Year, startOfWeek.Month, startOfWeek.Day, 0, 0, 0);
+            return new DateTime(startOfWeek.Year, startOfWeek.Month, startOfWeek.Day, 0, 0, 0, DateTimeKind.Utc);
         }
 
         if (timeframe == Timeframe.Daily)
