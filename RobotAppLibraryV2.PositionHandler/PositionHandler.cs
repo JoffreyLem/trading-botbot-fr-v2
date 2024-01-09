@@ -76,12 +76,11 @@ public class PositionHandler : IPositionHandler
     {
         try
         {
-            _logger.Information("Send position {Id} for update", position.Id);
-
             if (position.StatusPosition is not StatusPosition.Close)
                 if (PositionOpened?.StopLoss != position.StopLoss ||
                     PositionOpened?.TakeProfit != position.TakeProfit)
                 {
+                    _logger.Information("Send position {Id} for update", position.Id);
                     position.StopLoss = Math.Round(position.StopLoss, _precision);
                     position.TakeProfit = Math.Round(position.TakeProfit, _precision);
                     var priceData = position.TypePosition == TypeOperation.Buy ? LastPrice.Ask : LastPrice.Bid;
