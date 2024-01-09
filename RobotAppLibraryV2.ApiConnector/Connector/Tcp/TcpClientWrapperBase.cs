@@ -13,7 +13,6 @@ public abstract class TcpClientWrapperBase : IConnectorBase, IDisposable
 {
     private readonly TcpClient client = new();
 
-
     protected readonly ILogger Logger;
 
     protected StreamReader? ApiReadStream;
@@ -21,8 +20,6 @@ public abstract class TcpClientWrapperBase : IConnectorBase, IDisposable
     protected StreamWriter? ApiWriteStream;
 
     protected TimeSpan CommandTimeSpanmeSpace = TimeSpan.FromMilliseconds(200);
-
-    public volatile bool IsConnected;
 
     protected int Port;
 
@@ -39,6 +36,8 @@ public abstract class TcpClientWrapperBase : IConnectorBase, IDisposable
         ServerAddress = serverAddress;
         Port = port;
     }
+
+    public bool IsConnected => client.Connected;
 
     public void Dispose()
     {
@@ -155,14 +154,12 @@ public abstract class TcpClientWrapperBase : IConnectorBase, IDisposable
 
     protected void OnConnectedEvent()
     {
-        IsConnected = true;
         Logger.Information("{Connector} Connected to {server}:{port}", GetType().Name, ServerAddress, Port);
         Connected?.Invoke(this, EventArgs.Empty);
     }
 
     protected void OnDisconnected()
     {
-        IsConnected = false;
         Logger.Information("{Connector} Disconnected from {server}:{port}", GetType().Name, ServerAddress, Port);
         Disconnected?.Invoke(this, EventArgs.Empty);
     }

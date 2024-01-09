@@ -415,7 +415,7 @@ public class CommandCreatorXtb : ICommandCreatorXtb
             writer.WriteString("command", "getTickPrices");
             writer.WriteString("streamSessionId", StreamingSessionId);
             writer.WriteString("symbol", symbol);
-            writer.WriteNumber("minArrivalTime", 1);
+            writer.WriteNumber("minArrivalTime", 0);
             writer.WriteNumber("maxLevel", 0);
 
             writer.WriteEndObject();
