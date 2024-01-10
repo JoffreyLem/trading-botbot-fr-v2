@@ -406,9 +406,14 @@ public sealed class StrategyBase : IDisposable
             {
                 var positionClone = position.Clone();
                 _logger.Verbose("Try strategy update position {Id}", positionClone.Id);
-                if (StrategyImplementation.ShouldUpdatePosition(position))
+                if (StrategyImplementation.ShouldUpdatePosition(positionClone))
                 {
-                    _logger.Verbose("Position {Id} can be updated", position.Id);
+                    if (positionClone.StopLoss is 0) positionClone.StopLoss = position.StopLoss;
+
+                    if (positionClone.TakeProfit is 0) positionClone.TakeProfit = position.TakeProfit;
+
+                    _logger.Verbose("Position {Id} can be updated | New Sl {Sl} New Tp {Tp}", positionClone.Id,
+                        positionClone.StopLoss, positionClone.TakeProfit);
                     await _positionHandler.UpdatePositionAsync(positionClone);
                 }
                 else

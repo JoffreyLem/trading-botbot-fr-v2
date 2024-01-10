@@ -103,6 +103,9 @@
         <Compile Update="Pages\StrategyCreator\StrategyCreatorIndexBase.cs">
             <DependentUpon>StrategyCreatorIndex.razor</DependentUpon>
         </Compile>
+        <Compile Update="ComposantsCommuns\ToastCustomBase.cs">
+            <DependentUpon>ToastCustomComponent.razor</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 

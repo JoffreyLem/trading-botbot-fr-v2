@@ -23,7 +23,7 @@ public static class ServiceDatabaseExtension
                             TimeSpan.FromSeconds(10),
                             null))
                 .LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableDetailedErrors(), ServiceLifetime.Singleton);
+                .EnableDetailedErrors());
 
         services.AddSingleton<IStrategyFileRepository, StrategyFileRepository>();
 

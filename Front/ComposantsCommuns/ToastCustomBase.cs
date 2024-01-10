@@ -11,7 +11,7 @@ public abstract class ToastCustomComponentBase : ComponentBase
 
     private int ToastFlag = 0;
 
-    protected SfToast ToastObj;
+    protected SfToast? ToastObj;
     protected string ToastTitle = "";
 
     [Inject] private ShowToastService ShowToastService { get; set; }
@@ -28,7 +28,7 @@ public abstract class ToastCustomComponentBase : ComponentBase
                 ToastCssClass = options.CssClass;
 
                 StateHasChanged();
-                ToastObj.ShowAsync();
+                ToastObj?.ShowAsync();
             });
         };
     }
