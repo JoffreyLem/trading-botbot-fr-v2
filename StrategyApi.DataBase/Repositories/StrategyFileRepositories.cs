@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using StrategyApi.DataBase.DbContext;
 using StrategyApi.DataBase.Modeles;
 
@@ -6,21 +7,25 @@ namespace StrategyApi.DataBase.Repositories;
 
 public class StrategyFileRepository : IStrategyFileRepository
 {
-    private readonly StrategyContext _context;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public StrategyFileRepository(StrategyContext context)
+    public StrategyFileRepository(IServiceScopeFactory scopeFactory)
     {
-        _context = context;
+        _scopeFactory = scopeFactory;
     }
 
     public async Task<List<StrategyFile>> GetAllAsync()
     {
-        return await _context.StrategyFiles.ToListAsync();
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<StrategyContext>();
+        return await dbContext.StrategyFiles.ToListAsync();
     }
 
     public async Task<List<StrategyFile>> GetAllWithoutDataAsync()
     {
-        return await _context.StrategyFiles.Select(x => new StrategyFile
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<StrategyContext>();
+        return await dbContext.StrategyFiles.Select(x => new StrategyFile
         {
             Name = x.Name,
             Id = x.Id,
@@ -30,28 +35,36 @@ public class StrategyFileRepository : IStrategyFileRepository
 
     public async Task<StrategyFile> GetByIdAsync(int id)
     {
-        return await _context.StrategyFiles.FindAsync(id);
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<StrategyContext>();
+        return await dbContext.StrategyFiles.FindAsync(id);
     }
 
     public async Task AddAsync(StrategyFile strategyFile)
     {
-        _context.StrategyFiles.Add(strategyFile);
-        await _context.SaveChangesAsync();
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<StrategyContext>();
+        dbContext.StrategyFiles.Add(strategyFile);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(StrategyFile strategyFile)
     {
-        _context.StrategyFiles.Update(strategyFile);
-        await _context.SaveChangesAsync();
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<StrategyContext>();
+        dbContext.StrategyFiles.Update(strategyFile);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
-        var strategyFile = await _context.StrategyFiles.FindAsync(id);
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<StrategyContext>();
+        var strategyFile = await dbContext.StrategyFiles.FindAsync(id);
         if (strategyFile != null)
         {
-            _context.StrategyFiles.Remove(strategyFile);
-            await _context.SaveChangesAsync();
+            dbContext.StrategyFiles.Remove(strategyFile);
+            await dbContext.SaveChangesAsync();
         }
     }
 }
