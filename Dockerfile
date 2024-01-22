@@ -38,7 +38,7 @@ COPY --from=publish /app/publish .
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS="http://*:7000;"
 ENV API_URL=https://robot.botbot.fr/
-ENV SECURE=false
+ENV SECURE=true
 EXPOSE 7000
 
 ENTRYPOINT ["dotnet", "Robot.Server.dll"]
