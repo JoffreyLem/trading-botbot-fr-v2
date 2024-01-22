@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using RobotAppLibraryV2.ApiConnector.Interfaces;
-using RobotAppLibraryV2.ApiHandler;
+using RobotAppLibraryV2.ApiHandler.Exceptions;
 using RobotAppLibraryV2.ApiHandler.Handlers;
 using RobotAppLibraryV2.Modeles;
 using Serilog;

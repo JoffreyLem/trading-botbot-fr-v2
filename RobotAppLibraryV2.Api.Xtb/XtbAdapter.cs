@@ -533,7 +533,7 @@ public class XtbAdapter : IReponseAdapter
             if (errorDescr == null && !string.IsNullOrEmpty(errorCode))
                 errorDescr = ERR_CODE.getErrorDescription(errorCode);
 
-            throw new ApiException(errorCode, errorDescr);
+            throw new ApiException(errorDescr);
         }
     }
 

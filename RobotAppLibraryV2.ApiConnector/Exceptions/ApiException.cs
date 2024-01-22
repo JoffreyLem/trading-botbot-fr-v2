@@ -1,14 +1,22 @@
+using System.Runtime.Serialization;
+
 namespace RobotAppLibraryV2.ApiConnector.Exceptions;
 
 public class ApiException : Exception
 {
-    public ApiException(string errorCode, string errorDescription)
-        : base($"Error Code: {errorCode}, Description: {errorDescription}")
+    public ApiException()
     {
-        ErrorCode = errorCode;
-        ErrorDescription = errorDescription;
     }
 
-    public string ErrorCode { get; }
-    public string ErrorDescription { get; }
+    protected ApiException(SerializationInfo info, StreamingContext context) : base(info, context)
+    {
+    }
+
+    public ApiException(string? message) : base(message)
+    {
+    }
+
+    public ApiException(string? message, Exception? innerException) : base(message, innerException)
+    {
+    }
 }
