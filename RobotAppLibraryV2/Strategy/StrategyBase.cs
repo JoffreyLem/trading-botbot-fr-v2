@@ -213,7 +213,7 @@ public sealed class StrategyBase : IDisposable
         RunOnTick = StrategyImplementation.RunOnTick;
         UpdateOnTick = StrategyImplementation.UpdateOnTick;
         CloseOnTick = StrategyImplementation.CloseOnTick;
-        StrategyImplementation.CanRun = true;
+        StrategyImplementation.CanRun = false;
     }
 
     private void InitIndicator()

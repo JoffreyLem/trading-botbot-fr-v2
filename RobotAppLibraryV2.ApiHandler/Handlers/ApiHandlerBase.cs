@@ -1,4 +1,5 @@
 using RobotAppLibraryV2.ApiConnector.Interfaces;
+using RobotAppLibraryV2.ApiHandler.Exceptions;
 using RobotAppLibraryV2.Modeles;
 using Serilog;
 
@@ -101,7 +102,7 @@ public abstract class ApiHandlerBase : IApiHandler
             }
             else
             {
-                Logger.Warning("API not connected");
+                Logger.Warning("Can't ping because API not connected");
             }
         }
         catch (Exception e)
@@ -340,7 +341,6 @@ public abstract class ApiHandlerBase : IApiHandler
         Disconnected?.Invoke(this, EventArgs.Empty);
     }
 
-    // TODO : à retirer en faisant passer l'appel dans l'update directement
     private void TcpStreamingConnectorOnProfitRecordReceived(Position? obj)
     {
         OnPositionUpdatedEvent(obj);

@@ -1,22 +1,14 @@
 ﻿using System.Reflection;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.DependencyModel;
 
 namespace RobotAppLibraryV2.StrategyDynamiqCompiler;
 
 public static class StrategyDynamiqCompiler
 {
-    public static string ConvertByteToString(byte[] code)
-    {
-        return Encoding.UTF8.GetString(code);
-    }
-
-    public static bool TryCompileSourceCode(string sourceCode, out EmitResult compileResult,
-        out byte[] compiledAssemblyBytes, out IEnumerable<Diagnostic> compileErrors)
+    public static byte[] TryCompileSourceCode(string sourceCode)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
 
@@ -54,11 +46,12 @@ public static class StrategyDynamiqCompiler
             .WithOptions(compilationOptions);
 
         using var ms = new MemoryStream();
-        compileResult = compilation.Emit(ms);
-        compileErrors = compileResult.Diagnostics;
-        compiledAssemblyBytes = compileResult.Success ? ms.ToArray() : null;
+        var compileResult = compilation.Emit(ms);
 
-        return compileResult.Success;
+        if (compileResult.Success) return ms.ToArray();
+        IEnumerable<Diagnostic> compileErrors = compileResult.Diagnostics;
+        throw new CompilationException("La compilation a échoué.",
+            compileErrors.Where(error => error.Severity == DiagnosticSeverity.Error));
     }
 
     public static string? GetFirstClassName(string sourceCode)

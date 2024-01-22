@@ -46,17 +46,21 @@ public class BackTest : IDisposable
     {
         try
         {
+            var logger = Serilog.Core.Logger.None;
+            StrategyImplementationBase.Logger = logger;
             LastBacktestExecution = DateTime.Now;
             BacktestRunning = true;
             var backTestParameters =
                 new BacktestParameters(Symbol, Timeframe, balance, minSpread, maxSpread);
             using var apiHandler =
-                new BacktestApiHandler(new BackTestApiExecutor(ApihandlerProxy, Logger, backTestParameters),
-                    Logger.ForContext<BackTest>());
-            apiHandler.Disconnected += BackTestEnd;
+                new BacktestApiHandler(new BackTestApiExecutor(ApihandlerProxy, logger, backTestParameters),
+                    logger);
+
             _strategyBase = new StrategyBase(StrategyImplementationBase, Symbol, Timeframe, Timeframe2, apiHandler,
-                Logger, new StrategyServiceFactory());
+                logger, new StrategyServiceFactory());
+            StrategyImplementationBase.CanRun = true;
             await apiHandler.StartBacktest();
+            BackTestEnd();
         }
         catch (Exception e)
         {
@@ -66,7 +70,7 @@ public class BackTest : IDisposable
         }
     }
 
-    private void BackTestEnd(object? sender, EventArgs e)
+    private void BackTestEnd()
     {
         BacktestRunning = false;
         Result = new Result

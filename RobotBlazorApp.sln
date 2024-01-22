@@ -1,52 +1,53 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RobotLibrary", "RobotLibrary", "{6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RobotApi", "RobotApi", "{24D0A6B9-67D0-4651-96B9-9CAF09F43A6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2", "RobotAppLibraryV2\RobotAppLibraryV2.csproj", "{E932EFC8-0812-4B59-AB55-9E2A0D2B5208}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2", "RobotAppLibraryV2\RobotAppLibraryV2.csproj", "{E932EFC8-0812-4B59-AB55-9E2A0D2B5208}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.Tests", "RobotAppLibraryV2.Tests\RobotAppLibraryV2.Tests.csproj", "{370F30B5-B949-4756-A760-6F9A61773927}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.Tests", "RobotAppLibraryV2.Tests\RobotAppLibraryV2.Tests.csproj", "{370F30B5-B949-4756-A760-6F9A61773927}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrategyApi.Mail", "StrategyApi.Mail\StrategyApi.Mail.csproj", "{FDC74594-168E-41B8-A2E5-388CF2BE1FD1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrategyApi.StrategyBackgroundService", "StrategyApi.StrategyBackgroundService\StrategyApi.StrategyBackgroundService.csproj", "{8C393396-54A7-4A79-A7EF-4F343B4EFE83}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Front", "Front\Front.csproj", "{0A7F7CA2-CD5C-499D-9E1D-903A5895B9EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Robot.Mail", "Robot.Mail\Robot.Mail.csproj", "{FDC74594-168E-41B8-A2E5-388CF2BE1FD1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{D81FFD52-342A-41BE-B48D-953BF5DFA1C4}"
 	ProjectSection(SolutionItems) = preProject
 		.gitlab-ci.yml = .gitlab-ci.yml
-		Dockerfile = Dockerfile
-		docker-compose.yml = docker-compose.yml
 		docker-compose-dev.yml = docker-compose-dev.yml
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.ApiConnector", "RobotAppLibraryV2.ApiConnector\RobotAppLibraryV2.ApiConnector.csproj", "{1F71C404-E4FF-4E43-B535-E271E4992F00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.ApiConnector", "RobotAppLibraryV2.ApiConnector\RobotAppLibraryV2.ApiConnector.csproj", "{1F71C404-E4FF-4E43-B535-E271E4992F00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.Api.Xtb", "RobotAppLibraryV2.Api.Xtb\RobotAppLibraryV2.Api.Xtb.csproj", "{B9192C42-9B3F-4F35-B70A-6E1C185EBE10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.Api.Xtb", "RobotAppLibraryV2.Api.Xtb\RobotAppLibraryV2.Api.Xtb.csproj", "{B9192C42-9B3F-4F35-B70A-6E1C185EBE10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.Modeles", "RobotAppLibraryV2.Modeles\RobotAppLibraryV2.Modeles.csproj", "{FB1A1DA0-6203-469E-AFE4-57DAAE78F199}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.Modeles", "RobotAppLibraryV2.Modeles\RobotAppLibraryV2.Modeles.csproj", "{FB1A1DA0-6203-469E-AFE4-57DAAE78F199}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.Utils", "RobotAppLibraryV2.Utils\RobotAppLibraryV2.Utils.csproj", "{3777056E-F840-455F-B2DF-B4F57EB72DF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.Utils", "RobotAppLibraryV2.Utils\RobotAppLibraryV2.Utils.csproj", "{3777056E-F840-455F-B2DF-B4F57EB72DF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrategyApi.DataBase", "StrategyApi.DataBase\StrategyApi.DataBase.csproj", "{BC7F141D-6321-4AF3-871D-08DAA3A91CA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Robot.DataBase", "Robot.DataBase\Robot.DataBase.csproj", "{BC7F141D-6321-4AF3-871D-08DAA3A91CA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.Exposition", "RobotAppLibraryV2.Exposition\RobotAppLibraryV2.Exposition.csproj", "{C1527704-9710-4E34-B888-584715088981}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.Exposition", "RobotAppLibraryV2.Exposition\RobotAppLibraryV2.Exposition.csproj", "{C1527704-9710-4E34-B888-584715088981}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.CandleList", "RobotAppLibraryV2.CandleList\RobotAppLibraryV2.CandleList.csproj", "{AB20F021-A771-439E-B3E6-ABA3D6545440}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.CandleList", "RobotAppLibraryV2.CandleList\RobotAppLibraryV2.CandleList.csproj", "{AB20F021-A771-439E-B3E6-ABA3D6545440}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.ApiHandler", "RobotAppLibraryV2.ApiHandler\RobotAppLibraryV2.ApiHandler.csproj", "{D2033A1C-E882-4300-8743-784126B00DD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.ApiHandler", "RobotAppLibraryV2.ApiHandler\RobotAppLibraryV2.ApiHandler.csproj", "{D2033A1C-E882-4300-8743-784126B00DD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.Indicators", "RobotAppLibraryV2.Indicators\RobotAppLibraryV2.Indicators.csproj", "{9154C7BD-A8F7-45FE-8C14-A7709C4FD3A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.Indicators", "RobotAppLibraryV2.Indicators\RobotAppLibraryV2.Indicators.csproj", "{9154C7BD-A8F7-45FE-8C14-A7709C4FD3A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.MoneyManagement", "RobotAppLibraryV2.MoneyManagement\RobotAppLibraryV2.MoneyManagement.csproj", "{B3371832-038E-41D4-9E81-8E388B38E24B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.MoneyManagement", "RobotAppLibraryV2.MoneyManagement\RobotAppLibraryV2.MoneyManagement.csproj", "{B3371832-038E-41D4-9E81-8E388B38E24B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.Results", "RobotAppLibraryV2.Results\RobotAppLibraryV2.Results.csproj", "{46B642FD-4BCD-4A1E-B74C-0A63AC3F27F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.Results", "RobotAppLibraryV2.Results\RobotAppLibraryV2.Results.csproj", "{46B642FD-4BCD-4A1E-B74C-0A63AC3F27F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.PositionHandler", "RobotAppLibraryV2.PositionHandler\RobotAppLibraryV2.PositionHandler.csproj", "{32B5864D-083E-42B3-96D8-D77220E78C64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.PositionHandler", "RobotAppLibraryV2.PositionHandler\RobotAppLibraryV2.PositionHandler.csproj", "{32B5864D-083E-42B3-96D8-D77220E78C64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotAppLibraryV2.StrategyDynamiqCompiler", "RobotAppLibraryV2.StrategyDynamiqCompiler\RobotAppLibraryV2.StrategyDynamiqCompiler.csproj", "{0D9A0295-2E06-4640-AE3D-9381568AC5AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobotAppLibraryV2.StrategyDynamiqCompiler", "RobotAppLibraryV2.StrategyDynamiqCompiler\RobotAppLibraryV2.StrategyDynamiqCompiler.csproj", "{0D9A0295-2E06-4640-AE3D-9381568AC5AB}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "frontv2.client", "frontv2.client\frontv2.client.esproj", "{EB93FF07-6AA1-48C2-B67C-0393CC32B6C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Robot.Server", "Robot.Server\Robot.Server.csproj", "{0B0021F8-BF23-4CA7-96FC-65036E5B6095}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,14 +67,6 @@ Global
 		{FDC74594-168E-41B8-A2E5-388CF2BE1FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDC74594-168E-41B8-A2E5-388CF2BE1FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDC74594-168E-41B8-A2E5-388CF2BE1FD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8C393396-54A7-4A79-A7EF-4F343B4EFE83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8C393396-54A7-4A79-A7EF-4F343B4EFE83}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8C393396-54A7-4A79-A7EF-4F343B4EFE83}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8C393396-54A7-4A79-A7EF-4F343B4EFE83}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A7F7CA2-CD5C-499D-9E1D-903A5895B9EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A7F7CA2-CD5C-499D-9E1D-903A5895B9EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A7F7CA2-CD5C-499D-9E1D-903A5895B9EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A7F7CA2-CD5C-499D-9E1D-903A5895B9EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1F71C404-E4FF-4E43-B535-E271E4992F00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F71C404-E4FF-4E43-B535-E271E4992F00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F71C404-E4FF-4E43-B535-E271E4992F00}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -126,17 +119,25 @@ Global
 		{0D9A0295-2E06-4640-AE3D-9381568AC5AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D9A0295-2E06-4640-AE3D-9381568AC5AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D9A0295-2E06-4640-AE3D-9381568AC5AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB93FF07-6AA1-48C2-B67C-0393CC32B6C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB93FF07-6AA1-48C2-B67C-0393CC32B6C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB93FF07-6AA1-48C2-B67C-0393CC32B6C6}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB93FF07-6AA1-48C2-B67C-0393CC32B6C6}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{0B0021F8-BF23-4CA7-96FC-65036E5B6095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B0021F8-BF23-4CA7-96FC-65036E5B6095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B0021F8-BF23-4CA7-96FC-65036E5B6095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B0021F8-BF23-4CA7-96FC-65036E5B6095}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E932EFC8-0812-4B59-AB55-9E2A0D2B5208} = {6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}
 		{370F30B5-B949-4756-A760-6F9A61773927} = {6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}
-		{FDC74594-168E-41B8-A2E5-388CF2BE1FD1} = {24D0A6B9-67D0-4651-96B9-9CAF09F43A6F}
-		{8C393396-54A7-4A79-A7EF-4F343B4EFE83} = {24D0A6B9-67D0-4651-96B9-9CAF09F43A6F}
 		{1F71C404-E4FF-4E43-B535-E271E4992F00} = {6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}
 		{B9192C42-9B3F-4F35-B70A-6E1C185EBE10} = {6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}
 		{FB1A1DA0-6203-469E-AFE4-57DAAE78F199} = {6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}
 		{3777056E-F840-455F-B2DF-B4F57EB72DF1} = {6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}
-		{BC7F141D-6321-4AF3-871D-08DAA3A91CA1} = {24D0A6B9-67D0-4651-96B9-9CAF09F43A6F}
 		{C1527704-9710-4E34-B888-584715088981} = {6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}
 		{AB20F021-A771-439E-B3E6-ABA3D6545440} = {6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}
 		{D2033A1C-E882-4300-8743-784126B00DD8} = {6AC39472-BAFA-4DF9-9EEE-D08C76C2B9E9}

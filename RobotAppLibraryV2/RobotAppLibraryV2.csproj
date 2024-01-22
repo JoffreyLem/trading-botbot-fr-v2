@@ -3,13 +3,13 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Serilog" Version="3.0.1"/>
-        <PackageReference Include="Skender.Stock.Indicators" Version="2.4.11"/>
+        <PackageReference Include="Serilog" Version="3.1.1"/>
+        <PackageReference Include="Skender.Stock.Indicators" Version="2.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -36,7 +36,7 @@
 
     <ItemGroup>
         <Reference Include="Skender.Stock.Indicators">
-            <HintPath>..\..\..\.nuget\packages\skender.stock.indicators\2.4.10\lib\net7.0\Skender.Stock.Indicators.dll</HintPath>
+            <HintPath>..\..\..\.nuget\packages\skender.stock.indicators\2.4.10\lib\net8.0\Skender.Stock.Indicators.dll</HintPath>
         </Reference>
     </ItemGroup>
 
