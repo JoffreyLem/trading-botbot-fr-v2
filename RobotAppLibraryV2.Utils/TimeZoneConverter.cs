@@ -1,8 +1,11 @@
+using System.Runtime.InteropServices;
+
 namespace RobotAppLibraryV2.Utils;
 
 public static class TimeZoneConverter
 {
-    private static readonly string CentralEuropeanTimeZoneId = "Europe/Paris";
+    private static readonly string CentralEuropeanTimeZoneId =
+        RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Romance Standard Time" : "Europe/Paris";
 
     public static DateTime ConvertCetCestToUtc(DateTime cetDateTime)
     {

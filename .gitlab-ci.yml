@@ -1,7 +1,54 @@
-include:
-  - project: 'tradingbot3941224/cicd'
-    ref: main
-    file: '.gitlab-ci.yml'
-
+image: mcr.microsoft.com/dotnet/sdk:8.0
 variables:
   STACK_NAME: robot-app
+
+
+stages:
+  - test
+  - build
+  - deploy
+
+test:
+  stage: test
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - 'dotnet restore'
+    - 'dotnet test --no-restore'
+  artifacts:
+    paths:
+      - ./*
+
+create_docker_image:
+  stage: build
+  variables:
+    GIT_STRATEGY: none
+  image: docker:latest
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build --build-arg DATABASE_CA_CERTIFICATE=${DATABASE_CA_CERTIFICATE} -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
+  needs: [ "test" ]
+  dependencies:
+    - test
+  only:
+    - main
+
+
+deploy_to_swarm:
+  stage: deploy
+  image: docker:latest
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker stack deploy --with-registry-auth -c docker-compose.yml $STACK_NAME
+  only:
+    - main
+  needs: [ "create_docker_image" ]
+  dependencies:
+    - create_docker_image
+  environment:
+    name: production
+    url: https://robot.botbot.fr
+
