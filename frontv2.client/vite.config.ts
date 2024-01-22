@@ -5,6 +5,9 @@ import path from "path";
 import child_process from "child_process";
 import { fileURLToPath } from "node:url";
 
+const API_URL = process.env.API_URL || "https://localhost:7134/";
+const SECURE = process.env.SECURE === "true";
+
 const baseFolder =
   process.env.APPDATA !== undefined && process.env.APPDATA !== ""
     ? `${process.env.APPDATA}/ASP.NET/https`
@@ -62,24 +65,24 @@ export default defineConfig({
   server: {
     proxy: {
       "^/api/ApiHandler": {
-        target: "https://localhost:7134/",
-        secure: false,
+        target: API_URL,
+        secure: SECURE,
         changeOrigin: true,
       },
       "^/api/Strategy": {
-        target: "https://localhost:7134/",
-        secure: false,
+        target: API_URL,
+        secure: SECURE,
         changeOrigin: true,
       },
       "^/api/StrategyGenerator": {
-        target: "https://localhost:7134/",
-        secure: false,
+        target: API_URL,
+        secure: SECURE,
         changeOrigin: true,
       },
       "^/infoClient": {
-        target: "https://localhost:7134/",
+        target: API_URL,
         ws: true,
-        secure: false,
+        secure: SECURE,
         changeOrigin: true,
       },
     },
