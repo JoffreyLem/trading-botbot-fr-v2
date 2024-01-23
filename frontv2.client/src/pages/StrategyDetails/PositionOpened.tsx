@@ -83,7 +83,7 @@ const PositionOpened: React.FC<{
     return <div>Erreur: {error}</div>;
   }
 
-  return <PositionComponent positions={positions} positionClosed={true} />;
+  return <PositionComponent positions={positions} positionClosed={false} />;
 };
 
 export default PositionOpened;

@@ -3,7 +3,6 @@ using AutoMapper;
 using Microsoft.CodeAnalysis;
 using Robot.DataBase.Modeles;
 using Robot.DataBase.Repositories;
-using Robot.Server.Dto;
 using Robot.Server.Dto.Response;
 using RobotAppLibraryV2.ApiConnector.Exceptions;
 using RobotAppLibraryV2.StrategyDynamiqCompiler;
@@ -94,7 +93,7 @@ public class StrategyGeneratorService : IStrategyGeneratorService
             return new StrategyFileDto
             {
                 Id = data.Id,
-                Data = Encoding.UTF8.GetString(data.Data),
+                Data = Convert.ToBase64String(data.Data),
                 LastDateUpdate = data.LastDateUpdate,
                 Name = data.Name,
                 Version = data.Version
