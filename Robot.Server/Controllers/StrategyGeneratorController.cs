@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Robot.Server.Dto.Response;
 using Robot.Server.Services;
 
 namespace Robot.Server.Controllers;
@@ -39,9 +38,9 @@ public class StrategyGeneratorController(IStrategyGeneratorService strategyGener
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateStrategyFile([FromBody] StrategyFileDto strategyFile)
+    public async Task<IActionResult> UpdateStrategyFile([FromRoute] int id, [FromBody] string file)
     {
-        var updatedStrategy = await strategyGeneratorService.UpdateStrategyFile(strategyFile);
+        var updatedStrategy = await strategyGeneratorService.UpdateStrategyFile(id, file);
         return Ok(updatedStrategy);
     }
 }

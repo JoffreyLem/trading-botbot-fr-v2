@@ -7,7 +7,6 @@ import StrategyDetails from "./pages/StrategyDetails/StrategyDetails.tsx";
 import Api from "./pages/Api/Api.tsx";
 
 import StrategyCreator from "./pages/StrategyCreator/StrategyCreator.tsx";
-import CodeEditor from "./pages/StrategyCreator/CodeEditor.tsx";
 
 const NotFound = () => {
   return (
@@ -76,11 +75,6 @@ const Layout = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/api" element={<Api />} />
             <Route path="/strategy-list" element={<StrategyCreator />} />
-            <Route
-              path="/strategy-creator/:strategyId"
-              element={<CodeEditor />}
-            />
-            <Route path="/strategy-creator" element={<CodeEditor />} />
             <Route path="/strategy/:strategyId" element={<StrategyDetails />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

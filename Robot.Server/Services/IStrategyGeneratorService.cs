@@ -1,5 +1,4 @@
-﻿using Robot.Server.Dto;
-using Robot.Server.Dto.Response;
+﻿using Robot.Server.Dto.Response;
 
 namespace Robot.Server.Services;
 
@@ -13,5 +12,5 @@ public interface IStrategyGeneratorService
 
     Task DeleteStrategyFile(int id);
 
-    Task<StrategyUpdateResponseDto> UpdateStrategyFile(StrategyFileDto strategyFile);
+    Task<StrategyUpdateResponseDto> UpdateStrategyFile(int id, string data);
 }

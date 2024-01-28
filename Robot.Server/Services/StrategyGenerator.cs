@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using AutoMapper;
-using Microsoft.CodeAnalysis;
 using Robot.DataBase.Modeles;
 using Robot.DataBase.Repositories;
 using Robot.Server.Dto.Response;
@@ -66,8 +65,7 @@ public class StrategyGeneratorService : IStrategyGeneratorService
             await _strategyFileRepository.AddAsync(strategyFile);
 
             strategyCreateRsp.Created = true;
-            strategyCreateRsp.StrategyFile = _mapper.Map<StrategyFileDto>(strategyFile);
-            ;
+
 
             if (instance is IDisposable disposable) disposable.Dispose();
 
@@ -106,12 +104,12 @@ public class StrategyGeneratorService : IStrategyGeneratorService
         }
     }
 
-    public async Task<StrategyUpdateResponseDto> UpdateStrategyFile(StrategyFileDto strategyFile)
+    public async Task<StrategyUpdateResponseDto> UpdateStrategyFile(int id, string data)
     {
         var strategyCreateRsp = new StrategyUpdateResponseDto();
         try
         {
-            var sourceCode = strategyFile.Data;
+            var sourceCode = data;
 
             var compiledCode = StrategyDynamiqCompiler.TryCompileSourceCode(sourceCode);
 
@@ -141,7 +139,7 @@ public class StrategyGeneratorService : IStrategyGeneratorService
                 return strategyCreateRsp;
             }
 
-            var strategyFileSelected = await _strategyFileRepository.GetByIdAsync(strategyFile.Id);
+            var strategyFileSelected = await _strategyFileRepository.GetByIdAsync(id);
 
             strategyFileSelected.Name = nameValue;
             strategyFileSelected.Version = versionValue;
@@ -151,7 +149,7 @@ public class StrategyGeneratorService : IStrategyGeneratorService
             await _strategyFileRepository.UpdateAsync(strategyFileSelected);
 
             strategyCreateRsp.Created = true;
-            strategyCreateRsp.StrategyFile = strategyFile;
+
 
             if (instance is IDisposable disposable) disposable.Dispose();
 
@@ -161,8 +159,8 @@ public class StrategyGeneratorService : IStrategyGeneratorService
         }
         catch (System.Exception e) when (e is not CompilationException)
         {
-            _logger?.Error(e, "An exception occurred while updating strategyfile {id}", strategyFile.Id);
-            throw new ApiException($"An error occured while updating strategy {strategyFile.Id}");
+            _logger?.Error(e, "An exception occurred while updating strategyfile {id}", id);
+            throw new ApiException($"An error occured while updating strategy {id}");
         }
 
         return strategyCreateRsp;
@@ -200,13 +198,5 @@ public class StrategyGeneratorService : IStrategyGeneratorService
             _logger.Error(e, "Can't delete strategy {id}", id);
             throw new System.Exception();
         }
-    }
-
-
-    private void HandleCompilationErrors(IEnumerable<Diagnostic> compileErrors, StrategyCreatedResponseDto response)
-    {
-        foreach (var error in compileErrors)
-            if (error.Severity == DiagnosticSeverity.Error)
-                response.Errors?.Add(error.ToString());
     }
 }
