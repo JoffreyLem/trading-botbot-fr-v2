@@ -1,6 +1,6 @@
 ﻿using RobotAppLibraryV2.Modeles;
 
-namespace RobotAppLibraryV2.CandleList;
+namespace RobotAppLibraryV2.Exposition;
 
 public interface ICandleList : IList<Candle>
 {

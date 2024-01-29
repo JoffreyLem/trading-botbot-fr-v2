@@ -20,6 +20,8 @@
 
         <ProjectReference Include="..\RobotAppLibraryV2.ApiHandler\RobotAppLibraryV2.ApiHandler.csproj"/>
 
+        <ProjectReference Include="..\RobotAppLibraryV2.CandleList\RobotAppLibraryV2.CandleList.csproj"/>
+
         <ProjectReference Include="..\RobotAppLibraryV2.Exposition\RobotAppLibraryV2.Exposition.csproj"/>
 
         <ProjectReference Include="..\RobotAppLibraryV2.Indicators\RobotAppLibraryV2.Indicators.csproj"/>

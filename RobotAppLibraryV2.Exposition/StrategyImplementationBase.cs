@@ -1,5 +1,4 @@
-﻿using RobotAppLibraryV2.CandleList;
-using RobotAppLibraryV2.Modeles;
+﻿using RobotAppLibraryV2.Modeles;
 using Serilog;
 
 namespace RobotAppLibraryV2.Exposition;
