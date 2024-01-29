@@ -94,16 +94,9 @@ public abstract class ApiHandlerBase : IApiHandler
     {
         try
         {
-            if (IsConnected())
-            {
-                await CommandExecutor.ExecutePingCommand();
-                CommandExecutor.ExecutePingCommandStreaming();
-                LastPing = DateTime.Now;
-            }
-            else
-            {
-                Logger.Warning("Can't ping because API not connected");
-            }
+            await CommandExecutor.ExecutePingCommand();
+            CommandExecutor.ExecutePingCommandStreaming();
+            LastPing = DateTime.Now;
         }
         catch (Exception e)
         {
