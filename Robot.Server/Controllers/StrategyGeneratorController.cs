@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Robot.Server.Dto.Response;
 using Robot.Server.Services;
 
 namespace Robot.Server.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class StrategyGeneratorController(IStrategyGeneratorService strategyGeneratorService) : ControllerBase
@@ -42,5 +41,23 @@ public class StrategyGeneratorController(IStrategyGeneratorService strategyGener
     {
         var updatedStrategy = await strategyGeneratorService.UpdateStrategyFile(id, file);
         return Ok(updatedStrategy);
+    }
+
+
+    [HttpGet("GetTemplate")]
+    public async Task<IActionResult> GetTemplate()
+    {
+        var filePath = "Services/Template/StrategyBaseTemplate.cs";
+        if (System.IO.File.Exists(filePath))
+        {
+            var content = await System.IO.File.ReadAllTextAsync(filePath);
+            return Ok(new StrategyFileDto
+            {
+                Data = content,
+                Name = "StrategyBaseTemplate"
+            });
+        }
+
+        return NotFound("Template file not found.");
     }
 }

@@ -91,7 +91,7 @@ public class StrategyGeneratorService : IStrategyGeneratorService
             return new StrategyFileDto
             {
                 Id = data.Id,
-                Data = Convert.ToBase64String(data.Data),
+                Data = Encoding.UTF8.GetString(data.Data),
                 LastDateUpdate = data.LastDateUpdate,
                 Name = data.Name,
                 Version = data.Version

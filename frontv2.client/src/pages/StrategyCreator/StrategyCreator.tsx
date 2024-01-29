@@ -39,7 +39,7 @@ const StrategyCreator: React.FC = () => {
   };
 
   const handleCreate = () => {
-    window.open("vscode://botbot.botbot-ext?isForCreate=true");
+    window.open("vscode://botbot.botbot-ext");
   };
 
   if (error) {

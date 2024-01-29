@@ -14,7 +14,7 @@ public abstract class StrategyImplementationBase
     public ILogger Logger;
     public Func<TypeOperation, decimal, decimal, long?, double?, double, Task> OpenPositionAction { get; set; }
 
-    public string Name => GetType().Name;
+    public virtual string Name => GetType().Name;
 
     public abstract string? Version { get; }
     public ICandleList History { get; set; }
