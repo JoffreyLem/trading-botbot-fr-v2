@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\RobotAppLibraryV2.ApiHandler\RobotAppLibraryV2.ApiHandler.csproj"/>
+        <ProjectReference Include="..\RobotAppLibraryV2.Exposition\RobotAppLibraryV2.Exposition.csproj"/>
         <ProjectReference Include="..\RobotAppLibraryV2.Modeles\RobotAppLibraryV2.Modeles.csproj"/>
         <ProjectReference Include="..\RobotAppLibraryV2.Utils\RobotAppLibraryV2.Utils.csproj"/>
     </ItemGroup>

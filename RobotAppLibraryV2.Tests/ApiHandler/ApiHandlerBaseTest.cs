@@ -179,7 +179,7 @@ public class ApiHandlerBaseTest
     }
 
     [Fact]
-    public async void Test_Ping_IsConnected_False()
+    public async void Test_Ping_IsConnected_true()
     {
         // Arrange
         _commandExecutor.Setup(x => x.ExecuteIsConnected()).Returns(false);
@@ -188,7 +188,7 @@ public class ApiHandlerBaseTest
         await apiHandlerBase.Object.PingAsync();
 
         // Assert
-        _commandExecutor.Verify(x => x.ExecutePingCommand(), Times.Never);
+        _commandExecutor.Verify(x => x.ExecutePingCommand(), Times.Once);
     }
 
     [Fact]

@@ -58,6 +58,9 @@
         <Compile Update="Services\StrategyHandlerService.cs">
             <DependentUpon>IStrategyHandlerService.cs</DependentUpon>
         </Compile>
+        <Compile Update="Services\Template\StrategyBaseTemplate.cs">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Compile>
     </ItemGroup>
 
 </Project>

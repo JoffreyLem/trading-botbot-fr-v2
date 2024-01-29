@@ -4,9 +4,10 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=E932EFC8_002D0812_002D4B59_002DAB55_002D9E2A0D2B5208_002Fd_003AApiHandler_002Ff_003AApiHandlerFactory_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=E932EFC8_002D0812_002D4B59_002DAB55_002D9E2A0D2B5208_002Fd_003AMoneyManagement_002Ff_003ALotValueCalculator_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=E932EFC8_002D0812_002D4B59_002DAB55_002D9E2A0D2B5208_002Fd_003AMoneyManagement_002Ff_003AMoneyManagement_002Ecs/@EntryIndexedValue">ExplicitlyExcluded</s:String>
-	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2fa4cb7f_002Dabbf_002D4742_002Db0a9_002D120aadec58c4/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;RobotLibrary&amp;gt;\&amp;lt;RobotAppLibraryV2.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b57c9393_002D56c6_002D4569_002Dae22_002D68eade4a8ad3/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Solution /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	
+	
 	
 	</wpf:ResourceDictionary>

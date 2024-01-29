@@ -4,13 +4,13 @@ import { useMsal } from "@azure/msal-react";
 import LoadSpinner from "../../common/LoadSpinner.tsx";
 
 import { strategyGeneratorService } from "../../services/StrategyGeneratorService.ts";
-import { useNavigate } from "react-router-dom";
+
 import { ApiError } from "../../modeles/ApiError.ts";
 import ErrorComponent from "../../common/ErrorComponent.tsx";
 
 const StrategyCreator: React.FC = () => {
   const [strategyFiles, setStrategyFiles] = useState<StrategyFile[]>([]);
-  const navigate = useNavigate();
+
   const [actionError, setActionError] = useState<ApiError>();
   const [error, setError] = useState<string>("");
   const { instance } = useMsal();
@@ -26,7 +26,7 @@ const StrategyCreator: React.FC = () => {
   }, [instance]);
 
   const handleUpdate = (strategyId: number) => {
-    navigate(`/strategy-creator/${strategyId}`);
+    window.open(`vscode://botbot.botbot-ext?id=${strategyId}`);
   };
 
   const handleDelete = (id: number) => {
@@ -39,7 +39,7 @@ const StrategyCreator: React.FC = () => {
   };
 
   const handleCreate = () => {
-    navigate("/strategy-creator?isForCreate=true");
+    window.open("vscode://botbot.botbot-ext");
   };
 
   if (error) {

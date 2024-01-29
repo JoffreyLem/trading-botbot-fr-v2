@@ -1,4 +1,5 @@
 using RobotAppLibraryV2.ApiHandler;
+using RobotAppLibraryV2.Exposition;
 using RobotAppLibraryV2.Modeles;
 using RobotAppLibraryV2.Utils;
 using Serilog;
