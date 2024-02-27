@@ -4,7 +4,7 @@ services:
     image: registry.gitlab.com/tradingbot3941224/robotapp:latest
     restart: always
     networks:
-      - proxy
+      - bot
     environment:
       - SmtpSettings__Host=smtp.gmail.com
       - SmtpSettings__Port=587
@@ -15,5 +15,5 @@ services:
       - ConnectionStrings__DefaultConnection=server=51.195.104.173;Database=robot;Uid=admin;Pwd=${DATABASE_PASSWORD};SslMode=Required;
 
 networks:
-  proxy:
+  bot:
     external: true
