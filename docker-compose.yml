@@ -5,6 +5,8 @@ services:
     restart: always
     networks:
       - bot
+    ports:
+      - "127.0.0.1:7000:7000"
     environment:
       - SmtpSettings__Host=smtp.gmail.com
       - SmtpSettings__Port=587
