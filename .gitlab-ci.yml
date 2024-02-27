@@ -55,13 +55,14 @@ package_libraries:
   dependencies:
     - test
 
-
-deploy_to_swarm:
+deploy_with_compose:
   stage: deploy
-  image: docker:latest
+  image: docker/compose:latest
+  services:
+    - docker:dind
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker stack deploy --with-registry-auth -c docker-compose.yml $STACK_NAME
+    - docker-compose -f docker-compose.yml up -d
   only:
     - main
   needs: [ "create_docker_image" ]
@@ -70,4 +71,5 @@ deploy_to_swarm:
   environment:
     name: production
     url: https://robot.botbot.fr
+
 
