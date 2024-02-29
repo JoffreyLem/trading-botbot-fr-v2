@@ -2,8 +2,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Robot.DataBase;
+using Robot.DataBase.DbContext;
 using Robot.Server;
 using Robot.Server.Hubs;
 using Robot.Server.Mapper;
@@ -52,6 +54,13 @@ builder.Services.AddHealthChecks();
 builder.Services.AddStrategyDbContext(builder.Configuration);
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<StrategyContext>();
+    context.Database.Migrate();
+}
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
