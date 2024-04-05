@@ -1,34 +1,35 @@
 ﻿import React, { useEffect, useState } from "react";
 
 import { Position } from "../../modeles/Position";
-import { useMsal } from "@azure/msal-react";
-import { strategyService } from "../../services/StrategyHandlerService";
+
 import LoadSpinner from "../../common/LoadSpinner";
 
 import * as signalR from "@microsoft/signalr";
-import { getAuthToken } from "../../services/msalAuthService.ts";
+
 import PositionComponent from "./Components/PositionComponent.tsx";
+import { StrategyService } from "../../services/StrategyHandlerService.ts";
+import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
+import { MsalAuthService } from "../../services/MsalAuthService.ts";
 
 const PositionOpened: React.FC<{
   strategyId: string;
 }> = ({ strategyId }) => {
   const [positions, setPositions] = useState<Position[]>([]);
-  const [error, setError] = useState<string | null>(null);
+
   const [isLoading, setIsLoading] = useState(false);
-  const { instance } = useMsal();
+  const handleError = useErrorHandler();
 
   useEffect(() => {
     setIsLoading(true);
-    strategyService
-      .getOpenedPositions(instance, strategyId)
+    StrategyService.getOpenedPositions(strategyId)
       .then((r) => setPositions(r))
-      .catch((err) => setError(err.message))
+      .catch(handleError)
       .finally(() => {
         setIsLoading(false);
       });
     const connection = new signalR.HubConnectionBuilder()
       .withUrl("/infoClient", {
-        accessTokenFactory: () => getAuthToken(instance),
+        accessTokenFactory: () => MsalAuthService.getAuthToken(),
       })
       .withAutomaticReconnect()
       .build();
@@ -73,14 +74,10 @@ const PositionOpened: React.FC<{
         });
       })
       .catch((err) => console.error("Connection error: ", err));
-  }, [instance, strategyId]);
+  }, [strategyId]);
 
   if (isLoading) {
     return <LoadSpinner />;
-  }
-
-  if (error) {
-    return <div>Erreur: {error}</div>;
   }
 
   return <PositionComponent positions={positions} positionClosed={false} />;

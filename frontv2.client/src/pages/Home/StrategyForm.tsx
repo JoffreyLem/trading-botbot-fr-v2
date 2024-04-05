@@ -1,17 +1,19 @@
 ﻿import React, { useContext, useEffect, useState } from "react";
 import { StrategyInit } from "../../modeles/StrategyInit.ts";
 import { StrategyFile } from "../../modeles/StrategyFile.ts";
-import { useMsal } from "@azure/msal-react";
-import { strategyService } from "../../services/StrategyHandlerService.ts";
+
 import styles from "./css/Form.module.css";
-import { strategyGeneratorService } from "../../services/StrategyGeneratorService.ts";
+
 import AutocompleteInput from "../../common/AutoCompleteInputProps.tsx";
 import { SymbolInfo } from "../../modeles/SymbolInfo.ts";
-import { apiHandlerService } from "../../services/ApiHandlerService.ts";
+
 import LoadSpinner from "../../common/LoadSpinner.tsx";
 import { StrategyContext } from "./StrategyProvider.tsx";
-import { ApiError } from "../../modeles/ApiError.ts";
-import ErrorComponent from "../../common/ErrorComponent.tsx";
+
+import { StrategyGeneratorService } from "../../services/StrategyGeneratorService.ts";
+import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
+import { ApiHandlerService } from "../../services/ApiHandlerService.ts";
+import { StrategyService } from "../../services/StrategyHandlerService.ts";
 
 const StrategyForm: React.FC = () => {
   const [strategyInitDto, setStrategyInitDto] = useState<StrategyInit>({
@@ -24,39 +26,34 @@ const StrategyForm: React.FC = () => {
   const [allStrategy, setAllStrategy] = useState<StrategyFile[]>([]);
   const [allSymbol, setAllSymbol] = useState<SymbolInfo[]>([]);
   const [timeframes, setAllTimeframes] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [strategyFormError, setStrategyFormError] = useState<ApiError>();
-  const { instance } = useMsal();
+
   const [isLoading, setIsLoading] = useState(false);
   const { handleRefresh } = useContext(StrategyContext);
+  const handleError = useErrorHandler();
 
   useEffect(() => {
     setIsLoading(true);
 
     Promise.all([
-      strategyGeneratorService
-        .getAllStrategyFiles(instance)
+      StrategyGeneratorService.getAllStrategyFiles()
         .then((response) => setAllStrategy(response))
-        .catch((err) => setError(err.message)),
-      apiHandlerService
-        .getAllSymbol(instance)
+        .catch(handleError),
+      ApiHandlerService.getAllSymbol()
         .then((response) => setAllSymbol(response))
-        .catch((err) => setError(err.message)),
-      strategyService
-        .getListTimeframes(instance)
+        .catch(handleError),
+      StrategyService.getListTimeframes()
         .then((response) => setAllTimeframes(response))
-        .catch((err) => setError(err.message)),
+        .catch(handleError),
     ]).finally(() => {
       setIsLoading(false);
     });
-  }, [instance]);
+  }, []);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
-    strategyService
-      .initStrategy(instance, strategyInitDto)
-      .catch((err: ApiError) => setStrategyFormError(err))
+    StrategyService.initStrategy(strategyInitDto)
+      .catch(handleError)
       .finally(() => {
         setIsLoading(false);
         handleRefresh();
@@ -85,10 +82,6 @@ const StrategyForm: React.FC = () => {
     .map((symbolInfo) => symbolInfo.symbol)
     .filter((symbol) => symbol !== undefined) as string[];
 
-  if (error) {
-    return <div>Erreur: {error}</div>;
-  }
-
   if (isLoading) {
     return <LoadSpinner />;
   }
@@ -96,12 +89,6 @@ const StrategyForm: React.FC = () => {
   return (
     <div style={{ display: "flex" }}>
       <div style={{ flex: 1, paddingRight: "10px" }}>
-        {strategyFormError && (
-          <ErrorComponent
-            title="Erreur d'initialisation"
-            errors={strategyFormError.errors}
-          />
-        )}
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label htmlFor="strategyName">Strategy</label>

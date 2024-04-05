@@ -3,25 +3,21 @@ import { StrategyFile } from "../../modeles/StrategyFile.ts";
 import { useMsal } from "@azure/msal-react";
 import LoadSpinner from "../../common/LoadSpinner.tsx";
 
-import { strategyGeneratorService } from "../../services/StrategyGeneratorService.ts";
-
-import { ApiError } from "../../modeles/ApiError.ts";
-import ErrorComponent from "../../common/ErrorComponent.tsx";
+import { StrategyGeneratorService } from "../../services/StrategyGeneratorService.ts";
+import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
 
 const StrategyCreator: React.FC = () => {
   const [strategyFiles, setStrategyFiles] = useState<StrategyFile[]>([]);
 
-  const [actionError, setActionError] = useState<ApiError>();
-  const [error, setError] = useState<string>("");
   const { instance } = useMsal();
   const [isLoading, setIsLoading] = useState(false);
+  const handleError = useErrorHandler();
 
   useEffect(() => {
     setIsLoading(true);
-    strategyGeneratorService
-      .getAllStrategyFiles(instance)
+    StrategyGeneratorService.getAllStrategyFiles()
       .then((r) => setStrategyFiles(r))
-      .catch((err) => setError(err))
+      .catch(handleError)
       .finally(() => setIsLoading(false));
   }, [instance]);
 
@@ -30,33 +26,23 @@ const StrategyCreator: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    strategyGeneratorService
-      .deleteStrategyFile(instance, id)
+    StrategyGeneratorService.deleteStrategyFile(id)
       .then(() =>
         setStrategyFiles(strategyFiles.filter((file) => file.id !== id)),
       )
-      .catch((error: ApiError) => setActionError(error));
+      .catch(handleError);
   };
 
   const handleCreate = () => {
     window.open("vscode://botbot.botbot-ext");
   };
 
-  if (error) {
-    return <div>Erreur: {error}</div>;
-  }
   if (isLoading) {
     return <LoadSpinner />;
   }
 
   return (
     <div>
-      {actionError && (
-        <ErrorComponent
-          title="Erreur de suppression"
-          errors={actionError.errors}
-        />
-      )}
       <button className="btn btn-success mb-3" onClick={handleCreate}>
         Créer
       </button>

@@ -15,7 +15,6 @@
     "@azure/msal-browser": "^3.7.0",
     "@azure/msal-react": "^2.0.9",
     "@microsoft/signalr": "^8.0.0",
-    "ace-builds": "^1.32.3",
     "axios": "^1.6.5",
     "bootstrap": "^5.3.2",
     "react": "^18.2.0",

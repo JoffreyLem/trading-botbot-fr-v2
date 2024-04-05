@@ -1,16 +1,15 @@
 ﻿import React, { useEffect, useState } from "react";
 
-import { useMsal } from "@azure/msal-react";
 import LoadSpinner from "../../common/LoadSpinner.tsx";
-import { strategyService } from "../../services/StrategyHandlerService.ts";
 
 import { BacktestRequest } from "../../modeles/BacktestRequest.ts";
-import { ApiError } from "../../modeles/ApiError.ts";
+import { ApiErrorResponse } from "../../modeles/ApiResponseError.ts";
 import ErrorComponent from "../../common/ErrorComponent.tsx";
 
 import ResultDataDisplayComponent from "./Components/ResultDataDisplayComponent.tsx";
 import { Backtest } from "../../modeles/Backtest.ts";
 import { Result } from "../../modeles/Result.ts";
+import { StrategyService } from "../../services/StrategyHandlerService.ts";
 
 const BackTestForm: React.FC<{ strategyId: string }> = ({ strategyId }) => {
   const [formData, setFormData] = useState<BacktestRequest>({
@@ -24,16 +23,15 @@ const BackTestForm: React.FC<{ strategyId: string }> = ({ strategyId }) => {
     resultBacktest: {} as Result,
   };
   const [isLoading, setIsLoading] = useState(false);
-  const { instance } = useMsal();
-  const [actionError, setActionError] = useState<ApiError>();
+
+  const [actionError, setActionError] = useState<ApiErrorResponse>();
   const [backtest, setBacktest] = useState<Backtest>(initialBacktestState);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
 
-    strategyService
-      .getBacktestResult(instance, strategyId)
+    StrategyService.getBacktestResult(strategyId)
       .then((data) => setBacktest(data))
       .catch((err) => setError(err.message))
       .finally(() => {
@@ -41,7 +39,7 @@ const BackTestForm: React.FC<{ strategyId: string }> = ({ strategyId }) => {
           setIsLoading(false);
         }
       });
-  }, [backtest?.isBackTestRunning, instance, strategyId]);
+  }, [backtest?.isBackTestRunning, strategyId]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: parseFloat(e.target.value) });
   };
@@ -49,13 +47,12 @@ const BackTestForm: React.FC<{ strategyId: string }> = ({ strategyId }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    strategyService
-      .runBackTest(instance, strategyId, formData)
+    StrategyService.runBackTest(strategyId, formData)
       .then((r) => {
         setBacktest(r);
         setIsLoading(false);
       })
-      .catch((err: ApiError) => {
+      .catch((err: ApiErrorResponse) => {
         setIsLoading(false);
         setActionError(err);
       });

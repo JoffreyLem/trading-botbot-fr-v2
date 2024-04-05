@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useState } from "react";
 import { StrategyInfo } from "../../modeles/StrategyInfo.ts";
-import { strategyService } from "../../services/StrategyHandlerService.ts";
-import { useMsal } from "@azure/msal-react";
+
+import { StrategyService } from "../../services/StrategyHandlerService.ts";
 
 interface StrategyFormProps {
   strategyInfo: StrategyInfo;
@@ -9,7 +9,7 @@ interface StrategyFormProps {
 
 const StrategyForm: React.FC<StrategyFormProps> = ({ strategyInfo }) => {
   const [formData, setFormData] = useState<StrategyInfo>(strategyInfo);
-  const { instance } = useMsal();
+
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -17,8 +17,7 @@ const StrategyForm: React.FC<StrategyFormProps> = ({ strategyInfo }) => {
   }, [strategyInfo]);
 
   const handleCanRunChange = () => {
-    strategyService
-      .setCanRun(instance, strategyInfo.id, !formData.canRun)
+    StrategyService.setCanRun(strategyInfo.id, !formData.canRun)
       .then(() => {
         setFormData({ ...formData, canRun: !formData.canRun });
       })

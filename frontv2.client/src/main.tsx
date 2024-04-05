@@ -5,6 +5,7 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { Configuration, PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
+import { MsalAuthService } from "./services/MsalAuthService.ts";
 
 const configuration: Configuration = {
   auth: {
@@ -21,7 +22,7 @@ const configuration: Configuration = {
 
 const pca =
   await PublicClientApplication.createPublicClientApplication(configuration);
-
+MsalAuthService.initialize(pca);
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <React.StrictMode>

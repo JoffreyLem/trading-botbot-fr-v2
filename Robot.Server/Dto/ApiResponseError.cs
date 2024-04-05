@@ -2,5 +2,7 @@
 
 public class ApiResponseError
 {
-    public List<string> Errors { get; set; }
+
+    public string? Error { get; set; }
+    public List<string>? Errors { get; set; } = new();
 }

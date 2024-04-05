@@ -74,7 +74,7 @@ public class CustomExceptionMiddleware
 
         var response = new ApiResponseError
         {
-            Errors = [exception.Message]
+            Error = exception.Message
         };
 
         var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions

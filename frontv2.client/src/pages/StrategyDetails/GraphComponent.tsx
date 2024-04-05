@@ -2,8 +2,9 @@
 import * as signalR from "@microsoft/signalr";
 import { Candle } from "../../modeles/Candle.ts";
 import { Tick } from "../../modeles/Tick.ts";
-import { getAuthToken } from "../../services/msalAuthService.ts";
+
 import { useMsal } from "@azure/msal-react";
+import { MsalAuthService } from "../../services/MsalAuthService.ts";
 
 const TradingData: React.FC = () => {
   const [currentCandle, setCurrentCandle] = useState<Candle | null>(null);
@@ -13,7 +14,7 @@ const TradingData: React.FC = () => {
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
       .withUrl("/infoClient", {
-        accessTokenFactory: () => getAuthToken(instance),
+        accessTokenFactory: () => MsalAuthService.getAuthToken(),
       })
       .withAutomaticReconnect()
       .build();

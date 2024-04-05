@@ -8,6 +8,8 @@ import Api from "./pages/Api/Api.tsx";
 
 import StrategyCreator from "./pages/StrategyCreator/StrategyCreator.tsx";
 
+import { NotificationProvider } from "./context/NotificationContext.tsx";
+
 const NotFound = () => {
   return (
     <div>
@@ -70,14 +72,19 @@ const Layout = () => {
         </div>
 
         <div className="main-content p-4 flex-grow-1">
-          <Routes>
-            <Route path="/" element={<Navigate replace to="/home" />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/api" element={<Api />} />
-            <Route path="/strategy-list" element={<StrategyCreator />} />
-            <Route path="/strategy/:strategyId" element={<StrategyDetails />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <NotificationProvider>
+            <Routes>
+              <Route path="/" element={<Navigate replace to="/home" />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/api" element={<Api />} />
+              <Route path="/strategy-list" element={<StrategyCreator />} />
+              <Route
+                path="/strategy/:strategyId"
+                element={<StrategyDetails />}
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </NotificationProvider>
         </div>
       </div>
     </div>

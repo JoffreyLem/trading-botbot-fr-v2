@@ -1,71 +1,56 @@
-﻿// apiService.tsx
-import { IPublicClientApplication } from "@azure/msal-browser";
+﻿import { ConnectDto } from "../modeles/Connect.ts";
+import { ApiMiddlewareService } from "./ApiMiddlewareService.ts";
 import { SymbolInfo } from "../modeles/SymbolInfo.ts";
-import { ConnectDto } from "../modeles/Connect.ts";
-import { apiMiddleware } from "./apiMiddleware.ts";
 
-export const apiHandlerService = {
-  async connect(
-    msalInstance: IPublicClientApplication,
-    connectDto: ConnectDto,
-  ): Promise<void> {
-    await apiMiddleware(msalInstance, "/api/ApiHandler/connect", {
-      method: "POST",
-      body: JSON.stringify({
-        user: connectDto.user,
-        pwd: connectDto.pwd,
-        handlerEnum: connectDto.handlerEnum,
-      }),
-    });
-  },
+export class ApiHandlerService {
+  static async connect(connectDto: ConnectDto): Promise<void> {
+    await ApiMiddlewareService.callApiWithoutResponse(
+      "/api/ApiHandler/connect",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          user: connectDto.user,
+          pwd: connectDto.pwd,
+          handlerEnum: connectDto.handlerEnum,
+        }),
+      },
+    );
+  }
 
-  async disconnect(msalInstance: IPublicClientApplication): Promise<void> {
-    await apiMiddleware(msalInstance, "/api/ApiHandler/disconnect", {
-      method: "POST",
-    });
-  },
+  static async disconnect(): Promise<void> {
+    await ApiMiddlewareService.callApiWithoutResponse(
+      "/api/ApiHandler/disconnect",
+      {
+        method: "POST",
+      },
+    );
+  }
 
-  async isConnected(msalInstance: IPublicClientApplication): Promise<boolean> {
-    const response = await apiMiddleware(
-      msalInstance,
+  static async isConnected(): Promise<boolean> {
+    return await ApiMiddlewareService.callApi<boolean>(
       "/api/ApiHandler/isConnected",
       { method: "GET" },
     );
-    return await response.json();
-  },
+  }
 
-  async getTypeHandler(
-    msalInstance: IPublicClientApplication,
-  ): Promise<string> {
-    const response = await apiMiddleware(
-      msalInstance,
+  static async getTypeHandler(): Promise<string> {
+    return await ApiMiddlewareService.callApi<string>(
       "/api/ApiHandler/typeHandler",
       { method: "GET" },
     );
-    return response.text();
-  },
+  }
 
-  async getListHandler(
-    msalInstance: IPublicClientApplication,
-  ): Promise<string[]> {
-    const response = await apiMiddleware(
-      msalInstance,
+  static async getListHandler(): Promise<string[]> {
+    return await ApiMiddlewareService.callApi<string[]>(
       "/api/ApiHandler/listHandlers",
-      {
-        method: "GET",
-      },
+      { method: "GET" },
     );
-    return await response.json();
-  },
+  }
 
-  async getAllSymbol(
-    msalInstance: IPublicClientApplication,
-  ): Promise<SymbolInfo[]> {
-    const response = await apiMiddleware(
-      msalInstance,
+  static async getAllSymbol(): Promise<SymbolInfo[]> {
+    return await ApiMiddlewareService.callApi<SymbolInfo[]>(
       "/api/ApiHandler/allSymbols",
       { method: "GET" },
     );
-    return await response.json();
-  },
-};
+  }
+}

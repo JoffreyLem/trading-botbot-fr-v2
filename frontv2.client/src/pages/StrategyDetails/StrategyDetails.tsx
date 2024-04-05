@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useMsal } from "@azure/msal-react";
 import { StrategyInfo } from "../../modeles/StrategyInfo.ts";
-import { strategyService } from "../../services/StrategyHandlerService.ts";
+
 import LoadSpinner from "../../common/LoadSpinner.tsx";
 import StrategyDataInfo from "./StrategyDataInfo.tsx";
 import GraphComponent from "./GraphComponent.tsx";
@@ -13,22 +13,24 @@ import Backtest from "./Backtest.tsx";
 import PositionOpened from "./PositionOpened.tsx";
 import PositionClosed from "./PositionClosed.tsx";
 import ResultDisplay from "./ResultDisplay.tsx";
+import { StrategyService } from "../../services/StrategyHandlerService.ts";
+import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
 
 const StrategyDetails: React.FC = () => {
   const { strategyId } = useParams();
   const navigate = useNavigate();
   const [strategyInfo, setStrategyInfo] = useState<StrategyInfo>();
-  const [error, setError] = useState<string | null>(null);
+
   const { instance } = useMsal();
   const [isLoading, setIsLoading] = useState(false);
+  const handleError = useErrorHandler();
 
   useEffect(() => {
     setIsLoading(true);
     if (strategyId != null) {
-      strategyService
-        .getStrategyInfo(instance, strategyId)
+      StrategyService.getStrategyInfo(strategyId)
         .then((rsp) => setStrategyInfo(rsp))
-        .catch((err) => setError(err.message))
+        .catch(handleError)
         .finally(() => {
           setIsLoading(false);
         });
@@ -38,19 +40,14 @@ const StrategyDetails: React.FC = () => {
   const deleteStrategy = () => {
     setIsLoading(true);
     if (strategyId != null) {
-      strategyService
-        .closeStrategy(instance, strategyId)
+      StrategyService.closeStrategy(strategyId)
         .then(() => navigate("/Home"))
-        .catch((err) => setError(err.message))
+        .catch(handleError)
         .finally(() => {
           setIsLoading(false);
         });
     }
   };
-
-  if (error) {
-    return <div>Erreur: {error}</div>;
-  }
 
   if (isLoading) {
     return <LoadSpinner />;

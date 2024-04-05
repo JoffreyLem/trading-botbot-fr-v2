@@ -1,24 +1,26 @@
 ﻿import React, { useContext, useEffect, useState } from "react";
 
-import { useMsal } from "@azure/msal-react";
 import LoadSpinner from "../../common/LoadSpinner.tsx";
-import { strategyService } from "../../services/StrategyHandlerService.ts";
+
 import { StrategyInfo } from "../../modeles/StrategyInfo.ts";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/StrategyList.css";
 import { StrategyContext } from "./StrategyProvider.tsx";
-import { ApiError } from "../../modeles/ApiError.ts";
+import { ApiErrorResponse } from "../../modeles/ApiResponseError.ts";
 import ErrorComponent from "../../common/ErrorComponent.tsx";
+import { StrategyService } from "../../services/StrategyHandlerService.ts";
+import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
 
 const StrategyList: React.FC = () => {
   const [allStrategy, setAllStrategy] = useState<StrategyInfo[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<ApiError>();
-  const { instance } = useMsal();
+
+  const [actionError, setActionError] = useState<ApiErrorResponse>();
+
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { refreshList } = useContext(StrategyContext);
+  const handleError = useErrorHandler();
   const handleRowClick = (strategyId: string) => {
     navigate(`/strategy/${strategyId}`);
   };
@@ -26,15 +28,14 @@ const StrategyList: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    const getAllStrategy = strategyService
-      .getAllStrategy(instance)
+    const getAllStrategy = StrategyService.getAllStrategy()
       .then((response) => setAllStrategy(response))
-      .catch((err) => setError(err.message));
+      .catch(handleError);
 
     Promise.all([getAllStrategy]).finally(() => {
       setIsLoading(false);
     });
-  }, [instance, refreshList]);
+  }, [refreshList]);
 
   const handleDelete = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -42,22 +43,17 @@ const StrategyList: React.FC = () => {
   ) => {
     setIsLoading(true);
     event.stopPropagation();
-    strategyService
-      .closeStrategy(instance, strategyId)
+    StrategyService.closeStrategy(strategyId)
       .then(() => {
         setAllStrategy((prevStrategies) =>
           prevStrategies.filter((strategy) => strategy.id !== strategyId),
         );
       })
-      .catch((err: ApiError) => setActionError(err))
+      .catch((err: ApiErrorResponse) => setActionError(err))
       .finally(() => {
         setIsLoading(false);
       });
   };
-
-  if (error) {
-    return <div>Erreur: {error}</div>;
-  }
 
   if (isLoading) {
     return <LoadSpinner />;

@@ -1,19 +1,19 @@
 ﻿.virtualized-table {
-    border: 1px solid #ddd;
+  border: 1px solid #ddd;
 }
 
 .table-header {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
 .table-row {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
 }
 
 .table-cell {
-    flex: 1;
-    padding: 8px;
-    text-align: left;
+  flex: 1;
+  padding: 8px;
+  text-align: left;
 }

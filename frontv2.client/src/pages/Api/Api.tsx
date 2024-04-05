@@ -1,20 +1,17 @@
 ﻿import React, { useEffect, useState } from "react";
 
-import { useMsal } from "@azure/msal-react";
-
 import { useNavigate } from "react-router-dom";
-import { apiHandlerService } from "../../services/ApiHandlerService.ts";
+
 import LoadSpinner from "../../common/LoadSpinner.tsx";
 import { ConnectDto } from "../../modeles/Connect.ts";
-import { ApiError } from "../../modeles/ApiError.ts";
-import ErrorComponent from "../../common/ErrorComponent.tsx";
+
+import { ApiHandlerService } from "../../services/ApiHandlerService.ts";
+import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
 
 const Api: React.FC = () => {
   const [isConnected, setIsConected] = useState<boolean>(false);
   const [apiHandlerList, setApihandlerList] = useState<string[]>([]);
-  const [error, setError] = useState<string>("");
-  const [connectionError, setConnectionError] = useState<ApiError>();
-  const { instance } = useMsal();
+
   const [defaultApiHandlerSelected, setDefaultApiHandlerselected] =
     useState<string>();
   const [connectDto, setConnectDto] = useState<ConnectDto>({
@@ -23,27 +20,25 @@ const Api: React.FC = () => {
     handlerEnum: "",
   });
   const navigate = useNavigate();
+  const handleError = useErrorHandler();
 
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
 
-    const fetchApiHandlerList = apiHandlerService
-      .getListHandler(instance)
+    const fetchApiHandlerList = ApiHandlerService.getListHandler()
       .then((r) => setApihandlerList(r))
-      .catch((err) => setError(err.message));
+      .catch(handleError);
 
-    const checkIsConnected = apiHandlerService
-      .isConnected(instance)
+    const checkIsConnected = ApiHandlerService.isConnected()
       .then((response) => setIsConected(response))
-      .catch((err) => setError(err.message));
+      .catch(handleError);
 
     const fetchTypeHandler = isConnected
-      ? apiHandlerService
-          .getTypeHandler(instance)
+      ? ApiHandlerService.getTypeHandler()
           .then((response) => setDefaultApiHandlerselected(response))
-          .catch((err) => setError(err.message))
+          .catch(handleError)
       : Promise.resolve();
 
     Promise.all([
@@ -51,7 +46,7 @@ const Api: React.FC = () => {
       checkIsConnected,
       fetchTypeHandler,
     ]).finally(() => setIsLoading(false));
-  }, [instance, isConnected, setApihandlerList]);
+  }, [isConnected, setApihandlerList]);
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setConnectDto((prevConnectDto) => ({
@@ -63,10 +58,9 @@ const Api: React.FC = () => {
 
   const handleDisconnect = () => {
     setIsLoading(true);
-    apiHandlerService
-      .disconnect(instance)
+    ApiHandlerService.disconnect()
       .then(() => setIsConected(false))
-      .catch((err) => setError(err.message));
+      .catch(handleError);
     setIsLoading(false);
   };
 
@@ -80,16 +74,12 @@ const Api: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    apiHandlerService
-      .connect(instance, connectDto)
+    ApiHandlerService.connect(connectDto)
       .then(() => {
         setIsConected(true);
         navigate("/home");
       })
-      .catch((err: ApiError) => {
-        setConnectionError(err);
-        setIsConected(false);
-      })
+      .catch(handleError)
       .finally(() => {
         {
           setIsLoading(false);
@@ -97,20 +87,11 @@ const Api: React.FC = () => {
       });
   };
 
-  if (error) {
-    return <div>Erreur: {error}</div>;
-  }
   if (isLoading) {
     return <LoadSpinner />;
   }
   return (
     <div className="row">
-      {connectionError && (
-        <ErrorComponent
-          title="Erreur de connexion"
-          errors={connectionError.errors}
-        />
-      )}
       <div className="col-md-4">
         <select
           value={defaultApiHandlerSelected}

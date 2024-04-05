@@ -1,76 +1,56 @@
-﻿import { IPublicClientApplication } from "@azure/msal-browser";
-import { StrategyCreatedResponse } from "../modeles/StrategyCreatedResponse";
-import { StrategyFile } from "../modeles/StrategyFile";
-import { apiMiddleware } from "./apiMiddleware";
+﻿import { StrategyCreatedResponse } from "../modeles/StrategyCreatedResponse.ts";
+import { ApiMiddlewareService } from "./ApiMiddlewareService.ts";
+import { StrategyFile } from "../modeles/StrategyFile.ts";
 
-export const strategyGeneratorService = {
-  async createNewStrategy(
-    msalInstance: IPublicClientApplication,
+export class StrategyGeneratorService {
+  static async createNewStrategy(
     file: string,
   ): Promise<StrategyCreatedResponse> {
-    const response = await apiMiddleware(
-      msalInstance,
+    return await ApiMiddlewareService.callApi<StrategyCreatedResponse>(
       "/api/StrategyGenerator",
       {
         method: "POST",
         body: JSON.stringify({ file }),
       },
     );
+  }
 
-    return await response.json();
-  },
-
-  async getAllStrategyFiles(
-    msalInstance: IPublicClientApplication,
-  ): Promise<StrategyFile[]> {
-    const response = await apiMiddleware(
-      msalInstance,
+  static async getAllStrategyFiles(): Promise<StrategyFile[]> {
+    return await ApiMiddlewareService.callApi<StrategyFile[]>(
       "/api/StrategyGenerator/GetAll",
       {
         method: "GET",
       },
     );
+  }
 
-    return await response.json();
-  },
-
-  async getStrategyFile(
-    msalInstance: IPublicClientApplication,
-    id: number,
-  ): Promise<StrategyFile> {
-    const response = await apiMiddleware(
-      msalInstance,
+  static async getStrategyFile(id: number): Promise<StrategyFile> {
+    return await ApiMiddlewareService.callApi<StrategyFile>(
       `/api/StrategyGenerator/${id}`,
       {
         method: "GET",
       },
     );
+  }
 
-    return await response.json();
-  },
+  static async deleteStrategyFile(id: number): Promise<void> {
+    return await ApiMiddlewareService.callApiWithoutResponse(
+      `/api/StrategyGenerator/${id}`,
+      {
+        method: "DELETE",
+      },
+    );
+  }
 
-  async deleteStrategyFile(
-    msalInstance: IPublicClientApplication,
-    id: number,
-  ): Promise<void> {
-    await apiMiddleware(msalInstance, `/api/StrategyGenerator/${id}`, {
-      method: "DELETE",
-    });
-  },
-
-  async updateStrategyFile(
-    msalInstance: IPublicClientApplication,
+  static async updateStrategyFile(
     strategyFile: StrategyFile,
   ): Promise<StrategyFile> {
-    const response = await apiMiddleware(
-      msalInstance,
+    return await ApiMiddlewareService.callApi<StrategyFile>(
       `/api/StrategyGenerator/${strategyFile.id}`,
       {
         method: "PUT",
         body: JSON.stringify(strategyFile),
       },
     );
-
-    return await response.json();
-  },
-};
+  }
+}

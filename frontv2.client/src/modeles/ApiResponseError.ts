@@ -1,3 +1,4 @@
-﻿export type ApiResponseError = {
-  errors: string[];
-};
+﻿export interface ApiResponseError {
+  Error?: string;
+  Errors?: string[];
+}

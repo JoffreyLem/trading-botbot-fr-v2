@@ -1,30 +1,25 @@
 ﻿// Home.tsx
 import React, { useEffect, useState } from "react";
 
-import { useMsal } from "@azure/msal-react";
-import { apiHandlerService } from "../../services/ApiHandlerService.ts";
 import StrategyForm from "./StrategyForm.tsx";
 import StrategyList from "./StrategyList.tsx";
 import { StrategyProvider } from "./StrategyProvider.tsx";
 import LoadSpinner from "../../common/LoadSpinner.tsx";
+import { ApiHandlerService } from "../../services/ApiHandlerService.ts";
+import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
 
 const Home: React.FC = () => {
   const [isConnected, setIsConected] = useState<boolean | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const { instance } = useMsal();
+
   const [isLoading, setIsLoading] = useState(false);
+  const handleError = useErrorHandler();
   useEffect(() => {
     setIsLoading(true);
-    apiHandlerService
-      .isConnected(instance)
+    ApiHandlerService.isConnected()
       .then((response) => setIsConected(response))
-      .catch((err) => setError(err.message))
+      .catch(handleError)
       .finally(() => setIsLoading(false));
-  }, [instance]);
-
-  if (error) {
-    return <div>Erreur: {error}</div>;
-  }
+  }, []);
 
   if (isLoading) {
     return <LoadSpinner />;
