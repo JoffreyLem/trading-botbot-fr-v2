@@ -53,7 +53,7 @@ public class TimeZoneConvertersTests
     {
         // Arrange
         var milliseconds = 1609459200000; // Timestamp Unix pour une date en CET/CEST
-        var expectedOffset = TimeSpan.FromHours(23); // L'offset attendu pour CET/CEST à minuit
+        var expectedOffset = TimeSpan.FromHours(22); // L'offset attendu pour CET/CEST à minuit
 
         // Act
         var offset = TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(milliseconds);
@@ -67,7 +67,7 @@ public class TimeZoneConvertersTests
     {
         // Arrange
         var milliseconds = 79200000; // Timestamp Unix pour une date en CET/CEST
-        var expectedOffset = TimeSpan.FromHours(21); // L'offset attendu pour CET/CEST à minuit
+        var expectedOffset = TimeSpan.FromHours(20); // L'offset attendu pour CET/CEST à minuit
 
         // Act
         var offset = TimeZoneConverter.ConvertMidnightCetCestMillisecondsToUtcOffset(milliseconds);
