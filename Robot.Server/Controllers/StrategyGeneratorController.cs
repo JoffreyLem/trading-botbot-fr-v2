@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Robot.Server.Dto.Response;
 using Robot.Server.Services;
@@ -6,6 +7,7 @@ namespace Robot.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class StrategyGeneratorController(IStrategyGeneratorService strategyGeneratorService) : ControllerBase
 {
     [HttpPost]

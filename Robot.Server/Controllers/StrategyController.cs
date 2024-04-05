@@ -27,7 +27,9 @@ public class StrategyController(IStrategyHandlerService strategyHandlerService) 
     [HttpGet("all")]
     public async Task<ActionResult<List<StrategyInfoDto>>> GetAllStrategy()
     {
-        return await strategyHandlerService.GetAllStrategy();
+        var data = await strategyHandlerService.GetAllStrategy();
+     
+        return Ok(data);
     }
 
     [HttpPost("close/{id}")]
