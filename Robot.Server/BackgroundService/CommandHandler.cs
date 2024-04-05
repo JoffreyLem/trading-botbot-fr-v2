@@ -25,7 +25,7 @@ using RobotAppLibraryV2.Strategy;
 using RobotAppLibraryV2.StrategyDynamiqCompiler;
 using ILogger = Serilog.ILogger;
 
-namespace Robot.Server;
+namespace Robot.Server.BackgroundService;
 
 public class CommandHandler
 {

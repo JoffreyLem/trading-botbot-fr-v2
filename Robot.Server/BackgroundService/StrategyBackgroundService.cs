@@ -8,9 +8,9 @@ using Robot.Server.Command.Strategy.Request;
 using Robot.Server.Hubs;
 using ILogger = Serilog.ILogger;
 
-namespace Robot.Server;
+namespace Robot.Server.BackgroundService;
 
-public class StrategyBackgroundService : BackgroundService
+public class StrategyBackgroundService : Microsoft.Extensions.Hosting.BackgroundService
 {
     private readonly ChannelReader<ServiceCommandeBaseApiAbstract> _channelApiReader;
 

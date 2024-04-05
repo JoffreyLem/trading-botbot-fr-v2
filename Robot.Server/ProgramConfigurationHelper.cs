@@ -1,6 +1,7 @@
 ﻿using System.Threading.Channels;
 using Destructurama;
 using Robot.Mail;
+using Robot.Server.BackgroundService;
 using Robot.Server.Command.Api;
 using Robot.Server.Command.Strategy;
 using Robot.Server.Services;

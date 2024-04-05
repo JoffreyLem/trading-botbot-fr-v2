@@ -2,6 +2,8 @@
 using RobotAppLibraryV2.Indicators.Indicator;
 using RobotAppLibraryV2.Modeles;
 
+namespace Robot.Server.Services.Template;
+
 public class StrategyBaseTemplate : StrategyImplementationBase
 {
     public StrategyBaseTemplate()
