@@ -6,20 +6,7 @@ import { ApiResponseError } from "../modeles/ApiResponseError.ts";
 export class ApiMiddlewareService {
   static async callApi<T>(url: string, options: RequestInit): Promise<T> {
     const response = await ApiMiddlewareService.performRequest(url, options);
-
-    const contentType = response.headers.get("Content-Type");
-
-    if (contentType && contentType.includes("application/json")) {
-      return (await response.json()) as T;
-    } else if (
-      contentType &&
-      (contentType.includes("text/plain") || contentType.includes("text/html"))
-    ) {
-      const textResponse = await response.text();
-      return textResponse as T;
-    } else {
-      //TODO : Voir comment traiter ici ?
-    }
+    return (await response.json()) as T;
   }
 
   static async callApiWithoutResponse(

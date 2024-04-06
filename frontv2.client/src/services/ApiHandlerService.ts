@@ -1,6 +1,7 @@
 ﻿import { ConnectDto } from "../modeles/Connect.ts";
 import { ApiMiddlewareService } from "./ApiMiddlewareService.ts";
 import { SymbolInfo } from "../modeles/SymbolInfo.ts";
+import { ApiResponse } from "../modeles/ApiResponse.ts";
 
 export class ApiHandlerService {
   static async connect(connectDto: ConnectDto): Promise<void> {
@@ -27,17 +28,20 @@ export class ApiHandlerService {
   }
 
   static async isConnected(): Promise<boolean> {
-    return await ApiMiddlewareService.callApi<boolean>(
+    const response = await ApiMiddlewareService.callApi<ApiResponse<boolean>>(
       "/api/ApiHandler/isConnected",
       { method: "GET" },
     );
+    return response.data;
   }
 
   static async getTypeHandler(): Promise<string> {
-    return await ApiMiddlewareService.callApi<string>(
+    const response = await ApiMiddlewareService.callApi<ApiResponse<string>>(
       "/api/ApiHandler/typeHandler",
       { method: "GET" },
     );
+
+    return response.data;
   }
 
   static async getListHandler(): Promise<string[]> {

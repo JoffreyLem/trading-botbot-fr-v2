@@ -28,14 +28,20 @@ public class ApiHandlerController(IApiConnectService apiConnectService) : Contro
     public async Task<IActionResult> IsConnected()
     {
         var connectionState = await apiConnectService.IsConnected();
-        return Ok(connectionState);
+        return Ok(new ApiResponse<bool>()
+        {
+            Data = connectionState,
+        });
     }
 
     [HttpGet("typeHandler")]
     public async Task<IActionResult> GetTypeHandler()
     {
         var typeHandler = await apiConnectService.GetTypeHandler();
-        return Ok(typeHandler);
+        return Ok(new ApiResponse<string>()
+        {
+            Data = typeHandler
+        });
     }
 
     [HttpGet("listHandlers")]
