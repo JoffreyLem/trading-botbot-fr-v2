@@ -18,8 +18,7 @@ export class ApiMiddlewareService {
       const textResponse = await response.text();
       return textResponse as unknown as T;
     } else {
-      console.log(contentType);
-      throw new Error("Type de contenu non supporté ou non spécifié");
+      //TODO : Voir comment traiter ici ?
     }
   }
 
@@ -39,7 +38,11 @@ export class ApiMiddlewareService {
 
       const headers = new Headers(options.headers || {});
       headers.set("Authorization", `Bearer ${accessToken}`);
-      if (options.method === "POST" && !headers.has("Content-Type")) {
+      if (
+        options.method === "POST" &&
+        !(options.body instanceof FormData) &&
+        !headers.has("Content-Type")
+      ) {
         headers.set("Content-Type", "application/json");
       }
 

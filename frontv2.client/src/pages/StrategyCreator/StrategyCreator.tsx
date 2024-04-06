@@ -5,6 +5,7 @@ import LoadSpinner from "../../common/LoadSpinner.tsx";
 
 import { StrategyGeneratorService } from "../../services/StrategyGeneratorService.ts";
 import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
+import CreateModalStrategy from "./CreateModal.tsx";
 
 const StrategyCreator: React.FC = () => {
   const [strategyFiles, setStrategyFiles] = useState<StrategyFile[]>([]);
@@ -12,7 +13,7 @@ const StrategyCreator: React.FC = () => {
   const { instance } = useMsal();
   const [isLoading, setIsLoading] = useState(false);
   const handleError = useErrorHandler();
-
+  const [modalShow, setModalShow] = useState(false);
   useEffect(() => {
     setIsLoading(true);
     StrategyGeneratorService.getAllStrategyFiles()
@@ -34,7 +35,7 @@ const StrategyCreator: React.FC = () => {
   };
 
   const handleCreate = () => {
-    window.open("vscode://botbot.botbot-ext");
+    setModalShow(true);
   };
 
   if (isLoading) {
@@ -46,6 +47,10 @@ const StrategyCreator: React.FC = () => {
       <button className="btn btn-success mb-3" onClick={handleCreate}>
         Créer
       </button>
+      <CreateModalStrategy
+        show={modalShow}
+        onClose={() => setModalShow(false)}
+      />
       <table className="table table-striped">
         <thead>
           <tr>

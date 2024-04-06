@@ -3,14 +3,17 @@ import { ApiMiddlewareService } from "./ApiMiddlewareService.ts";
 import { StrategyFile } from "../modeles/StrategyFile.ts";
 
 export class StrategyGeneratorService {
-  static async createNewStrategy(
-    file: string,
-  ): Promise<StrategyCreatedResponse> {
+  static async createNewStrategy(file: File): Promise<StrategyCreatedResponse> {
+    const formData = new FormData();
+    formData.append("file", file);
+    for (const [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
     return await ApiMiddlewareService.callApi<StrategyCreatedResponse>(
       "/api/StrategyGenerator",
       {
         method: "POST",
-        body: JSON.stringify({ file }),
+        body: formData,
       },
     );
   }

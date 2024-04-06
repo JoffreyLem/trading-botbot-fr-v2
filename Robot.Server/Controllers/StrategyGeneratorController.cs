@@ -11,9 +11,20 @@ namespace Robot.Server.Controllers;
 public class StrategyGeneratorController(IStrategyGeneratorService strategyGeneratorService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateNewStrategy([FromBody] string file)
+    public async Task<IActionResult> CreateNewStrategy([FromForm] IFormFile file)
     {
-        var result = await strategyGeneratorService.CreateNewStrategy(file);
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("Fichier vide ou non fourni.");
+        }
+
+        string content;
+        using (var reader = new StreamReader(file.OpenReadStream()))
+        {
+            content = await reader.ReadToEndAsync();
+        }
+
+        var result = await strategyGeneratorService.CreateNewStrategy(content);
         return Ok(result);
     }
 
