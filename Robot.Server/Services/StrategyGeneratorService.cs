@@ -8,7 +8,18 @@ using RobotAppLibraryV2.StrategyDynamiqCompiler;
 using ILogger = Serilog.ILogger;
 
 namespace Robot.Server.Services;
+public interface IStrategyGeneratorService
+{
+    Task<StrategyCompilationResponseDto> CreateNewStrategy(string data);
 
+    Task<StrategyFileDto> GetStrategyFile(int id);
+
+    Task<List<StrategyFileDto>> GetAllStrategyFile();
+
+    Task DeleteStrategyFile(int id);
+
+    Task<StrategyCompilationResponseDto> UpdateStrategyFile(int id, string data);
+}
 public class StrategyGeneratorService : IStrategyGeneratorService
 {
     private readonly ILogger _logger;
@@ -22,9 +33,9 @@ public class StrategyGeneratorService : IStrategyGeneratorService
         _logger = logger.ForContext<StrategyGeneratorService>();
     }
 
-    public async Task<StrategyCreatedResponseDto> CreateNewStrategy(string data)
+    public async Task<StrategyCompilationResponseDto> CreateNewStrategy(string data)
     {
-        var strategyCreateRsp = new StrategyCreatedResponseDto();
+        var strategyCreateRsp = new StrategyCompilationResponseDto();
         try
         {
             var sourceCode = data;
@@ -38,7 +49,7 @@ public class StrategyGeneratorService : IStrategyGeneratorService
 
             if (string.IsNullOrEmpty(className))
             {
-                strategyCreateRsp.Created = false;
+                strategyCreateRsp.Compiled = false;
                 strategyCreateRsp.Errors.Add("Class name not found in file");
                 return strategyCreateRsp;
             }
@@ -51,7 +62,7 @@ public class StrategyGeneratorService : IStrategyGeneratorService
 
             if (string.IsNullOrEmpty(nameValue) || string.IsNullOrEmpty(versionValue))
             {
-                strategyCreateRsp.Created = false;
+                strategyCreateRsp.Compiled = false;
                 strategyCreateRsp.Errors.Add("Name or version not found");
                 return strategyCreateRsp;
             }
@@ -64,8 +75,15 @@ public class StrategyGeneratorService : IStrategyGeneratorService
 
             await _strategyFileRepository.AddAsync(strategyFile);
 
-            strategyCreateRsp.Created = true;
-
+            strategyCreateRsp.Compiled = true;
+            strategyCreateRsp.StrategyFileDto = new StrategyFileDto()
+            {
+                Id = strategyFile.Id,
+                Data = Encoding.UTF8.GetString(strategyFile.Data),
+                LastDateUpdate = strategyFile.LastDateUpdate,
+                Name = strategyFile.Name,
+                Version = strategyFile.Version
+            };
 
             if (instance is IDisposable disposable) disposable.Dispose();
 
@@ -73,7 +91,12 @@ public class StrategyGeneratorService : IStrategyGeneratorService
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
-        catch (System.Exception e) when (e is not CompilationException)
+        catch (CompilationException e)
+        {
+            strategyCreateRsp.Compiled = false;
+            strategyCreateRsp.Errors = e.CompileErrors.Select(e => e.ToString()).ToList();
+        }
+        catch (System.Exception e) 
         {
             _logger?.Error(e, "An exception occurred while creating the new strategy");
             throw new ApiException("An exception occurred while creating the new strategy");
@@ -104,9 +127,9 @@ public class StrategyGeneratorService : IStrategyGeneratorService
         }
     }
 
-    public async Task<StrategyUpdateResponseDto> UpdateStrategyFile(int id, string data)
+    public async Task<StrategyCompilationResponseDto> UpdateStrategyFile(int id, string data)
     {
-        var strategyCreateRsp = new StrategyUpdateResponseDto();
+        var strategyCreateRsp = new StrategyCompilationResponseDto();
         try
         {
             var sourceCode = data;
@@ -121,7 +144,7 @@ public class StrategyGeneratorService : IStrategyGeneratorService
             var className = StrategyDynamiqCompiler.GetFirstClassName(sourceCode);
             if (string.IsNullOrEmpty(className))
             {
-                strategyCreateRsp.Created = false;
+                strategyCreateRsp.Compiled = false;
                 strategyCreateRsp.Errors.Add("Class name not found in file");
                 return strategyCreateRsp;
             }
@@ -134,7 +157,7 @@ public class StrategyGeneratorService : IStrategyGeneratorService
 
             if (string.IsNullOrEmpty(nameValue) || string.IsNullOrEmpty(versionValue))
             {
-                strategyCreateRsp.Created = false;
+                strategyCreateRsp.Compiled = false;
                 strategyCreateRsp.Errors.Add("Name or version not found");
                 return strategyCreateRsp;
             }
@@ -148,7 +171,15 @@ public class StrategyGeneratorService : IStrategyGeneratorService
 
             await _strategyFileRepository.UpdateAsync(strategyFileSelected);
 
-            strategyCreateRsp.Created = true;
+            strategyCreateRsp.Compiled = true;
+            strategyCreateRsp.StrategyFileDto = new StrategyFileDto()
+            {
+                Id = strategyFileSelected.Id,
+                Data = Encoding.UTF8.GetString(strategyFileSelected.Data),
+                LastDateUpdate = strategyFileSelected.LastDateUpdate,
+                Name = strategyFileSelected.Name,
+                Version = strategyFileSelected.Version
+            };
 
 
             if (instance is IDisposable disposable) disposable.Dispose();
@@ -156,6 +187,11 @@ public class StrategyGeneratorService : IStrategyGeneratorService
             context.Unload();
             GC.Collect();
             GC.WaitForPendingFinalizers();
+        }
+        catch (CompilationException e)
+        {
+            strategyCreateRsp.Compiled = false;
+            strategyCreateRsp.Errors = e.CompileErrors.Select(e => e.ToString()).ToList();
         }
         catch (System.Exception e) when (e is not CompilationException)
         {

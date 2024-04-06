@@ -53,15 +53,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="Services\ApiConnectService.cs">
-            <DependentUpon>IApiConnectService.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Services\StrategyGenerator.cs">
-            <DependentUpon>IStrategyGeneratorService.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Services\StrategyHandlerService.cs">
-            <DependentUpon>IStrategyHandlerService.cs</DependentUpon>
-        </Compile>
         <Compile Update="Services\Template\StrategyBaseTemplate.cs">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Compile>

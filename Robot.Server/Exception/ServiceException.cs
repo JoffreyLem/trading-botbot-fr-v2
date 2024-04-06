@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Robot.Server.Services;
+namespace Robot.Server.Exception;
 
 public class ServiceException : System.Exception
 {

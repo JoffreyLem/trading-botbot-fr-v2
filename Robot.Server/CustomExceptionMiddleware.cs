@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 using Robot.Server.Dto;
+using Robot.Server.Dto.Response;
 using Robot.Server.Exception;
 using RobotAppLibraryV2.ApiHandler.Exceptions;
 using RobotAppLibraryV2.Strategy;
@@ -22,10 +23,6 @@ public class CustomExceptionMiddleware
         try
         {
             await _next(context);
-        }
-        catch (CompilationException ex)
-        {
-            await HandleCompilationExceptionAsync(context, ex);
         }
         catch (ApiHandlerException ex)
         {
@@ -49,23 +46,6 @@ public class CustomExceptionMiddleware
         }
     }
 
-    private static Task HandleCompilationExceptionAsync(HttpContext context, CompilationException exception)
-    {
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-        var response = new ApiResponseError
-        {
-            Errors = exception.CompileErrors.Select(e => e.ToString()).ToList()
-        };
-
-        var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
-
-        return context.Response.WriteAsync(jsonResponse);
-    }
 
     private static Task HandleExceptionAsync(HttpContext context, System.Exception exception, HttpStatusCode statusCode)
     {

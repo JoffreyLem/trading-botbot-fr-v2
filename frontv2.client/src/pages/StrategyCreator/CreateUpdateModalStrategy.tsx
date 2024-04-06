@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import StrategyCreator from "./StrategyCreator.tsx";
-import { StrategyGeneratorService } from "../../services/StrategyGeneratorService.ts";
 
-const CreateModalStrategy: React.FC<{ show: boolean; onClose: () => void }> = ({
-  show,
-  onClose,
-}) => {
+const CreateUpdateModalStrategy: React.FC<{
+  show: boolean;
+  onClose: () => void;
+  handleSubmit: (file: File) => void;
+}> = ({ show, onClose, handleSubmit }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,10 +24,13 @@ const CreateModalStrategy: React.FC<{ show: boolean; onClose: () => void }> = ({
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmitInternal = (event: React.FormEvent) => {
     event.preventDefault();
 
-    await StrategyGeneratorService.createNewStrategy(selectedFile);
+    if (selectedFile) {
+      handleSubmit(selectedFile);
+      setSelectedFile(null);
+    }
 
     onClose();
   };
@@ -47,7 +49,7 @@ const CreateModalStrategy: React.FC<{ show: boolean; onClose: () => void }> = ({
               <span>&times;</span>
             </button>
           </div>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmitInternal}>
             <div className="modal-body">
               <div
                 onDragOver={(e) => e.preventDefault()}
@@ -87,4 +89,4 @@ const CreateModalStrategy: React.FC<{ show: boolean; onClose: () => void }> = ({
   );
 };
 
-export default CreateModalStrategy;
+export default CreateUpdateModalStrategy;

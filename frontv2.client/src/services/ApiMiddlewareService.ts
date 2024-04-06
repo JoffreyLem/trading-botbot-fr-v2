@@ -16,7 +16,7 @@ export class ApiMiddlewareService {
       (contentType.includes("text/plain") || contentType.includes("text/html"))
     ) {
       const textResponse = await response.text();
-      return textResponse as unknown as T;
+      return textResponse as T;
     } else {
       //TODO : Voir comment traiter ici ?
     }
@@ -55,10 +55,7 @@ export class ApiMiddlewareService {
           response.headers.get("Content-Type")?.includes("application/json")
         ) {
           const errorBody: ApiResponseError = await response.json();
-          throw new ApiErrorResponseException(
-            errorBody.Errors,
-            errorBody.Error,
-          );
+          throw new ApiErrorResponseException(errorBody.Error);
         }
       }
 

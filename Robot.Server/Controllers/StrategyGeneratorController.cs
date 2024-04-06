@@ -50,9 +50,19 @@ public class StrategyGeneratorController(IStrategyGeneratorService strategyGener
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateStrategyFile([FromRoute] int id, [FromBody] string file)
+    public async Task<IActionResult> UpdateStrategyFile([FromRoute] int id, [FromForm] IFormFile file)
     {
-        var updatedStrategy = await strategyGeneratorService.UpdateStrategyFile(id, file);
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("Fichier vide ou non fourni.");
+        }
+
+        string content;
+        using (var reader = new StreamReader(file.OpenReadStream()))
+        {
+            content = await reader.ReadToEndAsync();
+        }
+        var updatedStrategy = await strategyGeneratorService.UpdateStrategyFile(id, content);
         return Ok(updatedStrategy);
     }
 

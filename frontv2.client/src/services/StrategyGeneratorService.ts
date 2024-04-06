@@ -1,15 +1,15 @@
-﻿import { StrategyCreatedResponse } from "../modeles/StrategyCreatedResponse.ts";
-import { ApiMiddlewareService } from "./ApiMiddlewareService.ts";
+﻿import { ApiMiddlewareService } from "./ApiMiddlewareService.ts";
 import { StrategyFile } from "../modeles/StrategyFile.ts";
+import { StrategyCompilationResponse } from "../modeles/StrategyCompilationResponse.ts";
 
 export class StrategyGeneratorService {
-  static async createNewStrategy(file: File): Promise<StrategyCreatedResponse> {
+  static async createNewStrategy(
+    file: File,
+  ): Promise<StrategyCompilationResponse> {
     const formData = new FormData();
     formData.append("file", file);
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-    return await ApiMiddlewareService.callApi<StrategyCreatedResponse>(
+
+    return await ApiMiddlewareService.callApi<StrategyCompilationResponse>(
       "/api/StrategyGenerator",
       {
         method: "POST",
@@ -46,13 +46,16 @@ export class StrategyGeneratorService {
   }
 
   static async updateStrategyFile(
-    strategyFile: StrategyFile,
-  ): Promise<StrategyFile> {
-    return await ApiMiddlewareService.callApi<StrategyFile>(
-      `/api/StrategyGenerator/${strategyFile.id}`,
+    id: number,
+    file: File,
+  ): Promise<StrategyCompilationResponse> {
+    const formData = new FormData();
+    formData.append("file", file);
+    return await ApiMiddlewareService.callApi<StrategyCompilationResponse>(
+      `/api/StrategyGenerator/${id}`,
       {
         method: "PUT",
-        body: JSON.stringify(strategyFile),
+        body: formData,
       },
     );
   }

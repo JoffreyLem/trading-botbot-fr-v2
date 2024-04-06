@@ -8,6 +8,21 @@ using ILogger = Serilog.ILogger;
 
 namespace Robot.Server.Services;
 
+
+public interface IApiConnectService
+{
+    Task Connect(ConnectDto connectDto);
+
+    Task Disconnect();
+
+    Task<bool> IsConnected();
+
+    Task<string?> GetTypeHandler();
+
+    Task<List<string>> GetListHandler();
+
+    Task<List<SymbolInfo>> GetAllSymbol();
+}
 public class ApiConnectService : IApiConnectService
 {
     private readonly ChannelWriter<ServiceCommandeBaseApiAbstract> _channelApiWriter;
