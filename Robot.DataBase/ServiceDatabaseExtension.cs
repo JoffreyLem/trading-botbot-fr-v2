@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Robot.DataBase.DbContext;
 using Robot.DataBase.Repositories;
+using Serilog;
 
 namespace Robot.DataBase;
 
@@ -22,7 +23,11 @@ public static class ServiceDatabaseExtension
                             2,
                             TimeSpan.FromSeconds(10),
                             null))
-                .LogTo(Console.WriteLine, LogLevel.Information)
+                .LogTo(message =>
+                {
+                    Log.Logger.Error(message);
+                    Console.WriteLine(message);
+                }, LogLevel.Information)
                 .EnableDetailedErrors());
 
         services.AddSingleton<IStrategyFileRepository, StrategyFileRepository>();

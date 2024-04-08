@@ -15,6 +15,7 @@ services:
       - SmtpSettings__Password=${SMTP_PASSWORD}
       - SmtpSettings__DefaultEmail=lemery.joffrey@outlook.fr
       - ConnectionStrings__DefaultConnection=server=mariadb_ssl;Database=robot;Uid=admin;Pwd=${DATABASE_PASSWORD};sslmode=required;
+      - Seq__ApiKey=${SEQ_APIKEY}
 networks:
   bot:
     external: true

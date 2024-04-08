@@ -29,6 +29,19 @@ public static class ProgramConfigurationHelper
             .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
             .WriteTo.Async(writeTo => writeTo.Console());
 
+        if (builder.Environment.IsDevelopment())
+        {
+            loggerConfig.WriteTo.Async(writeTo => writeTo.Seq(builder.Configuration["Seq:Url"]));
+        }
+
+        if (builder.Environment.IsProduction())
+        {
+            loggerConfig.WriteTo.Async(writeTo =>
+                writeTo.Seq(
+                    builder.Configuration["Seq:Url"], 
+                    apiKey: builder.Configuration["Seq:Apikey"]));
+        }
+
 
         var logger = loggerConfig.CreateLogger();
         SelfLog.Enable(Console.Error);
