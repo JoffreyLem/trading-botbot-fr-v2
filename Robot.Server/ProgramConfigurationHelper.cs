@@ -44,6 +44,7 @@ public static class ProgramConfigurationHelper
 
 
         var logger = loggerConfig.CreateLogger();
+        Log.Logger = logger;
         SelfLog.Enable(Console.Error);
         builder.Host.UseSerilog(logger);
         builder.Logging.ClearProviders();

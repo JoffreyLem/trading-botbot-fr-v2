@@ -10,31 +10,17 @@ public static class StrategyDynamiqCompiler
 {
     public static byte[] TryCompileSourceCode(string sourceCode)
     {
+        sourceCode = EnsureUsingDirective(sourceCode);
         var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
-
-        // var references = new List<MetadataReference>
-        // {
-        //     MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-        //     MetadataReference.CreateFromFile(typeof(GCSettings).Assembly.Location),
-        //     MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location) 
-        //
-        // };
-        //
-        // foreach (var assembly in DependencyContext.Default.CompileLibraries
-        //              .SelectMany(cl => cl.ResolveReferencePaths()))
-        //     references.Add(MetadataReference.CreateFromFile(assembly));
-        //
-        //
-        // references.Add(MetadataReference.CreateFromFile(typeof(StrategyImplementationBase).Assembly.Location));
-        // references.Add(MetadataReference.CreateFromFile(typeof(BaseIndicator<ResultBase>).Assembly.Location));
-        // references.Add(MetadataReference.CreateFromFile(typeof(Candle).Assembly.Location));
-        // references.Add(MetadataReference.CreateFromFile(typeof(ResultBase).Assembly.Location));
-
+        
         var dependencyContext = DependencyContext.Default;
         var runtimeAssemblies = dependencyContext.RuntimeLibraries
             .SelectMany(library => library.GetDefaultAssemblyNames(dependencyContext))
             .Select(Assembly.Load)
-            .Select(assembly => MetadataReference.CreateFromFile(assembly.Location));
+            .Select(assembly => MetadataReference.CreateFromFile(assembly.Location)).ToList();
+        
+        var systemRuntimeLocation = Assembly.Load(new AssemblyName("System")).Location;
+        runtimeAssemblies.Add(MetadataReference.CreateFromFile(systemRuntimeLocation));
 
         var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
             .WithOptimizationLevel(OptimizationLevel.Release)
@@ -66,5 +52,14 @@ public static class StrategyDynamiqCompiler
         return namespaceDeclaration != null
             ? $"{namespaceDeclaration.Name}.{firstClass.Identifier.ValueText}"
             : firstClass.Identifier.ValueText;
+    }
+    
+    private static string EnsureUsingDirective(string sourceCode, string namespaceName = "System")
+    {
+        if (!sourceCode.StartsWith($"using {namespaceName};"))
+        {
+            sourceCode = $"using {namespaceName};\n{sourceCode}";
+        }
+        return sourceCode;
     }
 }

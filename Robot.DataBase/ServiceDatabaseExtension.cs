@@ -25,7 +25,7 @@ public static class ServiceDatabaseExtension
                             null))
                 .LogTo(message =>
                 {
-                    Log.Logger.Error(message);
+                    Log.Logger.Information(message);
                     Console.WriteLine(message);
                 }, LogLevel.Information)
                 .EnableDetailedErrors());

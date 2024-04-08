@@ -14,7 +14,7 @@ const StrategyCreator: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const handleError = useErrorHandler();
   const [modalShow, setModalShow] = useState(false);
-  const [compilError, setCompilError] = useState<string[]>();
+  const [compilError, setCompilError] = useState<string[] | null>(null);
   const [strategyIdUpdate, setStrategyIdupdate] = useState<number | null>(null);
 
   useEffect(() => {
@@ -44,6 +44,7 @@ const StrategyCreator: React.FC = () => {
 
   const handleSubmitModal = (file: File) => {
     setIsLoading(true);
+    setCompilError(null);
     if (strategyIdUpdate === null) {
       StrategyGeneratorService.createNewStrategy(file)
         .then((r) => {
