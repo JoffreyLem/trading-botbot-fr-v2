@@ -7,15 +7,12 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/StrategyList.css";
 import { StrategyContext } from "./StrategyProvider.tsx";
-import { ApiErrorResponse } from "../../modeles/ApiResponseError.ts";
-import ErrorComponent from "../../common/ErrorComponent.tsx";
+
 import { StrategyService } from "../../services/StrategyHandlerService.ts";
 import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
 
 const StrategyList: React.FC = () => {
   const [allStrategy, setAllStrategy] = useState<StrategyInfo[]>([]);
-
-  const [actionError, setActionError] = useState<ApiErrorResponse>();
 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -49,7 +46,7 @@ const StrategyList: React.FC = () => {
           prevStrategies.filter((strategy) => strategy.id !== strategyId),
         );
       })
-      .catch((err: ApiErrorResponse) => setActionError(err))
+      .catch(handleError)
       .finally(() => {
         setIsLoading(false);
       });
@@ -61,12 +58,6 @@ const StrategyList: React.FC = () => {
 
   return (
     <div>
-      {actionError && (
-        <ErrorComponent
-          title="Erreur de suppression"
-          errors={actionError.errors}
-        />
-      )}
       <table className="table table-hover">
         <thead>
           <tr>

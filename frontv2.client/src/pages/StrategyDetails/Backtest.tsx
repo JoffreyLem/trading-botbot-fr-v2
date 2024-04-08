@@ -3,13 +3,13 @@
 import LoadSpinner from "../../common/LoadSpinner.tsx";
 
 import { BacktestRequest } from "../../modeles/BacktestRequest.ts";
-import { ApiErrorResponse } from "../../modeles/ApiResponseError.ts";
-import ErrorComponent from "../../common/ErrorComponent.tsx";
 
 import ResultDataDisplayComponent from "./Components/ResultDataDisplayComponent.tsx";
 import { Backtest } from "../../modeles/Backtest.ts";
 import { Result } from "../../modeles/Result.ts";
 import { StrategyService } from "../../services/StrategyHandlerService.ts";
+
+import { useErrorHandler } from "../../hooks/UseErrorHandler.tsx";
 
 const BackTestForm: React.FC<{ strategyId: string }> = ({ strategyId }) => {
   const [formData, setFormData] = useState<BacktestRequest>({
@@ -24,10 +24,9 @@ const BackTestForm: React.FC<{ strategyId: string }> = ({ strategyId }) => {
   };
   const [isLoading, setIsLoading] = useState(false);
 
-  const [actionError, setActionError] = useState<ApiErrorResponse>();
   const [backtest, setBacktest] = useState<Backtest>(initialBacktestState);
   const [error, setError] = useState<string | null>(null);
-
+  const handleError = useErrorHandler();
   useEffect(() => {
     setIsLoading(true);
 
@@ -50,11 +49,10 @@ const BackTestForm: React.FC<{ strategyId: string }> = ({ strategyId }) => {
     StrategyService.runBackTest(strategyId, formData)
       .then((r) => {
         setBacktest(r);
-        setIsLoading(false);
       })
-      .catch((err: ApiErrorResponse) => {
+      .catch(handleError)
+      .finally(() => {
         setIsLoading(false);
-        setActionError(err);
       });
   };
 
@@ -68,12 +66,6 @@ const BackTestForm: React.FC<{ strategyId: string }> = ({ strategyId }) => {
 
   return (
     <div>
-      {actionError && (
-        <ErrorComponent
-          title="Erreur d'execution du backtest"
-          errors={actionError.errors}
-        />
-      )}
       {backtest?.isBackTestRunning ? (
         <div>Backtest currently running</div>
       ) : (
