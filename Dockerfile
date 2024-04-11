@@ -1,12 +1,6 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
-RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y libpng-dev libjpeg-dev curl libxi6 build-essential libgl1-mesa-glx
-RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
-RUN apt-get install -y nodejs
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 RUN apt-get update
 RUN apt-get install -y curl
@@ -37,7 +31,8 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS="http://*:7000;"
-ENV API_URL=https://robot.botbot.fr/
+ARG API_URL
+ENV API_URL=${API_URL}
 ENV SECURE=true
 EXPOSE 7000
 
