@@ -1,92 +1,168 @@
-# RobotApp
+# RobotBlazorApp - Version 2
 
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.com/tradingbot3941224/robotapp.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.com/tradingbot3941224/robotapp/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
+> ⚠️ **Note importante** : Il s'agit de la **Version 2** du projet. Une **Version 3** plus récente existe et peut être disponible sur demande.
 
 ## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+RobotBlazorApp V2 est une plateforme de trading algorithmique complète développée en .NET avec une interface Blazor. Le système permet de concevoir, tester et exécuter des stratégies de trading automatisées avec support de backtesting et trading en temps réel.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## Architecture
+
+Le projet suit une architecture modulaire avec les composants suivants :
+
+### Backend (.NET)
+- **Robot.Server** : Serveur principal avec API REST et SignalR Hubs
+- **Robot.DataBase** : Couche d'accès aux données avec Entity Framework
+- **Robot.Mail** : Service de notification par email
+
+### Libraries de Trading
+- **RobotAppLibraryV2** : Bibliothèque principale de trading
+- **RobotAppLibraryV2.Api.Xtb** : Intégration avec le broker XTB
+- **RobotAppLibraryV2.ApiConnector** : Connecteurs API génériques
+- **RobotAppLibraryV2.ApiHandler** : Gestion des communications API
+- **RobotAppLibraryV2.Backtest** : Moteur de backtesting
+- **RobotAppLibraryV2.Indicators** : Indicateurs techniques
+- **RobotAppLibraryV2.CandleList** : Gestion des données de chandeliers
+- **RobotAppLibraryV2.MoneyManagement** : Gestion du risque et du capital
+- **RobotAppLibraryV2.PositionHandler** : Gestion des positions
+- **RobotAppLibraryV2.StrategyDynamiqCompiler** : Compilation dynamique de stratégies
+
+### Frontend
+- **frontv2.client** : Application React/TypeScript avec Vite
+
+## Prérequis
+
+- .NET 6.0 ou supérieur
+- Node.js 16+ et npm/yarn
+- Docker et Docker Compose (pour le déploiement)
+- SQL Server ou PostgreSQL (pour la base de données)
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Développement local
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+1. **Cloner le repository**
+```bash
+git clone https://gitlab.com/tradingbot3941224/robotapp.git
+cd robotapp
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+2. **Configuration de la base de données**
+```bash
+cd Robot.DataBase
+dotnet ef database update
+```
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+3. **Configuration des variables d'environnement**
+Créer un fichier `appsettings.Development.json` dans Robot.Server avec vos paramètres.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+4. **Lancer le backend**
+```bash
+cd Robot.Server
+dotnet run
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+5. **Lancer le frontend**
+```bash
+cd frontv2.client
+npm install
+npm run dev
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### Déploiement avec Docker
 
-## License
-For open source projects, say how it is licensed.
+```bash
+# Développement
+docker-compose -f docker-compose-dev.yml up
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+# Production
+docker-compose up -d
+```
+
+## Fonctionnalités principales
+
+- ✅ Création et gestion de stratégies de trading personnalisées
+- ✅ Backtesting avec données historiques
+- ✅ Trading en temps réel via API XTB
+- ✅ Indicateurs techniques intégrés
+- ✅ Gestion du risque et money management
+- ✅ Interface utilisateur Blazor moderne
+- ✅ Notifications par email
+- ✅ Communication temps réel via SignalR
+- ✅ Compilation dynamique de stratégies
+
+## Structure des données
+
+Le système utilise Entity Framework Core avec migrations pour gérer la structure de la base de données. Les modèles principaux se trouvent dans `Robot.DataBase/Modeles/`.
+
+## Tests
+
+```bash
+# Exécuter tous les tests
+dotnet test
+
+# Tests spécifiques
+cd RobotAppLibraryV2.Tests
+dotnet test
+```
+
+## Technologies utilisées
+
+- **Backend** : .NET 6+, ASP.NET Core, Entity Framework Core
+- **Frontend** : React, TypeScript, Vite
+- **Temps réel** : SignalR
+- **Base de données** : SQL Server / PostgreSQL
+- **Conteneurisation** : Docker
+- **API Trading** : XTB API
+
+## API et Intégrations
+
+Le système est conçu pour s'intégrer avec plusieurs brokers. Actuellement, l'intégration XTB est pleinement implémentée via le module `RobotAppLibraryV2.Api.Xtb`.
+
+## Contribution
+
+Ce projet est en version 2. Pour les nouvelles fonctionnalités, veuillez consulter la Version 3.
+
+## Licence
+
+**Copyright © 2025 - Tous droits réservés / All Rights Reserved**
+
+⚠️ **CE DÉPÔT EST PUBLIC POUR CONSULTATION UNIQUEMENT** ⚠️
+
+Bien que ce dépôt soit accessible publiquement, **AUCUNE licence d'utilisation n'est accordée**. L'accès public ne confère AUCUN droit d'utilisation, de copie, de modification ou de distribution du code.
+
+### Termes légaux
+
+Ce logiciel est protégé par les lois sur le droit d'auteur et la propriété intellectuelle. **Tous les droits sont expressément réservés**.
+
+**UTILISATIONS STRICTEMENT INTERDITES sans autorisation écrite préalable :**
+
+- ❌ Copier, reproduire ou dupliquer le code (en tout ou partie)
+- ❌ Modifier, adapter ou créer des œuvres dérivées
+- ❌ Distribuer, publier ou partager le code
+- ❌ Utiliser à des fins commerciales
+- ❌ Utiliser à des fins personnelles ou non commerciales
+- ❌ Incorporer dans d'autres projets ou logiciels
+- ❌ Forker ou cloner le repository
+- ❌ Rétro-ingénierie, décompilation ou désassemblage
+- ❌ Extraire ou réutiliser des portions du code
+
+### Utilisation autorisée
+
+La **SEULE** utilisation autorisée est :
+- ✅ Consultation du code à des fins éducatives ou de référence
+- ✅ Lecture de la documentation à des fins d'information
+
+### Conséquences légales
+
+Toute violation de ces termes constitue une violation du droit d'auteur et peut entraîner :
+- Des poursuites judiciaires civiles et/ou pénales
+- Des réclamations pour dommages et intérêts
+- Des mesures d'injonction
+- Tout autre recours juridique disponible
+
+### Demande de licence
+
+Pour toute demande d'autorisation d'utilisation ou de licence commerciale, veuillez contacter le propriétaire via les canaux officiels du repository.
+
+**Voir le fichier [LICENSE](LICENSE) pour les termes complets en français et anglais.**

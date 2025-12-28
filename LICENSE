@@ -1,0 +1,182 @@
+PROPRIETARY LICENSE - ALL RIGHTS RESERVED
+LICENCE PROPRIÉTAIRE - TOUS DROITS RÉSERVÉS
+
+Copyright © 2025. All rights reserved.
+Tous droits réservés.
+
+================================================================================
+
+IMPORTANT NOTICE / AVIS IMPORTANT
+
+This repository is publicly accessible for viewing purposes only. Public access 
+does NOT grant any license, right, or permission to use, copy, modify, or 
+distribute this code.
+
+Ce dépôt est accessible publiquement à des fins de consultation uniquement. 
+L'accès public n'accorde AUCUNE licence, droit ou permission d'utiliser, copier, 
+modifier ou distribuer ce code.
+
+================================================================================
+
+TERMS AND CONDITIONS / TERMES ET CONDITIONS
+
+1. COPYRIGHT AND OWNERSHIP / DROIT D'AUTEUR ET PROPRIÉTÉ
+
+All code, documentation, configuration files, resources, and other materials 
+contained in this repository (the "Software") are the exclusive property of 
+the copyright holder and are protected by copyright laws, international 
+treaties, and other intellectual property laws.
+
+Tout le code, la documentation, les fichiers de configuration, les ressources 
+et autres matériaux contenus dans ce dépôt (le "Logiciel") sont la propriété 
+exclusive du titulaire des droits d'auteur et sont protégés par les lois sur 
+le droit d'auteur, les traités internationaux et autres lois sur la propriété 
+intellectuelle.
+
+2. NO LICENSE GRANTED / AUCUNE LICENCE ACCORDÉE
+
+No license, express or implied, is granted to any person or entity by the mere 
+fact of this repository being publicly accessible. All rights are expressly 
+reserved by the copyright holder.
+
+Aucune licence, expresse ou implicite, n'est accordée à quelque personne ou 
+entité que ce soit du simple fait que ce dépôt soit accessible publiquement. 
+Tous les droits sont expressément réservés par le titulaire des droits d'auteur.
+
+3. PROHIBITED USES / UTILISATIONS INTERDITES
+
+Without prior written authorization from the copyright holder, the following 
+actions are STRICTLY PROHIBITED:
+
+Sans autorisation écrite préalable du titulaire des droits d'auteur, les actions 
+suivantes sont STRICTEMENT INTERDITES :
+
+   a) Copying, reproducing, or duplicating the Software, in whole or in part
+      Copier, reproduire ou dupliquer le Logiciel, en tout ou en partie
+
+   b) Modifying, adapting, translating, or creating derivative works
+      Modifier, adapter, traduire ou créer des œuvres dérivées
+
+   c) Distributing, publishing, transmitting, or making available to third parties
+      Distribuer, publier, transmettre ou mettre à disposition de tiers
+
+   d) Using for commercial purposes
+      Utiliser à des fins commerciales
+
+   e) Using for personal or non-commercial purposes
+      Utiliser à des fins personnelles ou non commerciales
+
+   f) Incorporating into other projects or software
+      Incorporer dans d'autres projets ou logiciels
+
+   g) Reverse engineering, decompiling, or disassembling
+      Procéder à la rétro-ingénierie, décompilation ou désassemblage
+
+   h) Extracting or reusing portions, components, algorithms, or concepts
+      Extraire ou réutiliser des portions, composants, algorithmes ou concepts
+
+   i) Forking, cloning, or creating mirrors of this repository
+      Créer un fork, cloner ou créer des miroirs de ce dépôt
+
+   j) Sublicensing or transferring any rights
+      Sous-licencier ou transférer quelque droit que ce soit
+
+4. PERMITTED USE / UTILISATION AUTORISÉE
+
+The ONLY permitted use of this publicly accessible repository is:
+- Viewing the code for educational or reference purposes
+- Reading documentation for information purposes
+
+La SEULE utilisation autorisée de ce dépôt accessible publiquement est :
+- Consulter le code à des fins éducatives ou de référence
+- Lire la documentation à des fins d'information
+
+Any other use requires explicit written permission from the copyright holder.
+Toute autre utilisation nécessite une autorisation écrite explicite du titulaire.
+
+5. NO WARRANTY / ABSENCE DE GARANTIE
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+LE LOGICIEL EST FOURNI "TEL QUEL", SANS GARANTIE D'AUCUNE SORTE, EXPRESSE OU 
+IMPLICITE, Y COMPRIS MAIS SANS S'Y LIMITER, LES GARANTIES DE QUALITÉ MARCHANDE, 
+D'ADÉQUATION À UN USAGE PARTICULIER ET D'ABSENCE DE CONTREFAÇON.
+
+6. LIMITATION OF LIABILITY / LIMITATION DE RESPONSABILITÉ
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR 
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING 
+FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+IN THE SOFTWARE.
+
+EN AUCUN CAS LE TITULAIRE DES DROITS D'AUTEUR NE POURRA ÊTRE TENU RESPONSABLE 
+DE TOUTE RÉCLAMATION, DOMMAGES OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS UNE 
+ACTION CONTRACTUELLE, DÉLICTUELLE OU AUTRE, DÉCOULANT DE, HORS DE OU EN RELATION 
+AVEC LE LOGICIEL OU SON UTILISATION.
+
+7. ENFORCEMENT / APPLICATION
+
+Any violation of these terms may result in:
+- Immediate legal action, including civil and/or criminal proceedings
+- Claims for damages and financial compensation
+- Injunctive relief to prevent further violations
+- Any other available legal remedies
+
+Toute violation de ces termes peut entraîner :
+- Une action en justice immédiate, y compris des poursuites civiles et/ou pénales
+- Des réclamations pour dommages et compensations financières
+- Des mesures d'injonction pour prévenir de nouvelles violations
+- Tout autre recours juridique disponible
+
+8. JURISDICTION / JURIDICTION
+
+This license shall be governed by and construed in accordance with the laws 
+of the jurisdiction where the copyright holder resides, without regard to 
+conflict of law principles.
+
+Cette licence sera régie et interprétée conformément aux lois de la juridiction 
+où réside le titulaire des droits d'auteur, sans égard aux principes de conflit 
+de lois.
+
+9. SEVERABILITY / DIVISIBILITÉ
+
+If any provision of this license is found to be unenforceable or invalid, that 
+provision shall be limited or eliminated to the minimum extent necessary so that 
+this license shall otherwise remain in full force and effect.
+
+Si une disposition de cette licence est jugée inapplicable ou invalide, cette 
+disposition sera limitée ou éliminée dans la mesure minimale nécessaire afin 
+que cette licence reste par ailleurs pleinement en vigueur et applicable.
+
+10. ENTIRE AGREEMENT / INTÉGRALITÉ DE L'ACCORD
+
+This license constitutes the entire agreement between the parties concerning 
+the subject matter hereof and supersedes all prior or contemporaneous 
+agreements, whether written or oral.
+
+Cette licence constitue l'intégralité de l'accord entre les parties concernant 
+l'objet des présentes et remplace tous les accords antérieurs ou simultanés, 
+qu'ils soient écrits ou oraux.
+
+================================================================================
+
+CONTACT FOR LICENSING INQUIRIES / CONTACT POUR DEMANDES DE LICENCE
+
+For authorization requests, commercial licensing, or any other inquiries, 
+please contact the copyright holder through the official repository channels.
+
+Pour les demandes d'autorisation, les licences commerciales ou toute autre 
+demande, veuillez contacter le titulaire des droits d'auteur via les canaux 
+officiels du dépôt.
+
+================================================================================
+
+Effective Date / Date d'effet : December 28, 2025 / 28 décembre 2025
+
+This license applies to all versions and commits of the Software, past, 
+present, and future.
+
+Cette licence s'applique à toutes les versions et commits du Logiciel, passées, 
+présentes et futures.
