@@ -1,6 +1,6 @@
 # RobotBlazorApp - Version 2
 
-> ⚠️ **Note importante** : Il s'agit de la **Version 2** du projet. Une **Version 3** plus récente existe et peut être disponible sur demande.
+> ⚠️ **Note importante** : Il s'agit de la **Version 2** du projet. Une **Version 3** plus récente existe.
 
 ## Description
 
